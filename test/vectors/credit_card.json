@@ -1,0 +1,6 @@
+[
+  {"input": "4111 1111 1111 1111", "isValid": true, "normalized": "4111111111111111", "format": "4111 1111 1111 1111"},
+  {"input": "378282246310005", "isValid": true, "format": "3782 822463 10005"},
+  {"input": "4111111111111112", "isValid": false, "code": "cardBadLuhn"},
+  {"input": "", "isValid": false, "code": "cardEmpty"}
+]
