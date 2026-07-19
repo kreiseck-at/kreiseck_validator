@@ -4,5 +4,9 @@
   {"input": "+436601234567", "international": false, "isValid": true, "format": "0660 1234567"},
   {"input": "0660 1234567", "country": "at", "isValid": true, "normalized": "+436601234567"},
   {"input": "0660 1234567", "isValid": false, "code": "phoneAmbiguousCountry"},
-  {"input": "+49 ABC", "isValid": false, "code": "phoneBadChars"}
+  {"input": "+49 ABC", "isValid": false, "code": "phoneBadChars"},
+  {"input": "+436641234567", "isValid": true, "type": "mobile", "format": "+43 664 1234567"},
+  {"input": "0662 123456", "country": "at", "isValid": true, "type": "landline"},
+  {"input": "+43316123456", "isValid": true, "type": "landline", "format": "+43 316 123456"},
+  {"input": "+43800123456", "isValid": true, "type": "freephone"}
 ]

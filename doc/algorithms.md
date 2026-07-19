@@ -118,6 +118,69 @@ DACH area codes (which varies by region and provider) and makes no
 attempt to reproduce it. Treat the grouping as a readability aid, not
 an authoritative area-code split.
 
+## Austrian number classification (AT)
+
+`Phone.type`/`Phone.parse` (`lib/src/phone/phone.dart`, delegating to
+`lib/src/phone/at_numbering.dart`) classify an Austrian **national
+significant number** — the number with the international `+43` or the
+national trunk `0` already stripped — into a `PhoneNumberType`. This
+is sourced from the public RTR (Rundfunk und Telekom Regulierungs-GmbH)
+numbering plan and describes the number's **type**, not its current
+operator: number portability means a prefix no longer reliably
+identifies the carrier. Classification and area-code-aware formatting
+are **Austria-only**; for DE/CH numbers `type` is always
+`PhoneNumberType.unknown` and formatting stays a simple 3-digit-prefix
+grouping.
+
+`AtNumbering.classify` checks the leading digits of the national
+number against four data sources, in this order:
+
+1. **Mobile — an explicit 3-digit allow-list, not a range.** The RTR
+   mobile block is `650`–`653`, `655`, `657`, `659`–`661`, `663`–`699`,
+   with deliberate gaps at `654`, `656`, `658` and `662`. The `662` gap
+   matters: `662` is the Salzburg geographic area code, so a number
+   like `0662 123456` is a **landline**, even though `662` sits
+   numerically inside the `65x`–`69x` mobile span. Checking mobile
+   before geographic (and as an allow-list, not a range test) is what
+   keeps Salzburg out of the mobile bucket.
+2. **Service ranges** — fixed 3-digit prefixes mapped directly to a
+   type: `800` → freephone (toll-free), `810`/`820`/`821` →
+   shared-cost, `900`/`901`/`930`/`931`/`939` → premium-rate, `720` →
+   voip (location-independent).
+3. **Geographic — longest-prefix match.** A curated table of area
+   codes (Vienna `1`, Graz `316`, Linz `732`, Salzburg `662`,
+   Innsbruck `512`, Klagenfurt `463`, and a dozen more regional
+   codes, 1–4 digits long) is matched by trying the longest candidate
+   prefix first (4, then 3, then 2, then 1 digit) so that, e.g., a
+   4-digit code isn't shadowed by an unrelated 1-digit one. A match
+   yields `PhoneNumberType.landline` with the matched prefix as the
+   display grouping.
+4. **Corporate / private networks** — numbers starting `50` or `59`
+   that didn't match a known geographic code fall back to
+   `PhoneNumberType.corporate` (e.g. `050x`/`059x` corporate ranges).
+5. **Approximate geographic fallback.** If nothing above matched but
+   the number plausibly starts with a geographic first digit (`2`,
+   `3`, `4`, `5`, `7` or `8`), it's still classified as `landline`
+   with an empty (unknown) prefix, rather than giving up. Anything
+   else is `PhoneNumberType.unknown`.
+
+`AtNumbering.format` reuses the same `classify` call for its display
+grouping: when the classifier found an explicit prefix (mobile, a
+service code, or a known area code), that exact prefix is used as the
+first group, e.g. `01 …` for Vienna (`1` is the whole area code) or
+`0316 …` for Graz. When the prefix is unknown (the approximate
+fallback), formatting falls back to an approximate split — 4 digits
+if the national number is at least 6 digits long, else 2 — purely for
+readability, so `format` never throws even for numbers outside the
+curated area-code table.
+
+Source: the RTR public numbering plan
+(<https://www.rtr.at/TKP/was_wir_tun/telekommunikation/nummerierung/nummernplaene/nummernplaene.de.html>).
+The mobile allow-list, service ranges and curated area-code table
+above are a snapshot of that plan and are not exhaustive of every
+Austrian area code; unmatched numbers degrade gracefully to the
+approximate fallback rather than throwing.
+
 ## Optimal string alignment (Damerau) distance-1 email typo heuristic
 
 `Email.validate` (`lib/src/email/email.dart`) never rejects a

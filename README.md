@@ -82,12 +82,27 @@ Phone.normalize('0660 1234567', country: Country.at); // '+436601234567'
 Phone.normalize('+43 (0) 660 1234567');               // '+436601234567'
 Phone.format('06601234567', country: Country.at);     // '+43 660 1234567'
 Phone.format('+436601234567', international: false);   // '0660 1234567'
+
+Phone.type('+43 664 1234567');                    // PhoneNumberType.mobile
+Phone.type('0662 123456', country: Country.at);   // PhoneNumberType.landline (not mobile!)
+
+final info = Phone.parse('0316 123456', country: Country.at);
+info?.type;           // PhoneNumberType.landline
+info?.national;       // '0316 123456'    (area-code-aware spacing)
+info?.international;  // '+43 316 123456'
 ```
 
 National input (no `+`, no country code) requires the `country:` argument; without it,
-`validate` returns `Invalid` with `IssueCode.phoneAmbiguousCountry`. `Phone.format` uses a
-simple readable grouping (a 3-digit prefix, then the remainder), **not** geographic
-area-code-aware grouping — real DACH area codes vary in length and are out of scope here.
+`validate` returns `Invalid` with `IssueCode.phoneAmbiguousCountry`. For **Austria**,
+`Phone.format` uses real geographic area-code spacing (e.g. `01 …` Vienna, `0316 …` Graz)
+derived from the public RTR numbering plan; for DE/CH it falls back to a simple 3-digit
+prefix grouping — real DE/CH area codes vary in length and are out of scope here.
+
+`Phone.type`/`Phone.parse` classify Austrian numbers into `PhoneNumberType` (mobile,
+landline, voip, freephone, sharedCost, premium, corporate) from the same RTR numbering
+plan; this **type classification is Austria-only** — for DE/CH numbers `type` is always
+`PhoneNumberType.unknown`. It classifies the number's **type**, not its current operator:
+number portability means a prefix no longer reliably identifies the carrier.
 
 ### 🔗 URL
 
