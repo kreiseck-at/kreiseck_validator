@@ -42,8 +42,8 @@ abstract final class AtNumbering {
   };
 
   /// Curated geographic area codes (without the trunk 0) for major cities.
-  /// Longest-prefix match wins. Not exhaustive; unknown geographic numbers
-  /// fall back to an approximate 4-digit area-code split.
+  /// Longest-prefix match wins. Not exhaustive — unknown numbers are handled
+  /// by the [format] method.
   static const Map<String, String> areaCodes = {
     '1': 'Wien',
     '316': 'Graz',
@@ -100,5 +100,21 @@ abstract final class AtNumbering {
     }
 
     return const AtClass(PhoneNumberType.unknown, '');
+  }
+
+  /// Formats an Austrian national significant [national] number with
+  /// type-aware spacing. [international] chooses `+43 <area> <rest>` vs
+  /// `0<area> <rest>`. Never throws; unknown area codes use an approximate
+  /// 4-digit split.
+  static String format(String national, {required bool international}) {
+    final c = classify(national);
+    var area = c.prefix;
+    if (area.isEmpty) {
+      // Fallback: approximate area code (min 2, max 4 digits) for readability.
+      final len = national.length >= 6 ? 4 : 2;
+      area = national.substring(0, national.length > len ? len : national.length);
+    }
+    final rest = national.substring(area.length);
+    return international ? '+43 $area $rest' : '0$area $rest';
   }
 }

@@ -1,6 +1,7 @@
 import '../common/country.dart';
 import '../common/issue_code.dart';
 import '../common/validation_result.dart';
+import 'at_numbering.dart';
 
 /// Validation, normalization (to E.164) and formatting of phone numbers.
 ///
@@ -95,6 +96,9 @@ class Phone {
     final d = e164.substring(1);
     final cc = _byCallingCode.keys.firstWhere(d.startsWith);
     final national = d.substring(cc.length);
+    if (cc == '43') {
+      return AtNumbering.format(national, international: international);
+    }
     final area = national.substring(0, 3);
     final rest = national.substring(3);
     return international ? '+$cc $area $rest' : '0$area $rest';
