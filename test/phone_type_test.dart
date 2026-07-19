@@ -1,6 +1,6 @@
 // test/phone_type_test.dart
+import 'package:kreiseck_validator/kreiseck_validator.dart';
 import 'package:kreiseck_validator/src/phone/at_numbering.dart';
-import 'package:kreiseck_validator/src/phone/phone_number_type.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -38,5 +38,23 @@ void main() {
     expect(AtNumbering.classify('316123456').prefix, '316');
     expect(AtNumbering.classify('15321234').prefix, '1');
     expect(AtNumbering.classify('6641234567').prefix, '664');
+  });
+
+  test('Phone.type classifies AT numbers and is unknown off-AT/invalid', () {
+    expect(Phone.type('+436641234567'), PhoneNumberType.mobile);
+    expect(Phone.type('0316 123456', country: Country.at),
+        PhoneNumberType.landline);
+    expect(Phone.type('+491701234567'), PhoneNumberType.unknown); // DE
+    expect(Phone.type('nonsense'), PhoneNumberType.unknown);
+  });
+
+  test('Phone.parse bundles type and both formats, null on invalid', () {
+    final info = Phone.parse('0316123456', country: Country.at)!;
+    expect(info.type, PhoneNumberType.landline);
+    expect(info.e164, '+43316123456');
+    expect(info.national, '0316 123456');
+    expect(info.international, '+43 316 123456');
+    expect(info.country, Country.at);
+    expect(Phone.parse('nonsense'), isNull);
   });
 }
