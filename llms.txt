@@ -1,10 +1,10 @@
-# input_validator
+# kreiseck_validator
 
 > Zero-dependency Dart package to validate, normalize and pretty-format common
 > user input: email, phone, URL/domain, IBAN and credit-card numbers. DACH-aware
 > (DE/AT/CH). Apache-2.0. By Kreiseck Software Solutions (https://kreiseck.com).
 
-Package name: `input_validator` (Dart, pub.dev). No runtime dependencies, no
+Package name: `kreiseck_validator` (Dart, pub.dev). No runtime dependencies, no
 network calls, no telemetry. Every algorithm (Luhn, ISO 13616 IBAN Mod-97, E.164
 phone parsing, Damerau/OSA typo distance) is hand-written in pure Dart. Works on
 all Dart and Flutter platforms. SDK: >=3.0.0 <4.0.0.
@@ -12,11 +12,11 @@ all Dart and Flutter platforms. SDK: >=3.0.0 <4.0.0.
 ## Install
 
 ```
-dart pub add input_validator
+dart pub add kreiseck_validator
 ```
 
 ```dart
-import 'package:input_validator/input_validator.dart';
+import 'package:kreiseck_validator/kreiseck_validator.dart';
 ```
 
 ## API
@@ -64,9 +64,9 @@ port will load the same JSON files, so implementations cannot drift.
 
 ## Links
 
-- pub.dev: https://pub.dev/packages/input_validator
-- API docs: https://pub.dev/documentation/input_validator/latest/
-- Source: https://github.com/mhmmdlkts/input_validator
+- pub.dev: https://pub.dev/packages/kreiseck_validator
+- API docs: https://pub.dev/documentation/kreiseck_validator/latest/
+- Source: https://github.com/kreiseck-at/kreiseck_validator
 - Algorithms explained: doc/algorithms.md
 - License: Apache-2.0 (LICENSE)
 

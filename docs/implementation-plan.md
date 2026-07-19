@@ -1,4 +1,4 @@
-# input_validator Implementation Plan
+# kreiseck_validator Implementation Plan
 
 **Goal:** A zero-dependency Dart package that validates, normalizes and pretty-formats email, phone, URL/domain, IBAN and credit-card input, driven by shared language-agnostic JSON test vectors.
 
@@ -22,14 +22,14 @@
 ## File Structure
 
 ```
-input_validator/
+kreiseck_validator/
   pubspec.yaml
   analysis_options.yaml
   LICENSE                         # Apache-2.0
   README.md
   CHANGELOG.md
   lib/
-    input_validator.dart          # barrel export
+    kreiseck_validator.dart          # barrel export
     src/
       common/
         country.dart              # enum Country
@@ -63,21 +63,21 @@ Each `src/<type>/` file owns one input type and depends only on `common/`. `vect
 ### Task 0: Project scaffold
 
 **Files:**
-- Create: `pubspec.yaml`, `analysis_options.yaml`, `LICENSE`, `CHANGELOG.md`, `lib/input_validator.dart`
+- Create: `pubspec.yaml`, `analysis_options.yaml`, `LICENSE`, `CHANGELOG.md`, `lib/kreiseck_validator.dart`
 
 **Interfaces:**
 - Consumes: nothing.
-- Produces: an analyzable, testable empty package. Barrel file `lib/input_validator.dart` will re-export type classes as tasks add them.
+- Produces: an analyzable, testable empty package. Barrel file `lib/kreiseck_validator.dart` will re-export type classes as tasks add them.
 
 - [ ] **Step 1: Create `pubspec.yaml`**
 
 ```yaml
-name: input_validator
+name: kreiseck_validator
 description: >-
   Zero-dependency validation, normalization and pretty-formatting for common
   inputs: email, phone, URL, IBAN and credit-card numbers.
 version: 0.1.0
-repository: https://github.com/mhmmdlkts/input_validator
+repository: https://github.com/kreiseck-at/kreiseck_validator
 environment:
   sdk: ">=3.0.0 <4.0.0"
 dev_dependencies:
@@ -97,7 +97,7 @@ analyzer:
 
 - [ ] **Step 3: Create `LICENSE` (Apache-2.0)**
 
-Write the full, unmodified Apache License 2.0 text (https://www.apache.org/licenses/LICENSE-2.0.txt), with the copyright line: `Copyright 2026 mhmmdlkts`.
+Write the full, unmodified Apache License 2.0 text (https://www.apache.org/licenses/LICENSE-2.0.txt), with the copyright line: `Copyright 2026 Kreiseck Software Solutions`.
 
 - [ ] **Step 4: Create `CHANGELOG.md`**
 
@@ -110,7 +110,7 @@ Write the full, unmodified Apache License 2.0 text (https://www.apache.org/licen
   normalization and formatting (DACH country coverage).
 ```
 
-- [ ] **Step 5: Create empty barrel `lib/input_validator.dart`**
+- [ ] **Step 5: Create empty barrel `lib/kreiseck_validator.dart`**
 
 ```dart
 /// Zero-dependency validation, normalization and formatting for common inputs.
@@ -127,7 +127,7 @@ Expected: `No issues found!`
 - [ ] **Step 7: Commit**
 
 ```bash
-git add pubspec.yaml analysis_options.yaml LICENSE CHANGELOG.md lib/input_validator.dart
+git add pubspec.yaml analysis_options.yaml LICENSE CHANGELOG.md lib/kreiseck_validator.dart
 git commit -m "Scaffold package: pubspec, lints, license, barrel"
 ```
 
@@ -150,9 +150,9 @@ git commit -m "Scaffold package: pubspec, lints, license, barrel"
 
 ```dart
 // test/common_test.dart
-import 'package:input_validator/src/common/country.dart';
-import 'package:input_validator/src/common/issue_code.dart';
-import 'package:input_validator/src/common/validation_result.dart';
+import 'package:kreiseck_validator/src/common/country.dart';
+import 'package:kreiseck_validator/src/common/issue_code.dart';
+import 'package:kreiseck_validator/src/common/validation_result.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -310,7 +310,7 @@ Start with credit cards: purely algorithmic, no country rules, exercises the res
 
 **Files:**
 - Create: `lib/src/credit_card/credit_card.dart`
-- Modify: `lib/input_validator.dart` (add export)
+- Modify: `lib/kreiseck_validator.dart` (add export)
 - Test: `test/credit_card_test.dart`
 
 **Interfaces:**
@@ -321,9 +321,9 @@ Start with credit cards: purely algorithmic, no country rules, exercises the res
 
 ```dart
 // test/credit_card_test.dart
-import 'package:input_validator/src/common/issue_code.dart';
-import 'package:input_validator/src/common/validation_result.dart';
-import 'package:input_validator/src/credit_card/credit_card.dart';
+import 'package:kreiseck_validator/src/common/issue_code.dart';
+import 'package:kreiseck_validator/src/common/validation_result.dart';
+import 'package:kreiseck_validator/src/credit_card/credit_card.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -535,7 +535,7 @@ class CreditCard {
 
 - [ ] **Step 4: Add export to barrel**
 
-In `lib/input_validator.dart` add:
+In `lib/kreiseck_validator.dart` add:
 
 ```dart
 export 'src/common/country.dart';
@@ -552,7 +552,7 @@ Expected: PASS (7 tests), `No issues found!`
 - [ ] **Step 6: Commit**
 
 ```bash
-git add lib/src/credit_card lib/input_validator.dart test/credit_card_test.dart
+git add lib/src/credit_card lib/kreiseck_validator.dart test/credit_card_test.dart
 git commit -m "Add credit-card validation, network detection and formatting"
 ```
 
@@ -562,7 +562,7 @@ git commit -m "Add credit-card validation, network detection and formatting"
 
 **Files:**
 - Create: `lib/src/iban/iban.dart`
-- Modify: `lib/input_validator.dart`
+- Modify: `lib/kreiseck_validator.dart`
 - Test: `test/iban_test.dart`
 
 **Interfaces:**
@@ -573,9 +573,9 @@ git commit -m "Add credit-card validation, network detection and formatting"
 
 ```dart
 // test/iban_test.dart
-import 'package:input_validator/src/common/issue_code.dart';
-import 'package:input_validator/src/common/validation_result.dart';
-import 'package:input_validator/src/iban/iban.dart';
+import 'package:kreiseck_validator/src/common/issue_code.dart';
+import 'package:kreiseck_validator/src/common/validation_result.dart';
+import 'package:kreiseck_validator/src/iban/iban.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -708,7 +708,7 @@ class Iban {
 
 - [ ] **Step 4: Add export to barrel**
 
-In `lib/input_validator.dart` add: `export 'src/iban/iban.dart';`
+In `lib/kreiseck_validator.dart` add: `export 'src/iban/iban.dart';`
 
 - [ ] **Step 5: Run tests to verify they pass**
 
@@ -718,7 +718,7 @@ Expected: PASS (5 tests), `No issues found!`
 - [ ] **Step 6: Commit**
 
 ```bash
-git add lib/src/iban lib/input_validator.dart test/iban_test.dart
+git add lib/src/iban lib/kreiseck_validator.dart test/iban_test.dart
 git commit -m "Add IBAN validation (Mod-97 + DACH length) and formatting"
 ```
 
@@ -728,7 +728,7 @@ git commit -m "Add IBAN validation (Mod-97 + DACH length) and formatting"
 
 **Files:**
 - Create: `lib/src/url/url.dart`
-- Modify: `lib/input_validator.dart`
+- Modify: `lib/kreiseck_validator.dart`
 - Test: `test/url_test.dart`
 
 **Interfaces:**
@@ -739,9 +739,9 @@ git commit -m "Add IBAN validation (Mod-97 + DACH length) and formatting"
 
 ```dart
 // test/url_test.dart
-import 'package:input_validator/src/common/issue_code.dart';
-import 'package:input_validator/src/common/validation_result.dart';
-import 'package:input_validator/src/url/url.dart';
+import 'package:kreiseck_validator/src/common/issue_code.dart';
+import 'package:kreiseck_validator/src/common/validation_result.dart';
+import 'package:kreiseck_validator/src/url/url.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -865,7 +865,7 @@ class Url {
 
 - [ ] **Step 4: Add export to barrel**
 
-In `lib/input_validator.dart` add: `export 'src/url/url.dart';`
+In `lib/kreiseck_validator.dart` add: `export 'src/url/url.dart';`
 
 - [ ] **Step 5: Run tests to verify they pass**
 
@@ -875,7 +875,7 @@ Expected: PASS (5 tests), `No issues found!`
 - [ ] **Step 6: Commit**
 
 ```bash
-git add lib/src/url lib/input_validator.dart test/url_test.dart
+git add lib/src/url lib/kreiseck_validator.dart test/url_test.dart
 git commit -m "Add URL/domain validation, normalization and display format"
 ```
 
@@ -885,7 +885,7 @@ git commit -m "Add URL/domain validation, normalization and display format"
 
 **Files:**
 - Create: `lib/src/email/email.dart`
-- Modify: `lib/input_validator.dart`
+- Modify: `lib/kreiseck_validator.dart`
 - Test: `test/email_test.dart`
 
 **Interfaces:**
@@ -896,9 +896,9 @@ git commit -m "Add URL/domain validation, normalization and display format"
 
 ```dart
 // test/email_test.dart
-import 'package:input_validator/src/common/issue_code.dart';
-import 'package:input_validator/src/common/validation_result.dart';
-import 'package:input_validator/src/email/email.dart';
+import 'package:kreiseck_validator/src/common/issue_code.dart';
+import 'package:kreiseck_validator/src/common/validation_result.dart';
+import 'package:kreiseck_validator/src/email/email.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -1040,7 +1040,7 @@ class Email {
 
 - [ ] **Step 4: Add export to barrel**
 
-In `lib/input_validator.dart` add: `export 'src/email/email.dart';`
+In `lib/kreiseck_validator.dart` add: `export 'src/email/email.dart';`
 
 - [ ] **Step 5: Run tests to verify they pass**
 
@@ -1050,7 +1050,7 @@ Expected: PASS (5 tests), `No issues found!`
 - [ ] **Step 6: Commit**
 
 ```bash
-git add lib/src/email lib/input_validator.dart test/email_test.dart
+git add lib/src/email lib/kreiseck_validator.dart test/email_test.dart
 git commit -m "Add email validation, normalization and offline typo hints"
 ```
 
@@ -1060,7 +1060,7 @@ git commit -m "Add email validation, normalization and offline typo hints"
 
 **Files:**
 - Create: `lib/src/phone/phone.dart`
-- Modify: `lib/input_validator.dart`
+- Modify: `lib/kreiseck_validator.dart`
 - Test: `test/phone_test.dart`
 
 **Interfaces:**
@@ -1071,10 +1071,10 @@ git commit -m "Add email validation, normalization and offline typo hints"
 
 ```dart
 // test/phone_test.dart
-import 'package:input_validator/src/common/country.dart';
-import 'package:input_validator/src/common/issue_code.dart';
-import 'package:input_validator/src/common/validation_result.dart';
-import 'package:input_validator/src/phone/phone.dart';
+import 'package:kreiseck_validator/src/common/country.dart';
+import 'package:kreiseck_validator/src/common/issue_code.dart';
+import 'package:kreiseck_validator/src/common/validation_result.dart';
+import 'package:kreiseck_validator/src/phone/phone.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -1234,7 +1234,7 @@ class Phone {
 
 - [ ] **Step 4: Add export to barrel**
 
-In `lib/input_validator.dart` add: `export 'src/phone/phone.dart';`
+In `lib/kreiseck_validator.dart` add: `export 'src/phone/phone.dart';`
 
 - [ ] **Step 5: Run tests to verify they pass**
 
@@ -1244,7 +1244,7 @@ Expected: PASS (6 tests), `No issues found!`
 - [ ] **Step 6: Commit**
 
 ```bash
-git add lib/src/phone lib/input_validator.dart test/phone_test.dart
+git add lib/src/phone lib/kreiseck_validator.dart test/phone_test.dart
 git commit -m "Add phone validation (E.164 + DACH) and formatting"
 ```
 
@@ -1327,7 +1327,7 @@ Turn the shared behavior data into an executable conformance suite. A future npm
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:input_validator/input_validator.dart';
+import 'package:kreiseck_validator/kreiseck_validator.dart';
 import 'package:test/test.dart';
 
 Country? _country(String? s) => switch (s) {
@@ -1445,7 +1445,7 @@ git commit -m "Add shared JSON test vectors and conformance runner"
 
 - [ ] **Step 1: Write `README.md`**
 
-Include: one-paragraph intro; install snippet (`dart pub add input_validator`); a copy-paste example per type (reuse the examples from the spec's "Öffentliche API" section); a feature/country matrix (five types × operations; DACH note); "zero dependencies" and Apache-2.0 statements; a "how behavior is pinned" paragraph pointing at `test/vectors/`.
+Include: one-paragraph intro; install snippet (`dart pub add kreiseck_validator`); a copy-paste example per type (reuse the examples from the spec's "Öffentliche API" section); a feature/country matrix (five types × operations; DACH note); "zero dependencies" and Apache-2.0 statements; a "how behavior is pinned" paragraph pointing at `test/vectors/`.
 
 - [ ] **Step 2: Write `doc/algorithms.md`**
 

@@ -1,4 +1,4 @@
-# input_validator — Design (V1)
+# kreiseck_validator — Design (V1)
 
 Status: approved
 Date: 2026-07-19
@@ -127,9 +127,9 @@ Blockung (Amex 4-6-5, sonst 4-4-4-4).
 ## Projektstruktur
 
 ```
-input_validator/
+kreiseck_validator/
   lib/
-    input_validator.dart          # Barrel-Export der öffentlichen API
+    kreiseck_validator.dart          # Barrel-Export der öffentlichen API
     src/
       common/                     # ValidationResult, ValidationIssue, IssueCode,
                                   #   Suggestion, Country, gemeinsame Helfer

@@ -1,6 +1,6 @@
-import 'package:input_validator/src/common/issue_code.dart';
-import 'package:input_validator/src/common/validation_result.dart';
-import 'package:input_validator/src/credit_card/credit_card.dart';
+import 'package:kreiseck_validator/src/common/issue_code.dart';
+import 'package:kreiseck_validator/src/common/validation_result.dart';
+import 'package:kreiseck_validator/src/credit_card/credit_card.dart';
 import 'package:test/test.dart';
 
 void main() {
