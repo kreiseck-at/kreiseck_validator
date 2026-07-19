@@ -159,13 +159,31 @@ Jeder `src/<typ>/`-Ordner bündelt Logik + interne Doku eines Typs und ist unabh
 testbar. `common/` definiert die geteilten Verträge, sonst hängen die Typen nicht
 voneinander ab.
 
-## Konsistenz für spätere Ports
+## Test-Strategie & Konsistenz für spätere Ports
 
-Die maßgeblichen Testfälle liegen als **JSON-Vektoren** in `test/vectors/`:
-Eingabe → erwartete Operation-Ergebnisse (isValid/normalize/format/Fehlercode).
-Der Dart-Test (`vectors_test.dart`) lädt und prüft sie. Ein späterer npm-Port lädt
-**dieselben Dateien** — so kann keine Implementierung stillschweigend abweichen.
-Sprachspezifische Unit-Tests ergänzen die Vektoren um Rand-/Fehlerfälle.
+**Grundsatz: geteilte Daten, kein geteilter Treiber.** Der einmalig zu definierende Teil
+sind die *erwarteten Ergebnisse*, nicht die Test-Logik. Diese liegen als sprachunabhängige
+**JSON-Vektoren** in `test/vectors/` und sind die maßgebliche Verhaltens-Spezifikation.
+
+- **Vektoren zuerst (TDD auf Verhaltensebene).** Die JSON-Vektoren werden *vor* der
+  Dart-Implementierung geschrieben und definieren pro Eingabe die erwarteten Ergebnisse
+  jeder Operation (isValid/normalize/format) bzw. den erwarteten Fehlercode. Implementiert
+  wird dann gegen Grün.
+- **Native Runner pro Sprache.** Jede Sprache hat einen dünnen Runner (~30 Zeilen: JSON
+  laden, Funktion aufrufen, vergleichen). Der Dart-Runner ist `vectors_test.dart`. Ein
+  späterer npm-Port lädt **dieselben JSON-Dateien** — so kann keine Implementierung
+  stillschweigend abweichen. Jede Lib wird dabei so getestet, wie echte Nutzer sie
+  verwenden (als import), nicht über eine externe CLI/Subprozess-Brücke.
+- **Kein externer Test-Treiber.** Bewusst *kein* Python-/Fremdsprachen-Harness, das die
+  Pakete von außen ansteuert: das würde je Paket eine Conformance-CLI erzwingen und die
+  eigentliche Bibliothek hinter einer zu debuggenden Brücke verstecken — ohne Mehrwert bei
+  reinen `input → output`-Funktionen.
+- **Native Unit-Tests ergänzend.** Für Rand-/Fehlerfälle, die keine Datentabelle brauchen,
+  gibt es zusätzlich sprachspezifische Unit-Tests (`<typ>_test.dart`).
+- **Python nur als optionaler Vektor-Generator.** Ein kleines, nicht ausgeliefertes
+  Python-Skript darf die Vektor-*Daten* erzeugen/prüfen (z.B. gültige IBANs mit korrekter
+  Mod-97-Prüfziffer, Luhn-Ziffern, E.164-Erwartungen), damit die JSON-Vektoren nicht per
+  Hand mit fehleranfälligen Prüfziffern befüllt werden. Build-Helfer, kein Teil der Lib.
 
 ## Doku & Qualität
 
