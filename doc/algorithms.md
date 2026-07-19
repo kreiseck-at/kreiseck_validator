@@ -133,7 +133,7 @@ are **Austria-only**; for DE/CH numbers `type` is always
 grouping.
 
 `AtNumbering.classify` checks the leading digits of the national
-number against four data sources, in this order:
+number in five steps, in this order:
 
 1. **Mobile — an explicit 3-digit allow-list, not a range.** The RTR
    mobile block is `650`–`653`, `655`, `657`, `659`–`661`, `663`–`699`,
