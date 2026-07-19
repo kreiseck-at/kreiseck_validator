@@ -95,10 +95,6 @@ analyzer:
   language:
     strict-casts: true
     strict-raw-types: true
-linter:
-  rules:
-    - prefer_final_locals
-    - public_member_api_docs
 ```
 
 - [ ] **Step 3: Create `LICENSE` (Apache-2.0)**
