@@ -37,13 +37,15 @@ class CreditCard {
     final s = _strip(input);
     if (s.isEmpty || !_digits.hasMatch(s)) return null;
     final n2 = int.parse(s.substring(0, s.length >= 2 ? 2 : 1).padRight(2, '0'));
+    final n3 =
+        int.parse(s.substring(0, s.length >= 3 ? 3 : s.length).padRight(3, '0'));
     final n4 = s.length >= 4 ? int.parse(s.substring(0, 4)) : n2 * 100;
     if (s[0] == '4') return CardNetwork.visa;
     if (n2 == 34 || n2 == 37) return CardNetwork.amex;
     if ((n2 >= 51 && n2 <= 55) || (n4 >= 2221 && n4 <= 2720)) {
       return CardNetwork.mastercard;
     }
-    if (n4 == 6011 || n2 == 65 || (n4 >= 644 && n4 <= 649)) {
+    if (n4 == 6011 || n2 == 65 || (n3 >= 644 && n3 <= 649)) {
       return CardNetwork.discover;
     }
     return CardNetwork.unknown;
@@ -87,9 +89,17 @@ class CreditCard {
     }
     final net = network(s);
     final allowed = _lengths[net];
-    if (allowed != null && !allowed.contains(s.length)) {
+    if (allowed != null) {
+      if (!allowed.contains(s.length)) {
+        return const Invalid([
+          ValidationIssue(IssueCode.cardBadLength, 'Wrong length for network.')
+        ]);
+      }
+    } else if (s.length < 12 || s.length > 19) {
+      // Unknown network: enforce the ISO/IEC 7812 PAN range so short,
+      // Luhn-clean junk (e.g. "00") is not accepted as a card.
       return const Invalid([
-        ValidationIssue(IssueCode.cardBadLength, 'Wrong length for network.')
+        ValidationIssue(IssueCode.cardBadLength, 'Implausible card length.')
       ]);
     }
     if (!_luhnOk(s)) {
