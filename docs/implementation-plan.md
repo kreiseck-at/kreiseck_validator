@@ -1,7 +1,5 @@
 # input_validator Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** A zero-dependency Dart package that validates, normalizes and pretty-formats email, phone, URL/domain, IBAN and credit-card input, driven by shared language-agnostic JSON test vectors.
 
 **Architecture:** Each input type is a class with static methods (`isValid`, `validate`, `normalize`, `format`) sharing a common sealed `ValidationResult` model in `lib/src/common/`. Behavior is pinned by JSON vectors in `test/vectors/`, written before the implementation (TDD), and checked by a native Dart runner plus per-type unit tests.
