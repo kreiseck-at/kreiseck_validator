@@ -14,8 +14,15 @@ class Email {
 
   /// Popular domains used as targets for the typo heuristic.
   static const List<String> _knownDomains = [
-    'gmail.com', 'googlemail.com', 'yahoo.com', 'hotmail.com',
-    'outlook.com', 'icloud.com', 'gmx.net', 'web.de', 'live.com',
+    'gmail.com',
+    'googlemail.com',
+    'yahoo.com',
+    'hotmail.com',
+    'outlook.com',
+    'icloud.com',
+    'gmx.net',
+    'web.de',
+    'live.com',
   ];
 
   /// Trims and lower-cases [input].

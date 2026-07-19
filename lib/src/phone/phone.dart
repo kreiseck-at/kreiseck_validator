@@ -55,8 +55,7 @@ class Phone {
     } else {
       if (country == null) {
         return const Invalid([
-          ValidationIssue(
-              IssueCode.phoneAmbiguousCountry, 'Country required.')
+          ValidationIssue(IssueCode.phoneAmbiguousCountry, 'Country required.')
         ]);
       }
       cc = country.callingCode;

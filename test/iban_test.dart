@@ -23,7 +23,7 @@ void main() {
   });
 
   test('format groups in 4s', () {
-    expect(Iban.format('DE89370400440532013000'),
-        'DE89 3704 0044 0532 0130 00');
+    expect(
+        Iban.format('DE89370400440532013000'), 'DE89 3704 0044 0532 0130 00');
   });
 }

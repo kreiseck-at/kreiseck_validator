@@ -10,8 +10,8 @@ void main() {
   });
 
   test('parses a national AT number with a country hint', () {
-    expect(Phone.normalize('0660 1234567', country: Country.at),
-        '+436601234567');
+    expect(
+        Phone.normalize('0660 1234567', country: Country.at), '+436601234567');
   });
 
   test('rejects a national number without a country hint', () {
@@ -29,7 +29,6 @@ void main() {
   });
 
   test('formats national when asked', () {
-    expect(Phone.format('+436601234567', international: false),
-        '0660 1234567');
+    expect(Phone.format('+436601234567', international: false), '0660 1234567');
   });
 }

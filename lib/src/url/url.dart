@@ -8,8 +8,7 @@ import '../common/validation_result.dart';
 class Url {
   Url._();
 
-  static final RegExp _host =
-      RegExp(r'^([a-z0-9](-?[a-z0-9])*\.)+[a-z]{2,}$');
+  static final RegExp _host = RegExp(r'^([a-z0-9](-?[a-z0-9])*\.)+[a-z]{2,}$');
 
   /// Splits [input] into (scheme, rest), defaulting scheme to null.
   static (String?, String) _split(String input) {
