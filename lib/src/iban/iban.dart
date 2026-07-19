@@ -12,7 +12,7 @@ class Iban {
   /// Known IBAN lengths for the DACH scope.
   static const Map<String, int> _dachLengths = {'DE': 22, 'AT': 20, 'CH': 21};
 
-  static final RegExp _alnum = RegExp(r'^[0-9A-Z]+$');
+  static final RegExp _structure = RegExp(r'^[A-Z]{2}[0-9]{2}[0-9A-Z]+$');
 
   static String _strip(String input) =>
       input.replaceAll(RegExp(r'\s'), '').toUpperCase();
@@ -47,7 +47,7 @@ class Iban {
       return const Invalid(
           [ValidationIssue(IssueCode.ibanEmpty, 'IBAN is empty.')]);
     }
-    if (!_alnum.hasMatch(s) || s.length < 5) {
+    if (!_structure.hasMatch(s)) {
       return const Invalid([
         ValidationIssue(IssueCode.ibanBadChars, 'IBAN has invalid characters.')
       ]);

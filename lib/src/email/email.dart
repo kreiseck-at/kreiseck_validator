@@ -20,9 +20,16 @@ class Email {
     'hotmail.com',
     'outlook.com',
     'icloud.com',
-    'gmx.net',
-    'web.de',
     'live.com',
+    'gmx.net',
+    'gmx.de',
+    'gmx.at',
+    'gmx.ch',
+    'web.de',
+    't-online.de',
+    'a1.net',
+    'aon.at',
+    'bluewin.ch',
   ];
 
   /// Trims and lower-cases [input].

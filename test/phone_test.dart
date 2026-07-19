@@ -31,4 +31,8 @@ void main() {
   test('formats national when asked', () {
     expect(Phone.format('+436601234567', international: false), '0660 1234567');
   });
+
+  test('strips an embedded (0) trunk prefix from E.164 input', () {
+    expect(Phone.normalize('+43 (0) 660 1234567'), '+436601234567');
+  });
 }
