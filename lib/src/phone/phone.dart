@@ -23,6 +23,8 @@ class Phone {
     Country.ch: (9, 9),
   };
 
+  static final RegExp _allowedChars = RegExp(r'^\+?[0-9\s\-/().]+$');
+
   static String _digits(String s) => s.replaceAll(RegExp(r'[^0-9]'), '');
 
   /// Validates [input], returning [Valid] with the E.164 normalized form.
@@ -32,11 +34,7 @@ class Phone {
       return const Invalid(
           [ValidationIssue(IssueCode.phoneEmpty, 'Phone is empty.')]);
     }
-    if (RegExp(r'[A-Za-z]').hasMatch(trimmed)) {
-      return const Invalid(
-          [ValidationIssue(IssueCode.phoneBadChars, 'Contains letters.')]);
-    }
-    if (!RegExp(r'^\+?[0-9\s\-/().]+$').hasMatch(trimmed)) {
+    if (!_allowedChars.hasMatch(trimmed)) {
       return const Invalid(
           [ValidationIssue(IssueCode.phoneBadChars, 'Bad characters.')]);
     }
@@ -52,6 +50,7 @@ class Phone {
         ]);
       }
       national = d.substring(cc.length);
+      if (national.startsWith('0')) national = national.substring(1);
     } else {
       if (country == null) {
         return const Invalid([
@@ -96,8 +95,8 @@ class Phone {
     final d = e164.substring(1);
     final cc = _byCallingCode.keys.firstWhere(d.startsWith);
     final national = d.substring(cc.length);
-    final area = national.substring(0, national.length >= 3 ? 3 : 1);
-    final rest = national.substring(area.length);
+    final area = national.substring(0, 3);
+    final rest = national.substring(3);
     return international ? '+$cc $area $rest' : '0$area $rest';
   }
 

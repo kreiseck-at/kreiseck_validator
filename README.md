@@ -49,6 +49,11 @@ National input (no `+`, no country code) requires the `country:`
 argument; without it, `validate` returns
 `Invalid` with `IssueCode.phoneAmbiguousCountry`.
 
+`Phone.format` applies a simple readable grouping (a 3-digit prefix,
+then the remainder), not geographic area-code–aware grouping — real
+DACH area codes vary in length, and reproducing them accurately is out
+of scope for this release.
+
 ### Url
 
 ```dart
@@ -75,8 +80,10 @@ CreditCard.network('4111111111111111');       // CardNetwork.visa
 ```
 
 All `format`/`normalize` calls throw `FormatException` on invalid
-input; use `tryFormat` for a null-returning variant instead of a
-try/catch.
+input, with one exception: `Email.normalize` doesn't validate at all —
+it's a pure `trim` + lower-case transform, so it never throws. Use
+`tryFormat` for a null-returning variant instead of a try/catch on the
+types that do throw.
 
 ## Feature matrix
 

@@ -25,4 +25,19 @@ void main() {
   test('format strips scheme, www and trailing slash for display', () {
     expect(Url.format('https://www.example.com/'), 'example.com');
   });
+
+  test('accepts a host with a port', () {
+    expect(Url.isValid('example.com:8080'), isTrue);
+    expect(Url.normalize('example.com:8080'), 'https://example.com:8080');
+  });
+
+  test('accepts a query string without a path', () {
+    expect(Url.isValid('example.com?q=1'), isTrue);
+    expect(Url.normalize('https://example.com?q=1'), 'https://example.com?q=1');
+  });
+
+  test('keeps port and path when normalizing', () {
+    expect(Url.normalize('HTTP://Example.com:8080/Path/'),
+        'http://example.com:8080/Path');
+  });
 }

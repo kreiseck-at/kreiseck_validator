@@ -111,6 +111,13 @@ a `+`: `+436601234567`. Formatting reverses this: `format(...,
 international: false)` re-adds a `0` prefix for the readable national
 form (`0660 1234567`).
 
+`Phone.format`'s grouping is deliberately simple, not geographic: it
+splits the national number into a fixed 3-digit prefix and the
+remainder (`660` / `1234567`), it does not know the real length of
+DACH area codes (which varies by region and provider) and makes no
+attempt to reproduce it. Treat the grouping as a readability aid, not
+an authoritative area-code split.
+
 ## Optimal string alignment (Damerau) distance-1 email typo heuristic
 
 `Email.validate` (`lib/src/email/email.dart`) never rejects a
