@@ -1,5 +1,6 @@
 [
   {"input": "+436601234567", "isValid": true, "normalized": "+436601234567", "format": "+43 660 1234567"},
+  {"input": "+436601234567", "international": false, "isValid": true, "format": "0660 1234567"},
   {"input": "0660 1234567", "country": "at", "isValid": true, "normalized": "+436601234567"},
   {"input": "0660 1234567", "isValid": false, "code": "phoneAmbiguousCountry"},
   {"input": "+49 ABC", "isValid": false, "code": "phoneBadChars"}
