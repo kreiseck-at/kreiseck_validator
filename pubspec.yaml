@@ -1,0 +1,11 @@
+name: input_validator
+description: >-
+  Zero-dependency validation, normalization and pretty-formatting for common
+  inputs: email, phone, URL, IBAN and credit-card numbers.
+version: 0.1.0
+repository: https://github.com/mhmmdlkts/input_validator
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.24.0
