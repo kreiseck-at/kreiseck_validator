@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.1
+
+- Add a runnable `example/` covering all five types.
+
+## 0.1.0
 
 - Initial release, zero runtime dependencies:
   - `Email`: syntax validation, trim/lowercase normalization, offline
