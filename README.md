@@ -1,14 +1,52 @@
-# input_validator
+<p align="center">
+  <img src="doc/kreiseck_logo.png" alt="Kreiseck — Software Solutions" width="300">
+</p>
 
-A small, zero-dependency Dart package for validating, normalizing and
-pretty-formatting the kind of user input almost every app collects:
-email addresses, phone numbers, URLs, IBANs and credit-card numbers.
-Every type follows the same four-operation pattern (`isValid` /
-`validate` / `normalize` / `format`), and country-specific behavior
-(phone national formats, IBAN length) covers the DACH region
-(Germany, Austria, Switzerland).
+<h1 align="center">input_validator</h1>
 
-## Install
+<p align="center">
+  <b>Validate, normalize and pretty-format the input every app collects —<br>
+  email, phone, URL, IBAN and credit-card — in a few lines of Dart.</b><br>
+  Zero dependencies. Hand-written algorithms. DACH-aware.
+</p>
+
+<p align="center">
+  <a href="https://pub.dev/packages/input_validator"><img src="https://img.shields.io/pub/v/input_validator?color=930C0C&label=pub" alt="pub version"></a>
+  <a href="https://pub.dev/packages/input_validator/score"><img src="https://img.shields.io/pub/points/input_validator?color=930C0C" alt="pub points"></a>
+  <a href="https://pub.dev/packages/input_validator/score"><img src="https://img.shields.io/pub/likes/input_validator?color=930C0C" alt="pub likes"></a>
+  <img src="https://img.shields.io/badge/dependencies-0-930C0C" alt="zero dependencies">
+  <img src="https://img.shields.io/badge/license-Apache--2.0-930C0C" alt="Apache-2.0 license">
+  <a href="https://kreiseck.com"><img src="https://img.shields.io/badge/by-Kreiseck-111111" alt="by Kreiseck"></a>
+</p>
+
+---
+
+`input_validator` is a small, **zero-dependency Dart package** for **validating**,
+**normalizing** and **formatting** the kinds of user input almost every app collects:
+**email addresses, phone numbers, URLs/domains, IBANs and credit-card numbers**. Every
+type follows the same four-operation API — `isValid`, `validate`, `normalize`, `format` —
+so once you learn one, you know them all.
+
+It is built and maintained by **[Kreiseck Software Solutions](https://kreiseck.com)**, an
+Austrian software company. Every algorithm (Luhn, IBAN Mod-97, E.164 phone parsing, an
+offline typo-distance heuristic) is hand-written in pure Dart — **no third-party
+dependencies, no network calls, no telemetry.**
+
+## ✨ Features
+
+- 📧 **Email** — pragmatic syntax validation, `trim` + lower-case normalization, and an
+  **offline typo-domain suggestion** (`user@gmial.com` → suggests `user@gmail.com`, no DNS lookup)
+- ☎️ **Phone** — **E.164** validation and normalization, national ↔ international formatting
+  for the **DACH** region (🇩🇪 DE / 🇦🇹 AT / 🇨🇭 CH), tolerant of `+43 (0)…` business-card notation
+- 🔗 **URL / Domain** — scheme/host/TLD plausibility check (accepts `:port`, `?query`,
+  `#fragment`), canonical normalization, and a compact display form (`https://www.example.com/` → `example.com`)
+- 🏦 **IBAN** — **ISO 13616 Mod-97** checksum, exact DACH length checks, pretty 4-group formatting
+- 💳 **Credit card** — **Luhn** checksum, network detection (Visa / Mastercard / Amex / Discover),
+  network-aware grouping (Amex `4-6-5`, else `4-4-4-4`)
+- 🧱 **One consistent API** — `isValid` / `validate` / `normalize` / `format` (+ `tryFormat`) on every type
+- 🪶 **Zero dependencies** · **Apache-2.0** · **null-safe** · works on **all Dart & Flutter platforms**
+
+## 📦 Install
 
 ```bash
 dart pub add input_validator
@@ -18,51 +56,49 @@ dart pub add input_validator
 import 'package:input_validator/input_validator.dart';
 ```
 
-## Quick examples
+## 🚀 Quick start
 
-### Email
+### 📧 Email
 
 ```dart
 Email.isValid('a@b.com');           // true
 Email.normalize(' A@B.com ');       // 'a@b.com'
 
-final result = Email.validate('a@gmial.com');
+final result = Email.validate('user@gmial.com');
 switch (result) {
   case Valid(:final normalized, :final suggestions):
-    print(normalized);              // 'a@gmial.com'
-    print(suggestions.first.value); // 'a@gmail.com' (offline typo hint)
+    print(normalized);              // 'user@gmial.com'
+    print(suggestions.first.value); // 'user@gmail.com'  (offline typo hint)
   case Invalid(:final issues):
-    print(issues.first.code);
+    print(issues.first.code);       // e.g. IssueCode.emailMissingAt
 }
 ```
 
-### Phone
+### ☎️ Phone
 
 ```dart
-Phone.isValid('+43 660 1234567');                    // true
+Phone.isValid('+43 660 1234567');                     // true
 Phone.normalize('0660 1234567', country: Country.at); // '+436601234567'
+Phone.normalize('+43 (0) 660 1234567');               // '+436601234567'
 Phone.format('06601234567', country: Country.at);     // '+43 660 1234567'
-Phone.format('+436601234567', international: false);  // '0660 1234567'
+Phone.format('+436601234567', international: false);   // '0660 1234567'
 ```
 
-National input (no `+`, no country code) requires the `country:`
-argument; without it, `validate` returns
-`Invalid` with `IssueCode.phoneAmbiguousCountry`.
+National input (no `+`, no country code) requires the `country:` argument; without it,
+`validate` returns `Invalid` with `IssueCode.phoneAmbiguousCountry`. `Phone.format` uses a
+simple readable grouping (a 3-digit prefix, then the remainder), **not** geographic
+area-code-aware grouping — real DACH area codes vary in length and are out of scope here.
 
-`Phone.format` applies a simple readable grouping (a 3-digit prefix,
-then the remainder), not geographic area-code–aware grouping — real
-DACH area codes vary in length, and reproducing them accurately is out
-of scope for this release.
-
-### Url
+### 🔗 URL
 
 ```dart
 Url.isValid('example.com');                   // true
+Url.isValid('example.com:8080');              // true
 Url.normalize('Example.com/path/');           // 'https://example.com/path'
 Url.format('https://www.example.com/');       // 'example.com'
 ```
 
-### Iban
+### 🏦 IBAN
 
 ```dart
 Iban.isValid('AT61 1904 3002 3457 3201');     // true
@@ -70,52 +106,86 @@ Iban.normalize('at611904300234573201');       // 'AT611904300234573201'
 Iban.format('AT611904300234573201');          // 'AT61 1904 3002 3457 3201'
 ```
 
-### CreditCard
+### 💳 Credit card
 
 ```dart
 CreditCard.isValid('4111 1111 1111 1111');    // true
 CreditCard.normalize('4111-1111-1111-1111');  // '4111111111111111'
-CreditCard.format('378282246310005');         // '3782 822463 10005' (Amex 4-6-5)
+CreditCard.format('378282246310005');         // '3782 822463 10005'  (Amex 4-6-5)
 CreditCard.network('4111111111111111');       // CardNetwork.visa
 ```
 
-All `format`/`normalize` calls throw `FormatException` on invalid
-input, with one exception: `Email.normalize` doesn't validate at all —
-it's a pure `trim` + lower-case transform, so it never throws. Use
-`tryFormat` for a null-returning variant instead of a try/catch on the
-types that do throw.
+All `format`/`normalize` calls throw `FormatException` on invalid input, with one
+exception: `Email.normalize` doesn't validate at all — it's a pure `trim` + lower-case
+transform, so it never throws. Use `tryFormat` for a null-returning variant instead of a
+`try`/`catch` on the types that do throw.
 
-## Feature matrix
+## 🧾 The result model
+
+`validate` returns a **sealed** `ValidationResult`, so a `switch` is exhaustive:
+
+```dart
+sealed class ValidationResult {}
+class Valid   extends ValidationResult { String normalized; List<Suggestion> suggestions; }
+class Invalid extends ValidationResult { List<ValidationIssue> issues; }
+// ValidationIssue(IssueCode code, String message) — codes are a stable, translatable enum.
+```
+
+`isValid(x)` is shorthand for `validate(x) is Valid`. Error **codes** (`IssueCode`) are
+stable enums you can switch on and translate; the English `message` is only a default.
+
+## 🧩 Feature matrix
 
 | Type         | isValid | validate | normalize | format | tryFormat | Country scope |
 |--------------|:-------:|:--------:|:---------:|:------:|:---------:|----------------|
-| `Email`        | yes | yes | yes | – (display = normalized form) | – | none; offline typo suggestions only |
-| `Phone`        | yes | yes | yes | yes | yes | DACH (DE/AT/CH) only: recognizes the `+49`/`+43`/`+41` calling codes and DACH national formats; any other calling code is `Invalid(phoneUnknownCountry)` |
-| `Url`          | yes | yes | yes | yes | yes | none (scheme/host/TLD plausibility is global) |
-| `Iban`         | yes | yes | yes | yes | yes | DACH (DE/AT/CH): checksum + exact length; other countries: checksum only, no length guarantee |
-| `CreditCard`   | yes | yes | yes | yes | yes | none (Luhn + network detection is global) |
+| `Email`      | ✅ | ✅ | ✅ | – (display = normalized) | – | none; offline typo suggestions only |
+| `Phone`      | ✅ | ✅ | ✅ | ✅ | ✅ | DACH (DE/AT/CH): `+49`/`+43`/`+41` + national formats; other calling codes → `phoneUnknownCountry` |
+| `Url`        | ✅ | ✅ | ✅ | ✅ | ✅ | none (scheme/host/TLD check is global) |
+| `Iban`       | ✅ | ✅ | ✅ | ✅ | ✅ | DACH: checksum + exact length; other countries: checksum only |
+| `CreditCard` | ✅ | ✅ | ✅ | ✅ | ✅ | none (Luhn + network detection is global) |
 
-`Email` has no `format`/`tryFormat`: its normalized form (trimmed,
-lower-cased) already is the display form.
+## 🪶 Zero dependencies, Apache-2.0
 
-## Zero dependencies, Apache-2.0
+`input_validator` has **zero runtime dependencies** — every algorithm (Luhn, Mod-97,
+E.164 parsing, the Damerau/OSA typo-distance heuristic) is hand-written in `lib/` and
+documented in [`doc/algorithms.md`](doc/algorithms.md). It is licensed under
+**Apache-2.0** (see [LICENSE](LICENSE)) — free for commercial and closed-source use, with
+patent protection and attribution.
 
-`input_validator` has **zero runtime dependencies** — every algorithm
-(Luhn, Mod-97, E.164 parsing, the typo-distance heuristic) is
-hand-written in `lib/`. It is licensed under **Apache-2.0** (see
-`LICENSE`).
+## 🌍 How behavior is pinned (cross-language)
 
-## How behavior is pinned (cross-language)
+The exact expected result of every operation, for representative inputs, is captured once
+**as data** in the language-independent JSON files under `test/vectors/` (one per type).
+`test/vectors_test.dart` is a thin Dart runner that checks this package against them. A
+planned **npm port** will load the very same JSON files with its own runner, so the two
+implementations cannot quietly drift apart — the vectors, not either runner, are the source
+of truth for behavior.
 
-The exact expected result of every `isValid`/`validate`/`normalize`/
-`format` call for representative inputs is captured once, as data, in
-the language-independent JSON files under `test/vectors/` (one file
-per type). `test/vectors_test.dart` is the thin Dart runner that loads
-those vectors and checks this package against them. A planned npm
-port is meant to load the very same JSON files with its own thin
-runner, so the two implementations can't quietly drift apart — the
-vectors, not either runner, are the source of truth for behavior.
-See `doc/algorithms.md` for how the checksums and heuristics behind
-those vectors work, and `tool/gen_vectors.py` (a dev-only helper, not
-shipped with the package) for how sample check digits were computed
-while authoring them.
+## 🧭 About Kreiseck
+
+<p>
+  <a href="https://kreiseck.com"><img src="doc/kreiseck_logo.png" alt="Kreiseck Software Solutions" width="180"></a>
+</p>
+
+**[Kreiseck Software Solutions](https://kreiseck.com)** is an Austrian software company
+building practical tools for developers and businesses — from point-of-sale and payment
+systems to open-source developer libraries like this one. We favour **lightweight,
+dependency-free, well-documented** code that is easy to audit and easy to trust.
+
+- 🌐 Website — **[kreiseck.com](https://kreiseck.com)**
+- ✉️ Contact — **[office@kreiseck.com](mailto:office@kreiseck.com)**
+- 💙 If this package saves you time, a **like on [pub.dev](https://pub.dev/packages/input_validator)** or a ⭐ on GitHub helps others find it.
+
+## 🗂️ Versioning
+
+Semantic versioning — see the [CHANGELOG](CHANGELOG.md).
+
+## 📄 License
+
+Apache-2.0 — see [LICENSE](LICENSE). © 2026 Kreiseck Software Solutions.
+
+---
+
+<p align="center">
+  <sub>Made with care by <a href="https://kreiseck.com"><b>Kreiseck Software Solutions</b></a> · Austria 🇦🇹</sub>
+</p>
