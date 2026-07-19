@@ -8,4 +8,6 @@ export 'src/credit_card/credit_card.dart';
 export 'src/email/email.dart';
 export 'src/iban/iban.dart';
 export 'src/phone/phone.dart';
+export 'src/phone/phone_info.dart';
+export 'src/phone/phone_number_type.dart';
 export 'src/url/url.dart';

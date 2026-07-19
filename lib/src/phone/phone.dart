@@ -2,6 +2,8 @@ import '../common/country.dart';
 import '../common/issue_code.dart';
 import '../common/validation_result.dart';
 import 'at_numbering.dart';
+import 'phone_info.dart';
+import 'phone_number_type.dart';
 
 /// Validation, normalization (to E.164) and formatting of phone numbers.
 ///
@@ -112,5 +114,41 @@ class Phone {
     } on FormatException {
       return null;
     }
+  }
+
+  /// Splits a normalized E.164 string into (callingCode, nationalNumber).
+  static (String, String) _ccNational(String e164) {
+    final d = e164.substring(1);
+    final cc = _byCallingCode.keys.firstWhere(d.startsWith);
+    return (cc, d.substring(cc.length));
+  }
+
+  /// Classifies [input] by Austrian number type. Returns
+  /// [PhoneNumberType.unknown] for invalid input or non-AT numbers.
+  static PhoneNumberType type(String input, {Country? country}) {
+    final result = validate(input, country: country);
+    if (result is! Valid) return PhoneNumberType.unknown;
+    final (cc, national) = _ccNational(result.normalized);
+    if (cc != '43') return PhoneNumberType.unknown;
+    return AtNumbering.classify(national).type;
+  }
+
+  /// Parses [input] into a [PhoneInfo] bundle, or null if invalid.
+  static PhoneInfo? parse(String input, {Country? country}) {
+    final result = validate(input, country: country);
+    if (result is! Valid) return null;
+    final e164 = result.normalized;
+    final (cc, national) = _ccNational(e164);
+    final resolved = _byCallingCode[cc]!;
+    final numberType = resolved == Country.at
+        ? AtNumbering.classify(national).type
+        : PhoneNumberType.unknown;
+    return PhoneInfo(
+      e164: e164,
+      country: resolved,
+      type: numberType,
+      national: format(input, country: country, international: false),
+      international: format(input, country: country, international: true),
+    );
   }
 }
