@@ -160,9 +160,13 @@ number in five steps, in this order:
    `PhoneNumberType.corporate` (e.g. `050x`/`059x` corporate ranges).
 5. **Approximate geographic fallback.** If nothing above matched but
    the number plausibly starts with a geographic first digit (`2`,
-   `3`, `4`, `5`, `7` or `8`), it's still classified as `landline`
-   with an empty (unknown) prefix, rather than giving up. Anything
-   else is `PhoneNumberType.unknown`.
+   `3`, `4`, `5`, `6`, `7` or `8`), it's still classified as
+   `landline` with an empty (unknown) prefix, rather than giving up.
+   This is what catches the many `06xx` regional landlines outside the
+   curated table (e.g. Bad Ischl `06132`, Zell am See `06542`); mobile
+   `06xx` numbers were already matched by the allow-list in step 1, so
+   anything reaching here is geographic. Anything else is
+   `PhoneNumberType.unknown`.
 
 `AtNumbering.format` reuses the same `classify` call for its display
 grouping: when the classifier found an explicit prefix (mobile, a

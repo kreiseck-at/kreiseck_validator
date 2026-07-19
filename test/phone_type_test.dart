@@ -22,6 +22,11 @@ void main() {
     expect(t('5572123456'), PhoneNumberType.landline); // 05572 Dornbirn
   });
 
+  test('06xx regional landlines (not in the curated table) are landline', () {
+    expect(t('613212345'), PhoneNumberType.landline); // 06132 Bad Ischl
+    expect(t('654212345'), PhoneNumberType.landline); // 06542 Zell am See
+  });
+
   test('service ranges classify correctly', () {
     expect(t('800123456'), PhoneNumberType.freephone); // 0800
     expect(t('810123456'), PhoneNumberType.sharedCost); // 0810

@@ -103,7 +103,10 @@ abstract final class AtNumbering {
     }
 
     // 5. Plausible geographic first digit → landline with an unknown area code.
-    if (national.isNotEmpty && '234578'.contains(national[0])) {
+    //    Includes 6: the 06xx range holds real regional landlines (e.g. Bad
+    //    Ischl 06132, Zell am See 06542) — mobile 06xx is already caught by the
+    //    allow-list above, so anything reaching here is geographic.
+    if (national.isNotEmpty && '2345678'.contains(national[0])) {
       return const AtClass(PhoneNumberType.landline, '');
     }
 
