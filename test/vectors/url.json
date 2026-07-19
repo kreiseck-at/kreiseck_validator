@@ -1,0 +1,6 @@
+[
+  {"input": "example.com", "isValid": true, "normalized": "https://example.com", "format": "example.com"},
+  {"input": "https://www.example.com/", "isValid": true, "format": "example.com"},
+  {"input": "localhost", "isValid": false, "code": "urlBadHost"},
+  {"input": "ftp://example.com", "isValid": false, "code": "urlBadScheme"}
+]

@@ -1,0 +1,6 @@
+[
+  {"input": "a.b+tag@example.com", "isValid": true, "normalized": "a.b+tag@example.com"},
+  {"input": "  A@B.COM ", "isValid": true, "normalized": "a@b.com"},
+  {"input": "ab.com", "isValid": false, "code": "emailMissingAt"},
+  {"input": "@example.com", "isValid": false, "code": "emailEmptyLocal"}
+]

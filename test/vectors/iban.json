@@ -1,0 +1,6 @@
+[
+  {"input": "AT61 1904 3002 3457 3201", "isValid": true, "normalized": "AT611904300234573201", "format": "AT61 1904 3002 3457 3201"},
+  {"input": "DE89 3704 0044 0532 0130 00", "isValid": true, "normalized": "DE89370400440532013000"},
+  {"input": "AT611904300234573200", "isValid": false, "code": "ibanBadChecksum"},
+  {"input": "DE8937040044053201", "isValid": false, "code": "ibanBadLength"}
+]
