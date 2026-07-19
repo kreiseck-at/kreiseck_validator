@@ -2,7 +2,7 @@
   <img src="doc/kreiseck_logo.png" alt="Kreiseck — Software Solutions" width="300">
 </p>
 
-<h1 align="center">input_validator</h1>
+<h1 align="center">kreiseck_validator</h1>
 
 <p align="center">
   <b>Validate, normalize and pretty-format the input every app collects —<br>
@@ -11,9 +11,9 @@
 </p>
 
 <p align="center">
-  <a href="https://pub.dev/packages/input_validator"><img src="https://img.shields.io/pub/v/input_validator?color=930C0C&label=pub" alt="pub version"></a>
-  <a href="https://pub.dev/packages/input_validator/score"><img src="https://img.shields.io/pub/points/input_validator?color=930C0C" alt="pub points"></a>
-  <a href="https://pub.dev/packages/input_validator/score"><img src="https://img.shields.io/pub/likes/input_validator?color=930C0C" alt="pub likes"></a>
+  <a href="https://pub.dev/packages/kreiseck_validator"><img src="https://img.shields.io/pub/v/kreiseck_validator?color=930C0C&label=pub" alt="pub version"></a>
+  <a href="https://pub.dev/packages/kreiseck_validator/score"><img src="https://img.shields.io/pub/points/kreiseck_validator?color=930C0C" alt="pub points"></a>
+  <a href="https://pub.dev/packages/kreiseck_validator/score"><img src="https://img.shields.io/pub/likes/kreiseck_validator?color=930C0C" alt="pub likes"></a>
   <img src="https://img.shields.io/badge/dependencies-0-930C0C" alt="zero dependencies">
   <img src="https://img.shields.io/badge/license-Apache--2.0-930C0C" alt="Apache-2.0 license">
   <a href="https://kreiseck.com"><img src="https://img.shields.io/badge/by-Kreiseck-111111" alt="by Kreiseck"></a>
@@ -21,7 +21,7 @@
 
 ---
 
-`input_validator` is a small, **zero-dependency Dart package** for **validating**,
+`kreiseck_validator` is a small, **zero-dependency Dart package** for **validating**,
 **normalizing** and **formatting** the kinds of user input almost every app collects:
 **email addresses, phone numbers, URLs/domains, IBANs and credit-card numbers**. Every
 type follows the same four-operation API — `isValid`, `validate`, `normalize`, `format` —
@@ -49,11 +49,11 @@ dependencies, no network calls, no telemetry.**
 ## 📦 Install
 
 ```bash
-dart pub add input_validator
+dart pub add kreiseck_validator
 ```
 
 ```dart
-import 'package:input_validator/input_validator.dart';
+import 'package:kreiseck_validator/kreiseck_validator.dart';
 ```
 
 ## 🚀 Quick start
@@ -146,7 +146,7 @@ stable enums you can switch on and translate; the English `message` is only a de
 
 ## 🪶 Zero dependencies, Apache-2.0
 
-`input_validator` has **zero runtime dependencies** — every algorithm (Luhn, Mod-97,
+`kreiseck_validator` has **zero runtime dependencies** — every algorithm (Luhn, Mod-97,
 E.164 parsing, the Damerau/OSA typo-distance heuristic) is hand-written in `lib/` and
 documented in [`doc/algorithms.md`](doc/algorithms.md). It is licensed under
 **Apache-2.0** (see [LICENSE](LICENSE)) — free for commercial and closed-source use, with
@@ -174,7 +174,7 @@ dependency-free, well-documented** code that is easy to audit and easy to trust.
 
 - 🌐 Website — **[kreiseck.com](https://kreiseck.com)**
 - ✉️ Contact — **[office@kreiseck.com](mailto:office@kreiseck.com)**
-- 💙 If this package saves you time, a **like on [pub.dev](https://pub.dev/packages/input_validator)** or a ⭐ on GitHub helps others find it.
+- 💙 If this package saves you time, a **like on [pub.dev](https://pub.dev/packages/kreiseck_validator)** or a ⭐ on GitHub helps others find it.
 
 ## 🗂️ Versioning
 

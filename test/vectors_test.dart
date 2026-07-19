@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:input_validator/input_validator.dart';
+import 'package:kreiseck_validator/kreiseck_validator.dart';
 import 'package:test/test.dart';
 
 Country? _country(String? s) => switch (s) {

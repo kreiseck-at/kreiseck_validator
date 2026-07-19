@@ -1,7 +1,7 @@
-import 'package:input_validator/src/common/country.dart';
-import 'package:input_validator/src/common/issue_code.dart';
-import 'package:input_validator/src/common/validation_result.dart';
-import 'package:input_validator/src/phone/phone.dart';
+import 'package:kreiseck_validator/src/common/country.dart';
+import 'package:kreiseck_validator/src/common/issue_code.dart';
+import 'package:kreiseck_validator/src/common/validation_result.dart';
+import 'package:kreiseck_validator/src/phone/phone.dart';
 import 'package:test/test.dart';
 
 void main() {

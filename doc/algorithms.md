@@ -1,7 +1,7 @@
 # Algorithms
 
 This page walks through the non-obvious pieces of logic behind
-`input_validator`'s checksums and heuristics, each with a worked
+`kreiseck_validator`'s checksums and heuristics, each with a worked
 example. The implementations referenced here live in `lib/src/`.
 
 ## Luhn checksum (credit card)
