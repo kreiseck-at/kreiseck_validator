@@ -94,9 +94,11 @@ info?.international;  // '+43 316 123456'
 
 National input (no `+`, no country code) requires the `country:` argument; without it,
 `validate` returns `Invalid` with `IssueCode.phoneAmbiguousCountry`. For **Austria**,
-`Phone.format` uses real geographic area-code spacing (e.g. `01 …` Vienna, `0316 …` Graz)
-derived from the public RTR numbering plan; for DE/CH it falls back to a simple 3-digit
-prefix grouping — real DE/CH area codes vary in length and are out of scope here.
+`Phone.format` uses geographic area-code spacing (e.g. `01 …` Vienna, `0316 …` Graz)
+derived from the public RTR numbering plan. The area-code table is a **curated subset**
+of the most common Austrian codes; numbers outside it still format with an approximate
+split (and a regional landline may report `type` `landline` without an exact grouping).
+For DE/CH, `Phone.format` falls back to a simple 3-digit prefix grouping.
 
 `Phone.type`/`Phone.parse` classify Austrian numbers into `PhoneNumberType` (mobile,
 landline, voip, freephone, sharedCost, premium, corporate) from the same RTR numbering
