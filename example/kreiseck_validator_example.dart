@@ -49,6 +49,15 @@ void _phone() {
     case Invalid(:final issues):
       print('rejected: ${issues.first.code}'); // phoneAmbiguousCountry
   }
+
+  // Austrian number-type classification (RTR numbering plan). AT-only:
+  // DE/CH numbers classify as PhoneNumberType.unknown.
+  print(Phone.type('+43 664 1234567')); // PhoneNumberType.mobile
+  print(Phone.type('0662 123456', country: Country.at)); // .landline
+
+  final info = Phone.parse('0316 123456', country: Country.at);
+  print('${info?.type} ${info?.national} ${info?.international}');
+  // PhoneNumberType.landline 0316 123456 +43 316 123456
 }
 
 void _url() {

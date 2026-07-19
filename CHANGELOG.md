@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0
+
+- `Phone.type` and `Phone.parse` (`PhoneInfo`): Austrian number-type
+  classification (mobile, landline, VoIP, freephone, shared-cost, premium,
+  corporate) from the public RTR numbering plan.
+- Type-aware Austrian formatting: `Phone.format` now uses the geographic
+  area-code length for landlines (e.g. `01 …` Vienna, `0316 …` Graz);
+  mobile output is unchanged.
+
 ## 0.1.1
 
 - Add a runnable `example/` covering all five types.

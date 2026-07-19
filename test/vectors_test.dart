@@ -83,6 +83,11 @@ void main() {
           () => Phone.validate(input, country: country),
           () => Phone.format(input,
               country: country, international: international));
+      if (c.containsKey('type')) {
+        test('phone type: $input', () {
+          expect(Phone.type(input, country: country).name, c['type']);
+        });
+      }
     }
   });
 }

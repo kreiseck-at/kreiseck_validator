@@ -2,7 +2,7 @@ name: kreiseck_validator
 description: >-
   Zero-dependency validation, normalization and formatting for email, phone,
   URL, IBAN and credit-card input. DACH-aware. By Kreiseck.
-version: 0.1.1
+version: 0.2.0
 homepage: https://kreiseck.com
 repository: https://github.com/kreiseck-at/kreiseck_validator
 issue_tracker: https://github.com/kreiseck-at/kreiseck_validator/issues
