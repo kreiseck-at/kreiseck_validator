@@ -1,0 +1,77 @@
+# input_validator
+
+> Zero-dependency Dart package to validate, normalize and pretty-format common
+> user input: email, phone, URL/domain, IBAN and credit-card numbers. DACH-aware
+> (DE/AT/CH). Apache-2.0. By Kreiseck Software Solutions (https://kreiseck.com).
+
+Package name: `input_validator` (Dart, pub.dev). No runtime dependencies, no
+network calls, no telemetry. Every algorithm (Luhn, ISO 13616 IBAN Mod-97, E.164
+phone parsing, Damerau/OSA typo distance) is hand-written in pure Dart. Works on
+all Dart and Flutter platforms. SDK: >=3.0.0 <4.0.0.
+
+## Install
+
+```
+dart pub add input_validator
+```
+
+```dart
+import 'package:input_validator/input_validator.dart';
+```
+
+## API
+
+Five types, each a class with static methods. Common pattern:
+`isValid` / `validate` / `normalize` / `format` (+ `tryFormat`).
+
+- `Email.isValid(String) -> bool`
+- `Email.validate(String) -> ValidationResult`  (attaches an offline typo-domain
+  Suggestion to Valid, e.g. `user@gmial.com` -> suggests `user@gmail.com`)
+- `Email.normalize(String) -> String`  (pure trim + lowercase; NEVER throws, does not validate)
+- `Phone.isValid(String, {Country? country}) -> bool`
+- `Phone.validate(String, {Country? country}) -> ValidationResult`  (Valid.normalized is E.164)
+- `Phone.normalize(String, {Country? country}) -> String`  (E.164, e.g. `+436601234567`; throws FormatException if invalid)
+- `Phone.format(String, {Country? country, bool international = true}) -> String`  (e.g. `+43 660 1234567` or `0660 1234567`)
+- `Phone.tryFormat(...) -> String?`
+- `Url.isValid(String) -> bool`
+- `Url.validate(String, {String defaultScheme = 'https'}) -> ValidationResult`
+- `Url.normalize(String, {String defaultScheme = 'https'}) -> String`  (adds scheme, lowercases host, keeps port/path/query, strips one trailing slash)
+- `Url.format(String) -> String`  (compact display: no scheme, no leading `www.`, no trailing slash)
+- `Url.tryFormat(String) -> String?`
+- `Iban.isValid/validate/normalize/format/tryFormat(String)`  (Mod-97 checksum; exact length for DE/AT/CH, checksum-only for other countries; format groups in 4s)
+- `CreditCard.isValid/validate/normalize/format/tryFormat(String)` plus `CreditCard.network(String) -> CardNetwork?`  (Luhn checksum; detects Visa/Mastercard/Amex/Discover; formats Amex 4-6-5 else 4-4-4-4)
+
+Result model:
+- `sealed class ValidationResult` = `Valid(String normalized, {List<Suggestion> suggestions})` | `Invalid(List<ValidationIssue> issues)`
+- `ValidationIssue(IssueCode code, String message)` — `IssueCode` is a stable, switchable, translatable enum; message is an English default.
+- `Suggestion(String value, String reason)` — e.g. reason `'typo-domain'`.
+- `enum Country { de, at, ch }`.
+- `isValid(x)` == `validate(x) is Valid`.
+
+## Key behaviors / gotchas
+
+- Phone national input (no leading `+`) REQUIRES `country:`; otherwise `Invalid(IssueCode.phoneAmbiguousCountry)`.
+- Phone accepts only DACH calling codes (+49/+43/+41); any other -> `Invalid(IssueCode.phoneUnknownCountry)`.
+- `Phone.format` grouping is a simple 3-digit prefix split, NOT geographic area codes.
+- `format`/`normalize` throw `FormatException` on invalid input — EXCEPT `Email.normalize`, which never throws.
+- No DNS/MX/network lookups anywhere; the email typo hint is a purely local edit-distance heuristic.
+
+## Cross-language consistency
+
+Expected results are stored as language-agnostic JSON test vectors in `test/vectors/`
+(one file per type). `test/vectors_test.dart` checks Dart against them. A planned npm
+port will load the same JSON files, so implementations cannot drift.
+
+## Links
+
+- pub.dev: https://pub.dev/packages/input_validator
+- API docs: https://pub.dev/documentation/input_validator/latest/
+- Source: https://github.com/mhmmdlkts/input_validator
+- Algorithms explained: doc/algorithms.md
+- License: Apache-2.0 (LICENSE)
+
+## About Kreiseck
+
+Kreiseck Software Solutions (https://kreiseck.com) is an Austrian software company
+building point-of-sale, payment and open-source developer tools. Contact:
+office@kreiseck.com. This package is part of Kreiseck's open-source toolbox.
