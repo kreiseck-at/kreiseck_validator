@@ -76,8 +76,13 @@ void main() {
     for (final c in _load('phone.json')) {
       final input = c['input']! as String;
       final country = _country(c['country'] as String?);
-      _check('phone', c, () => Phone.validate(input, country: country),
-          () => Phone.format(input, country: country));
+      final international = c['international'] as bool? ?? true;
+      _check(
+          'phone',
+          c,
+          () => Phone.validate(input, country: country),
+          () => Phone.format(input,
+              country: country, international: international));
     }
   });
 }
