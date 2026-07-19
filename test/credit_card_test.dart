@@ -31,6 +31,18 @@ void main() {
     expect(CreditCard.network('378282246310005'), CardNetwork.amex);
   });
 
+  test('detects Discover across its BIN ranges', () {
+    expect(CreditCard.network('6011000000000004'), CardNetwork.discover);
+    expect(CreditCard.network('6440000000000000'), CardNetwork.discover);
+    expect(CreditCard.network('6500000000000000'), CardNetwork.discover);
+  });
+
+  test('rejects an implausibly short number even if Luhn-clean', () {
+    expect(CreditCard.isValid('00'), isFalse);
+    final r = CreditCard.validate('00');
+    expect((r as Invalid).issues.first.code, IssueCode.cardBadLength);
+  });
+
   test('tryFormat returns null on invalid input', () {
     expect(CreditCard.tryFormat('abcd'), isNull);
   });
