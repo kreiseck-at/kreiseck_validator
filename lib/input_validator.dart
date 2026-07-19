@@ -6,3 +6,4 @@ export 'src/common/issue_code.dart';
 export 'src/common/validation_result.dart';
 export 'src/credit_card/credit_card.dart';
 export 'src/iban/iban.dart';
+export 'src/url/url.dart';
