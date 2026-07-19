@@ -1315,6 +1315,7 @@ Turn the shared behavior data into an executable conformance suite. A future npm
 ```json
 [
   {"input": "+436601234567", "isValid": true, "normalized": "+436601234567", "format": "+43 660 1234567"},
+  {"input": "+436601234567", "international": false, "isValid": true, "format": "0660 1234567"},
   {"input": "0660 1234567", "country": "at", "isValid": true, "normalized": "+436601234567"},
   {"input": "0660 1234567", "isValid": false, "code": "phoneAmbiguousCountry"},
   {"input": "+49 ABC", "isValid": false, "code": "phoneBadChars"}
@@ -1403,8 +1404,13 @@ void main() {
     for (final c in _load('phone.json')) {
       final input = c['input']! as String;
       final country = _country(c['country'] as String?);
-      _check('phone', c, () => Phone.validate(input, country: country),
-          () => Phone.format(input, country: country));
+      final international = c['international'] as bool? ?? true;
+      _check(
+          'phone',
+          c,
+          () => Phone.validate(input, country: country),
+          () => Phone.format(input,
+              country: country, international: international));
     }
   });
 }
