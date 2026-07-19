@@ -23,7 +23,15 @@ abstract final class AtNumbering {
   /// Note the deliberate gaps — 654, 656, 658 and 662 are NOT mobile
   /// (662 is the Salzburg geographic area code).
   static final Set<String> _mobile = {
-    '650', '651', '652', '653', '655', '657', '659', '660', '661',
+    '650',
+    '651',
+    '652',
+    '653',
+    '655',
+    '657',
+    '659',
+    '660',
+    '661',
     for (var n = 663; n <= 699; n++) '$n',
   };
 
@@ -105,14 +113,15 @@ abstract final class AtNumbering {
   /// Formats an Austrian national significant [national] number with
   /// type-aware spacing. [international] chooses `+43 <area> <rest>` vs
   /// `0<area> <rest>`. Never throws; unknown area codes use an approximate
-  /// 4-digit split.
+  /// 2- or 4-digit split.
   static String format(String national, {required bool international}) {
     final c = classify(national);
     var area = c.prefix;
     if (area.isEmpty) {
       // Fallback: approximate area code (min 2, max 4 digits) for readability.
       final len = national.length >= 6 ? 4 : 2;
-      area = national.substring(0, national.length > len ? len : national.length);
+      area =
+          national.substring(0, national.length > len ? len : national.length);
     }
     final rest = national.substring(area.length);
     return international ? '+43 $area $rest' : '0$area $rest';
