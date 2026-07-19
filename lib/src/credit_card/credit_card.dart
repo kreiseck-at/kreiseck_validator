@@ -29,16 +29,16 @@ class CreditCard {
   static final RegExp _digits = RegExp(r'^[0-9]+$');
 
   /// Returns the digits-only form, discarding spaces and dashes.
-  static String _strip(String input) =>
-      input.replaceAll(RegExp(r'[\s-]'), '');
+  static String _strip(String input) => input.replaceAll(RegExp(r'[\s-]'), '');
 
   /// Detects the [CardNetwork] from the leading digits, or null if empty.
   static CardNetwork? network(String input) {
     final s = _strip(input);
     if (s.isEmpty || !_digits.hasMatch(s)) return null;
-    final n2 = int.parse(s.substring(0, s.length >= 2 ? 2 : 1).padRight(2, '0'));
-    final n3 =
-        int.parse(s.substring(0, s.length >= 3 ? 3 : s.length).padRight(3, '0'));
+    final n2 =
+        int.parse(s.substring(0, s.length >= 2 ? 2 : 1).padRight(2, '0'));
+    final n3 = int.parse(
+        s.substring(0, s.length >= 3 ? 3 : s.length).padRight(3, '0'));
     final n4 = s.length >= 4 ? int.parse(s.substring(0, 4)) : n2 * 100;
     if (s[0] == '4') return CardNetwork.visa;
     if (n2 == 34 || n2 == 37) return CardNetwork.amex;
@@ -103,9 +103,8 @@ class CreditCard {
       ]);
     }
     if (!_luhnOk(s)) {
-      return const Invalid([
-        ValidationIssue(IssueCode.cardBadLuhn, 'Fails the Luhn checksum.')
-      ]);
+      return const Invalid(
+          [ValidationIssue(IssueCode.cardBadLuhn, 'Fails the Luhn checksum.')]);
     }
     return Valid(s);
   }
@@ -126,10 +125,7 @@ class CreditCard {
     final s = normalize(input);
     final groups = network(s) == CardNetwork.amex ? [4, 6, 5] : null;
     if (groups == null) {
-      return RegExp(r'.{1,4}')
-          .allMatches(s)
-          .map((m) => m.group(0))
-          .join(' ');
+      return RegExp(r'.{1,4}').allMatches(s).map((m) => m.group(0)).join(' ');
     }
     final out = <String>[];
     var i = 0;

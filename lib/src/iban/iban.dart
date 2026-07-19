@@ -59,9 +59,8 @@ class Iban {
           [ValidationIssue(IssueCode.ibanBadLength, 'Wrong length.')]);
     }
     if (!_checksumOk(s)) {
-      return const Invalid([
-        ValidationIssue(IssueCode.ibanBadChecksum, 'Checksum failed.')
-      ]);
+      return const Invalid(
+          [ValidationIssue(IssueCode.ibanBadChecksum, 'Checksum failed.')]);
     }
     return Valid(s);
   }
