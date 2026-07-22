@@ -58,6 +58,14 @@ void _phone() {
   final info = Phone.parse('0316 123456', country: Country.at);
   print('${info?.type} ${info?.national} ${info?.international}');
   // PhoneNumberType.landline 0316 123456 +43 316 123456
+
+  // Phone/Country coverage is global, not just DACH: every country has a
+  // flag and a synthetic example number (libphonenumber-derived metadata).
+  final fr = Country.fromIso2('FR')!;
+  print('${fr.displayName} ${fr.flag}: ${fr.exampleInternational}');
+  // France 🇫🇷: +33 6 12 34 56 78
+  print(Phone.format('+33612345678'));
+  // +33 6 12 34 56 78
 }
 
 void _url() {

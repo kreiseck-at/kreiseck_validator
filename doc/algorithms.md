@@ -92,12 +92,14 @@ reproducing the example above.
 either:
 
 - **International (E.164) input**, starting with `+`: `+` followed by
-  a country calling code (`49` = DE, `43` = AT, `41` = CH in this
-  package's DACH scope) and the national subscriber number, with no
-  leading zero — e.g. `+436601234567`.
+  a country calling code (e.g. `49` = Germany, `43` = Austria, `1` =
+  US/Canada) and the national subscriber number, with no leading zero
+  — e.g. `+436601234567`.
 - **National input**, written the way a local caller would dial it
   domestically, typically with a leading `0` **trunk prefix** — e.g.
-  Austrian `0660 1234567`. That leading `0` is a dialing convention,
+  Austrian `0660 1234567` (not every country has one; the trunk prefix
+  itself, when present, comes from that country's metadata — see
+  "Phone metadata" below). That leading `0` is a dialing convention,
   not part of the number itself, and must be dropped when converting
   to E.164. Because a national number on its own doesn't say which
   country it belongs to, callers must pass `country:` explicitly
@@ -111,12 +113,62 @@ a `+`: `+436601234567`. Formatting reverses this: `format(...,
 international: false)` re-adds a `0` prefix for the readable national
 form (`0660 1234567`).
 
-`Phone.format`'s grouping is deliberately simple, not geographic: it
-splits the national number into a fixed 3-digit prefix and the
-remainder (`660` / `1234567`), it does not know the real length of
-DACH area codes (which varies by region and provider) and makes no
-attempt to reproduce it. Treat the grouping as a readability aid, not
-an authoritative area-code split.
+## Phone metadata: uniform validation and formatting
+
+`Phone.validate`/`normalize`/`format` (`lib/src/phone/phone.dart`) work
+the same way for **every** country, not just DACH, driven entirely by
+per-country data in `Country` (`lib/src/common/country.dart`,
+generated into `lib/src/common/country.g.dart`). That data — calling
+code, national trunk prefix, possible national-number lengths, a
+national-number pattern, format rules and synthetic example numbers —
+is derived from Google's [libphonenumber](https://github.com/google/libphonenumber)
+(Apache-2.0) by `tool/gen_phone_metadata.py`; see `NOTICE` for the
+attribution and the exact source version.
+
+**Validation** is uniform and strict: a national significant number is
+accepted only when its length is one of `Country.possibleLengths`
+*and* it matches `Country.pattern` in full. A length outside the
+allowed set is rejected as too short/too long; a length that's allowed
+but a pattern mismatch is rejected as `IssueCode.phoneInvalid` (e.g. a
+US number of the right length that starts with a digit no valid US
+number starts with).
+
+**Formatting** (`lib/src/phone/phone_format.dart`) applies each
+country's ordered list of `PhoneFormat` rules — a regex `pattern` to
+match against the national number, an optional `leadingDigits` filter
+to pick the right rule when several patterns could match, and a
+`format` template (`$1`, `$2`, …) built from the regex's capture
+groups. For national (non-international) display, a
+`nationalPrefixFormattingRule` (e.g. `0$1`) additionally prepends the
+national prefix. This reproduces libphonenumber's national and
+international grouping for the large majority of countries.
+
+*Known limitation:* the `nationalPrefixFormattingRule` handling here
+is a pragmatic subset — it treats the whole already-grouped number as
+`$1`/`$FG`, which reproduces the common case (`0$1`, used by DACH and
+most of Europe) but not rules that parenthesize only the *first*
+captured group, e.g. Brazil's `($1)` or Russia's `8 ($1)`. For those,
+this package's national-form output does not exactly match
+libphonenumber's; the generator (`tool/gen_phone_metadata.py`)
+deliberately excludes such regions from the cross-language test
+vectors rather than asserting a result it can't actually produce.
+Carrier codes (`$CC`) are likewise not supported.
+
+*Known limitation:* countries that share a calling code without any
+area-code routing data (e.g. NANP `+1`, shared by the US and Canada
+among others) all resolve to that calling code's **main region** —
+`Country.fromCallingCode('1')` is US — so a structurally valid
+Canadian number is validated and formatted, but attributed to the US
+`Country`.
+
+*Known limitation:* three libphonenumber regions — `AC`, `TA`, `XK` —
+have no corresponding ISO 3166-1 country name and fall back to their
+ISO2 code as `displayName` (e.g. `Country.fromIso2('XK')!.displayName
+== 'XK'`).
+
+Number-**type** classification (`Phone.type`/`Phone.parse`) is a
+separate layer on top of this and, as before, Austria-only — see
+below; every other country reports `PhoneNumberType.unknown`.
 
 ## Austrian number classification (AT)
 
@@ -127,10 +179,12 @@ national trunk `0` already stripped — into a `PhoneNumberType`. This
 is sourced from the public RTR (Rundfunk und Telekom Regulierungs-GmbH)
 numbering plan and describes the number's **type**, not its current
 operator: number portability means a prefix no longer reliably
-identifies the carrier. Classification and area-code-aware formatting
-are **Austria-only**; for DE/CH numbers `type` is always
-`PhoneNumberType.unknown` and formatting stays a simple 3-digit-prefix
-grouping.
+identifies the carrier. This classification is **Austria-only**; for
+every other country `type` is always `PhoneNumberType.unknown`.
+Display **formatting** (national/international grouping), by contrast,
+is the generic pattern-driven formatter described in "Phone metadata"
+above and applies to AT the same way it applies to every other
+country.
 
 `AtNumbering.classify` checks the leading digits of the national
 number in five steps, in this order:
@@ -168,15 +222,12 @@ number in five steps, in this order:
    anything reaching here is geographic. Anything else is
    `PhoneNumberType.unknown`.
 
-`AtNumbering.format` reuses the same `classify` call for its display
-grouping: when the classifier found an explicit prefix (mobile, a
-service code, or a known area code), that exact prefix is used as the
-first group, e.g. `01 …` for Vienna (`1` is the whole area code) or
-`0316 …` for Graz. When the prefix is unknown (the approximate
-fallback), formatting falls back to an approximate split — 4 digits
-if the national number is at least 6 digits long, else 2 — purely for
-readability, so `format` never throws even for numbers outside the
-curated area-code table.
+`AtClass` also carries a `prefix` (the matched mobile/service/area-code
+digits) alongside `type`, but it is used internally only — it is not
+currently exposed through `Phone.type`/`Phone.parse`/`PhoneInfo`.
+Display grouping for AT numbers comes entirely from the generic
+pattern-driven formatter described in "Phone metadata" above, the same
+formatter used for every other country.
 
 Source: the RTR public numbering plan
 (<https://www.rtr.at/TKP/was_wir_tun/telekommunikation/nummerierung/nummernplaene/nummernplaene.de.html>).

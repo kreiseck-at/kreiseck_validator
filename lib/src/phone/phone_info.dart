@@ -18,7 +18,8 @@ class PhoneInfo {
   /// The resolved country.
   final Country country;
 
-  /// The classified number type (`unknown` for non-AT numbers).
+  /// The classified number type (`unknown` for countries without
+  /// classification data — currently all but AT).
   final PhoneNumberType type;
 
   /// National display form, e.g. `0316 123456`.
