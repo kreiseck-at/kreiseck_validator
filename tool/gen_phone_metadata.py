@@ -66,6 +66,19 @@ def _formats(meta) -> list[dict]:
     return out
 
 
+def _intl_formats(meta) -> list[dict]:
+    out = []
+    for nf in meta.intl_number_format:
+        leading = nf.leading_digits_pattern[-1] if nf.leading_digits_pattern else None
+        out.append({
+            "pattern": nf.pattern,
+            "format": _fmt_token_normalize(nf.format),
+            "leadingDigits": leading,
+            "nationalPrefixFormattingRule": None,
+        })
+    return out
+
+
 def _example(iso2: str) -> dict | None:
     for t in _EXAMPLE_TYPES:
         pn = phonenumbers.example_number_for_type(iso2, t)
@@ -98,6 +111,7 @@ def build_countries() -> list[dict]:
             "possibleLengths": list(gd.possible_length) if gd and gd.possible_length else [],
             "pattern": (gd.national_number_pattern if gd else "") or "",
             "formats": _formats(meta),
+            "intlFormats": _intl_formats(meta),
             "example": example,
         })
     return countries
@@ -130,7 +144,9 @@ def _dart_format(nf: dict) -> str:
 def _dart_country(c: dict) -> str:
     ex = c["example"] or {}
     fmts = ", ".join(_dart_format(f) for f in c["formats"])
+    intl_fmts = ", ".join(_dart_format(f) for f in c["intlFormats"])
     lengths = ", ".join(str(n) for n in c["possibleLengths"])
+    intl_line = f"  intlFormats: [{intl_fmts}],\n" if c["intlFormats"] else ""
     return (
         "Country(\n"
         f"  iso2: {_dart_str(c['iso2'])},\n"
@@ -140,6 +156,7 @@ def _dart_country(c: dict) -> str:
         f"  possibleLengths: [{lengths}],\n"
         f"  pattern: {_dart_str(c['pattern'])},\n"
         f"  formats: [{fmts}],\n"
+        f"{intl_line}"
         f"  exampleNsn: {_dart_str(ex.get('nsn'))},\n"
         f"  exampleE164: {_dart_str(ex.get('e164'))},\n"
         f"  exampleNational: {_dart_str(ex.get('national'))},\n"

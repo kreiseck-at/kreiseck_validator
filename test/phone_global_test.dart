@@ -62,8 +62,7 @@ void main() {
     });
 
     test('unknown calling code', () {
-      expect(Phone.validate('+9990000000'),
-          isA<Invalid>());
+      expect(Phone.validate('+9990000000'), isA<Invalid>());
     });
   });
 
@@ -86,13 +85,13 @@ void main() {
     });
 
     test('US national formatting matches libphonenumber', () {
-      expect(Phone.format('+12015550123', international: false),
-          '(201) 555-0123');
+      expect(
+          Phone.format('+12015550123', international: false), '(201) 555-0123');
     });
 
     test('US international formatting matches libphonenumber', () {
-      expect(Phone.format('+12015550123', international: true),
-          '+1 201-555-0123');
+      expect(
+          Phone.format('+12015550123', international: true), '+1 201-555-0123');
     });
 
     test('tryFormat returns null on invalid input', () {
