@@ -4,12 +4,7 @@ import 'dart:io';
 import 'package:kreiseck_validator/kreiseck_validator.dart';
 import 'package:test/test.dart';
 
-Country? _country(String? s) => switch (s) {
-      'de' => Country.de,
-      'at' => Country.at,
-      'ch' => Country.ch,
-      _ => null,
-    };
+Country? _country(String? s) => s == null ? null : Country.fromIso2(s);
 
 String? _codeOf(ValidationResult r) =>
     r is Invalid ? r.issues.first.code.name : null;
@@ -88,6 +83,20 @@ void main() {
           expect(Phone.type(input, country: country).name, c['type']);
         });
       }
+    }
+  });
+
+  group('phone_global', () {
+    for (final c in _load('phone_global.json')) {
+      final input = c['input']! as String;
+      final country = _country(c['country'] as String?);
+      final international = c['international'] as bool? ?? true;
+      _check(
+          'phone_global',
+          c,
+          () => Phone.validate(input, country: country),
+          () => Phone.format(input,
+              country: country, international: international));
     }
   });
 }

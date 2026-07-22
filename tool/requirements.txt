@@ -1,0 +1,2 @@
+phonenumbers==9.0.34
+pycountry==26.2.16

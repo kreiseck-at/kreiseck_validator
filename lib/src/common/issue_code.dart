@@ -13,6 +13,7 @@ enum IssueCode {
   phoneTooLong,
   phoneAmbiguousCountry,
   phoneUnknownCountry,
+  phoneInvalid,
   // url
   urlEmpty,
   urlBadScheme,
