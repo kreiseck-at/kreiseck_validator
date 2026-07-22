@@ -1,0 +1,9 @@
+kreiseck_validator
+
+This product contains phone-numbering metadata derived from libphonenumber
+(https://github.com/google/libphonenumber), Copyright (c) The libphonenumber
+Authors, licensed under the Apache License, Version 2.0.
+
+Derived data was generated from the "phonenumbers" Python distribution,
+version 9.0.34, and reduced to the fields used by this package. See
+tool/gen_phone_metadata.py for the extraction process.
