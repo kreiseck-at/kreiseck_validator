@@ -1,0 +1,236 @@
+[
+  {
+    "input": "+43664123456",
+    "country": "AT",
+    "isValid": true,
+    "normalized": "+43664123456",
+    "international": true,
+    "format": "+43 664 123456"
+  },
+  {
+    "input": "+43664123456",
+    "country": "AT",
+    "international": false,
+    "format": "0664 123456"
+  },
+  {
+    "input": "+4915123456789",
+    "country": "DE",
+    "isValid": true,
+    "normalized": "+4915123456789",
+    "international": true,
+    "format": "+49 1512 3456789"
+  },
+  {
+    "input": "+4915123456789",
+    "country": "DE",
+    "international": false,
+    "format": "01512 3456789"
+  },
+  {
+    "input": "+41781234567",
+    "country": "CH",
+    "isValid": true,
+    "normalized": "+41781234567",
+    "international": true,
+    "format": "+41 78 123 45 67"
+  },
+  {
+    "input": "+41781234567",
+    "country": "CH",
+    "international": false,
+    "format": "078 123 45 67"
+  },
+  {
+    "input": "+33612345678",
+    "country": "FR",
+    "isValid": true,
+    "normalized": "+33612345678",
+    "international": true,
+    "format": "+33 6 12 34 56 78"
+  },
+  {
+    "input": "+33612345678",
+    "country": "FR",
+    "international": false,
+    "format": "06 12 34 56 78"
+  },
+  {
+    "input": "+447400123456",
+    "country": "GB",
+    "isValid": true,
+    "normalized": "+447400123456",
+    "international": true,
+    "format": "+44 7400 123456"
+  },
+  {
+    "input": "+447400123456",
+    "country": "GB",
+    "international": false,
+    "format": "07400 123456"
+  },
+  {
+    "input": "+12015550123",
+    "country": "US",
+    "isValid": true,
+    "normalized": "+12015550123",
+    "international": true,
+    "format": "+1 201-555-0123"
+  },
+  {
+    "input": "+12015550123",
+    "country": "US",
+    "international": false,
+    "format": "(201) 555-0123"
+  },
+  {
+    "input": "+393123456789",
+    "country": "IT",
+    "isValid": true,
+    "normalized": "+393123456789",
+    "international": true,
+    "format": "+39 312 345 6789"
+  },
+  {
+    "input": "+393123456789",
+    "country": "IT",
+    "international": false,
+    "format": "312 345 6789"
+  },
+  {
+    "input": "+34612345678",
+    "country": "ES",
+    "isValid": true,
+    "normalized": "+34612345678",
+    "international": true,
+    "format": "+34 612 34 56 78"
+  },
+  {
+    "input": "+34612345678",
+    "country": "ES",
+    "international": false,
+    "format": "612 34 56 78"
+  },
+  {
+    "input": "+31612345678",
+    "country": "NL",
+    "isValid": true,
+    "normalized": "+31612345678",
+    "international": true,
+    "format": "+31 6 12345678"
+  },
+  {
+    "input": "+31612345678",
+    "country": "NL",
+    "international": false,
+    "format": "06 12345678"
+  },
+  {
+    "input": "+46701234567",
+    "country": "SE",
+    "isValid": true,
+    "normalized": "+46701234567",
+    "international": true,
+    "format": "+46 70 123 45 67"
+  },
+  {
+    "input": "+46701234567",
+    "country": "SE",
+    "international": false,
+    "format": "070-123 45 67"
+  },
+  {
+    "input": "+48512345678",
+    "country": "PL",
+    "isValid": true,
+    "normalized": "+48512345678",
+    "international": true,
+    "format": "+48 512 345 678"
+  },
+  {
+    "input": "+48512345678",
+    "country": "PL",
+    "international": false,
+    "format": "512 345 678"
+  },
+  {
+    "input": "+819012345678",
+    "country": "JP",
+    "isValid": true,
+    "normalized": "+819012345678",
+    "international": true,
+    "format": "+81 90-1234-5678"
+  },
+  {
+    "input": "+819012345678",
+    "country": "JP",
+    "international": false,
+    "format": "090-1234-5678"
+  },
+  {
+    "input": "+61412345678",
+    "country": "AU",
+    "isValid": true,
+    "normalized": "+61412345678",
+    "international": true,
+    "format": "+61 412 345 678"
+  },
+  {
+    "input": "+61412345678",
+    "country": "AU",
+    "international": false,
+    "format": "0412 345 678"
+  },
+  {
+    "input": "+918123456789",
+    "country": "IN",
+    "isValid": true,
+    "normalized": "+918123456789",
+    "international": true,
+    "format": "+91 81234 56789"
+  },
+  {
+    "input": "+918123456789",
+    "country": "IN",
+    "international": false,
+    "format": "081234 56789"
+  },
+  {
+    "input": "+27711234567",
+    "country": "ZA",
+    "isValid": true,
+    "normalized": "+27711234567",
+    "international": true,
+    "format": "+27 71 123 4567"
+  },
+  {
+    "input": "+27711234567",
+    "country": "ZA",
+    "international": false,
+    "format": "071 123 4567"
+  },
+  {
+    "input": "+3546111234",
+    "country": "IS",
+    "isValid": true,
+    "normalized": "+3546111234",
+    "international": true,
+    "format": "+354 611 1234"
+  },
+  {
+    "input": "+3546111234",
+    "country": "IS",
+    "international": false,
+    "format": "611 1234"
+  },
+  {
+    "input": "+331",
+    "isValid": false,
+    "code": "phoneTooShort"
+  },
+  {
+    "input": "+9990000000",
+    "isValid": false,
+    "code": "phoneUnknownCountry"
+  }
+]

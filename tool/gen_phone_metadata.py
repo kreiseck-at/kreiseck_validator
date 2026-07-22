@@ -26,6 +26,10 @@ HERE = os.path.dirname(__file__)
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
 JSON_OUT = os.path.join(ROOT, "lib", "src", "phone", "data", "metadata.json")
 DART_OUT = os.path.join(ROOT, "lib", "src", "common", "country.g.dart")
+# Cross-country coverage. Kept separate from the hand-authored
+# test/vectors/phone.json (DACH cases incl. AT classification), which this
+# generator does NOT touch.
+VECTORS_GLOBAL_OUT = os.path.join(ROOT, "test", "vectors", "phone_global.json")
 
 # ISO2 codes that are Dart reserved words cannot be `Country.<code>` members.
 _DACH = {"AT": "_atData", "DE": "_deData", "CH": "_chData"}
@@ -204,6 +208,51 @@ def write_dart(data: dict) -> None:
         f.write("\n".join(lines))
 
 
+# Representative spread; NOT all 245 countries (kept small and reviewable).
+# Started from AT, DE, CH, FR, GB, US, IT, ES, NL, SE, PL, JP, AU, BR, IN, ZA,
+# IS. Dropped: BR — its mobile-number format rule wraps only the first group
+# in parentheses (nationalPrefixFormattingRule "($1)"), but our formatNsn()
+# applies such rules to the whole already-grouped string, producing
+# "(11 96123-4567)" instead of libphonenumber's "(11) 96123-4567". Same
+# limitation ruled out adding RU (rule "8 ($1)"): its national form mismatches
+# for the same reason, even though +7's main region resolves correctly to RU.
+_VECTOR_REGIONS = ["AT", "DE", "CH", "FR", "GB", "US", "IT", "ES", "NL",
+                   "SE", "PL", "JP", "AU", "IN", "ZA", "IS"]
+
+
+def build_vectors() -> list[dict]:
+    cases = []
+    for iso2 in _VECTOR_REGIONS:
+        ex = _example(iso2)
+        if ex is None:
+            continue
+        cases.append({
+            "input": ex["e164"],
+            "country": iso2,
+            "isValid": True,
+            "normalized": ex["e164"],
+            "international": True,
+            "format": ex["international"],
+        })
+        cases.append({
+            "input": ex["e164"],
+            "country": iso2,
+            "international": False,
+            "format": ex["national"],
+        })
+    # A couple of explicit invalids.
+    cases.append({"input": "+331", "isValid": False, "code": "phoneTooShort"})
+    cases.append({"input": "+9990000000", "isValid": False, "code": "phoneUnknownCountry"})
+    return cases
+
+
+def write_vectors() -> None:
+    with open(VECTORS_GLOBAL_OUT, "w", encoding="utf-8") as f:
+        json.dump(build_vectors(), f, ensure_ascii=False, indent=2)
+        f.write("\n")
+    print(f"Wrote vectors to {VECTORS_GLOBAL_OUT}")
+
+
 def main() -> None:
     data = build_data()
     os.makedirs(os.path.dirname(JSON_OUT), exist_ok=True)
@@ -213,6 +262,7 @@ def main() -> None:
     print(f"Wrote {len(data['countries'])} countries to {JSON_OUT}")
     write_dart(data)
     print(f"Wrote Dart registry to {DART_OUT}")
+    write_vectors()
 
 
 if __name__ == "__main__":
