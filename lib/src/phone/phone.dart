@@ -143,7 +143,9 @@ class Phone {
       {Country? country, bool international = true}) {
     final e164 = normalize(input, country: country);
     final (c, nsn) = _ccCountry(e164);
-    final grouped = formatNsn(c.formats, nsn,
+    final formats =
+        international && c.intlFormats.isNotEmpty ? c.intlFormats : c.formats;
+    final grouped = formatNsn(formats, nsn,
         international: international, nationalPrefix: c.nationalPrefix);
     if (grouped == null) {
       // Fallback: E.164 for international, prefixed digits for national.
@@ -180,8 +182,9 @@ class Phone {
     if (result is! Valid) return null;
     final e164 = result.normalized;
     final (c, nsn) = _ccCountry(e164);
-    final numberType =
-        c.iso2 == 'AT' ? AtNumbering.classify(nsn).type : PhoneNumberType.unknown;
+    final numberType = c.iso2 == 'AT'
+        ? AtNumbering.classify(nsn).type
+        : PhoneNumberType.unknown;
     return PhoneInfo(
       e164: e164,
       country: c,

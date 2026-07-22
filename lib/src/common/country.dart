@@ -14,6 +14,7 @@ class Country {
     required this.possibleLengths,
     required this.pattern,
     required this.formats,
+    this.intlFormats = const [],
     required this.exampleNsn,
     required this.exampleE164,
     required this.exampleNational,
@@ -40,6 +41,10 @@ class Country {
 
   /// National number-format rules.
   final List<PhoneFormat> formats;
+
+  /// International number-format rules; empty when the national [formats]
+  /// are also used internationally.
+  final List<PhoneFormat> intlFormats;
 
   /// Synthetic example national significant number, or null.
   final String? exampleNsn;

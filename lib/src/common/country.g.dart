@@ -59,6 +59,44 @@ const Country _atData = Country(
         leadingDigits: '5',
         nationalPrefixFormattingRule: r'0$1')
   ],
+  intlFormats: [
+    PhoneFormat(
+        pattern: r'(\d)(\d{3,12})',
+        format: r'$1 $2',
+        leadingDigits: '1(?:11|[2-9])',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{3})(\d{2})',
+        format: r'$1 $2',
+        leadingDigits: '517',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{2})(\d{3,5})',
+        format: r'$1 $2',
+        leadingDigits: '5[079]',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{3})(\d{3,10})',
+        format: r'$1 $2',
+        leadingDigits:
+            '(?:31|4)6|51|6(?:485|5[0-3579]|[6-9])|7(?:20|32|8)|[89]',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{4})(\d{3,9})',
+        format: r'$1 $2',
+        leadingDigits: '[2-467]|5[2-6]',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{2})(\d{3})(\d{3,4})',
+        format: r'$1 $2 $3',
+        leadingDigits: '5',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{2})(\d{4})(\d{4,7})',
+        format: r'$1 $2 $3',
+        leadingDigits: '5',
+        nationalPrefixFormattingRule: null)
+  ],
   exampleNsn: '664123456',
   exampleE164: '+43664123456',
   exampleNational: '0664 123456',
@@ -202,6 +240,100 @@ const Country _deData = Country(
         leadingDigits: '15',
         nationalPrefixFormattingRule: r'0$1')
   ],
+  intlFormats: [
+    PhoneFormat(
+        pattern: r'(\d{2})(\d{3,13})',
+        format: r'$1 $2',
+        leadingDigits: '3[02]|40|[68]9',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{3})(\d{3,12})',
+        format: r'$1 $2',
+        leadingDigits:
+            '2(?:0[1-389]|12[0-8])|3(?:[35-9][15]|4[015])|906|2(?:[13][14]|2[18])|(?:2[4-9]|4[2-9]|[579][1-9]|[68][1-8])1',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{4})(\d{2,11})',
+        format: r'$1 $2',
+        leadingDigits:
+            '[24-6]|3(?:3(?:0[1-467]|2[127-9]|3[124578]|7[1257-9]|8[1256]|9[145])|4(?:2[135]|4[13578]|9[1346])|5(?:0[14]|2[1-3589]|6[1-4]|7[13468]|8[13568])|6(?:2[1-489]|3[124-6]|6[13]|7[12579]|8[1-356]|9[135])|7(?:2[1-7]|4[145]|6[1-5]|7[1-4])|8(?:21|3[1468]|6|7[1467]|8[136])|9(?:0[12479]|2[1358]|4[134679]|6[1-9]|7[136]|8[147]|9[1468]))|70[2-8]|8(?:0[2-9]|[1-8])|90[7-9]|[79][1-9]|3[68]4[1347]|3(?:47|60)[1356]|3(?:3[46]|46|5[49])[1246]|3[4579]3[1357]',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{3})(\d{4})',
+        format: r'$1 $2',
+        leadingDigits: '138',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{5})(\d{2,10})',
+        format: r'$1 $2',
+        leadingDigits: '3',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{3})(\d{5,11})',
+        format: r'$1 $2',
+        leadingDigits: '181',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{3})(\d)(\d{4,10})',
+        format: r'$1 $2 $3',
+        leadingDigits: '1(?:3|80)|9',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{3})(\d{7,8})',
+        format: r'$1 $2',
+        leadingDigits: '1[67]',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{3})(\d{7,12})',
+        format: r'$1 $2',
+        leadingDigits: '8',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{5})(\d{6})',
+        format: r'$1 $2',
+        leadingDigits: '18500',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{3})(\d{4})(\d{4})',
+        format: r'$1 $2 $3',
+        leadingDigits: '7',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{4})(\d{7})',
+        format: r'$1 $2',
+        leadingDigits: '18[68]',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{4})(\d{7})',
+        format: r'$1 $2',
+        leadingDigits: '15[1279]',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{5})(\d{6})',
+        format: r'$1 $2',
+        leadingDigits: '15(?:[0568]|3[13])',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{3})(\d{8})',
+        format: r'$1 $2',
+        leadingDigits: '18',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{3})(\d{2})(\d{7,8})',
+        format: r'$1 $2 $3',
+        leadingDigits: '1(?:6[023]|7)',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{4})(\d{2})(\d{7})',
+        format: r'$1 $2 $3',
+        leadingDigits: '15[279]',
+        nationalPrefixFormattingRule: null),
+    PhoneFormat(
+        pattern: r'(\d{3})(\d{2})(\d{8})',
+        format: r'$1 $2 $3',
+        leadingDigits: '15',
+        nationalPrefixFormattingRule: null)
+  ],
   exampleNsn: '15123456789',
   exampleE164: '+4915123456789',
   exampleNational: '01512 3456789',
@@ -304,6 +436,13 @@ const List<Country> kCountries = [
           format: r'$1 $2 $3',
           leadingDigits: '[2-7]',
           nationalPrefixFormattingRule: r'0$1')
+    ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[2-7]',
+          nationalPrefixFormattingRule: null)
     ],
     exampleNsn: '701234567',
     exampleE164: '+93701234567',
@@ -499,6 +638,50 @@ const List<Country> kCountries = [
           leadingDigits: '9',
           nationalPrefixFormattingRule: r'0$1')
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{2})(\d{4})',
+          format: r'$1 $2-$3',
+          leadingDigits:
+              '2(?:[23]02|6(?:[25]|4(?:64|[78]))|9(?:[02356]|4(?:[0268]|5[2-6])|72|8[23]))|3(?:3[28]|4(?:[04679]|3(?:5(?:4[0-25689]|[56])|[78])|58|8[2379])|5(?:[2467]|3[237]|8(?:[23]|4(?:[45]|60)|5(?:4[0-39]|5|64)))|7[1-578]|8(?:[2469]|3[278]|54(?:4|5[13-7]|6[89])|86[3-6]))|2(?:2[24-9]|3[1-59]|47)|38(?:[58][78]|7[378])|3(?:454|85[56])[46]|3(?:4(?:36|5[56])|8(?:[38]5|76))[4-6]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{4})(\d{4})',
+          format: r'$1 $2-$3',
+          leadingDigits: '1',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{4})',
+          format: r'$1-$2-$3',
+          leadingDigits: '[68]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{4})',
+          format: r'$1 $2-$3',
+          leadingDigits: '[23]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{4})(\d{2})(\d{4})',
+          format: r'$1 $2 $3-$4',
+          leadingDigits:
+              '9(?:2(?:[23]02|6(?:[25]|4(?:64|[78]))|9(?:[02356]|4(?:[0268]|5[2-6])|72|8[23]))|3(?:3[28]|4(?:[04679]|3(?:5(?:4[0-25689]|[56])|[78])|5(?:4[46]|8)|8[2379])|5(?:[2467]|3[237]|8(?:[23]|4(?:[45]|60)|5(?:4[0-39]|5|64)))|7[1-578]|8(?:[2469]|3[278]|5(?:4(?:4|5[13-7]|6[89])|[56][46]|[78])|7[378]|8(?:6[3-6]|[78]))))|92(?:2[24-9]|3[1-59]|47)|93(?:4(?:36|5[56])|8(?:[38]5|76))[4-6]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{2})(\d{4})(\d{4})',
+          format: r'$1 $2 $3-$4',
+          leadingDigits: '91',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{5})',
+          format: r'$1-$2-$3',
+          leadingDigits: '8',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{3})(\d{3})(\d{4})',
+          format: r'$1 $2 $3-$4',
+          leadingDigits: '9',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '91123456789',
     exampleE164: '+5491123456789',
     exampleNational: '011 15-2345-6789',
@@ -578,6 +761,33 @@ const List<Country> kCountries = [
           leadingDigits: '130',
           nationalPrefixFormattingRule: null)
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3,4})',
+          format: r'$1 $2',
+          leadingDigits: '16',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{2,4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '16',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '14|4',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{4})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[2378]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{3})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '1(?:30|[89])',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '412345678',
     exampleE164: '+61412345678',
     exampleNational: '0412 345 678',
@@ -645,6 +855,23 @@ const List<Country> kCountries = [
           leadingDigits: '[13-9]',
           nationalPrefixFormattingRule: r'0$1')
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '90',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '1[28]|2|365(?:4|5[02])|46',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '[13-9]',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '401234567',
     exampleE164: '+994401234567',
     exampleNational: '040 123 45 67',
@@ -678,6 +905,23 @@ const List<Country> kCountries = [
           format: r'$1 $2 $3 $4',
           leadingDigits: '6',
           nationalPrefixFormattingRule: r'0$1')
+    ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '6[1-3]|[7-9]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{3})',
+          format: r'$1 $2-$3',
+          leadingDigits: '[3-5]|6[56]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{2})(\d{2})(\d{3})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '6',
+          nationalPrefixFormattingRule: null)
     ],
     exampleNsn: '61123456',
     exampleE164: '+38761123456',
@@ -839,6 +1083,48 @@ const List<Country> kCountries = [
           format: r'$1 $2 $3',
           leadingDigits: '9',
           nationalPrefixFormattingRule: r'0$1')
+    ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d)(\d)(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '2',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{4})',
+          format: r'$1 $2',
+          leadingDigits: '43[1-6]|70[1-9]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{3})(\d{3,4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '2',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{2,3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[356]|4[124-7]|7[1-9]|8[1-6]|9[1-7]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{2})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '(?:70|8)0',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{2})',
+          format: r'$1 $2 $3',
+          leadingDigits: '43[1-7]|7',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{3,4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[48]|9[08]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '9',
+          nationalPrefixFormattingRule: null)
     ],
     exampleNsn: '43012345',
     exampleE164: '+35943012345',
@@ -1041,6 +1327,29 @@ const List<Country> kCountries = [
           leadingDigits: '[16][1-9]|[2-57-9]',
           nationalPrefixFormattingRule: r'($1)')
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{4})',
+          format: r'$1-$2',
+          leadingDigits: '300|4(?:0(?:0|20)|370|864)',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{2,3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '(?:[358]|90)0',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{4})(\d{4})',
+          format: r'$1 $2-$3',
+          leadingDigits:
+              '(?:[14689][1-9]|2[12478]|3[1-578]|5[13-5]|7[13-579])[2-57]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{5})(\d{4})',
+          format: r'$1 $2-$3',
+          leadingDigits: '[16][1-9]|[2-57-9]',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '11961234567',
     exampleE164: '+5511961234567',
     exampleNational: '(11) 96123-4567',
@@ -1072,6 +1381,18 @@ const List<Country> kCountries = [
           format: r'$1 $2',
           leadingDigits: '[2-7]',
           nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{3})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[2-6]|7[246]|8[2-4]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '1[67]|[78]',
+          nationalPrefixFormattingRule: null)
+    ],
+    intlFormats: [
       PhoneFormat(
           pattern: r'(\d)(\d{3})(\d{3})',
           format: r'$1 $2 $3',
@@ -1413,6 +1734,53 @@ const List<Country> kCountries = [
           leadingDigits: '60',
           nationalPrefixFormattingRule: null)
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{5})(\d{4})',
+          format: r'$1 $2',
+          leadingDigits: '2196',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '60|809',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '44',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{4})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '2[1-36]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{4})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '9(?:10|[2-9])',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '3[2-5]|[47]|5[1-3578]|6[13-57]|8(?:0[1-8]|[1-9])',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{3,4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '60|8',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '1',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{2})(\d{3})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '60',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '221234567',
     exampleE164: '+56221234567',
     exampleNational: '(2) 2123 4567',
@@ -1533,6 +1901,62 @@ const List<Country> kCountries = [
           leadingDigits: '[12]',
           nationalPrefixFormattingRule: r'0$1')
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{5,6})',
+          format: r'$1 $2',
+          leadingDigits:
+              r'10(?:1(?:0|23)|9[56])|2[0-57-9](?:1(?:00|23)|9[56])|(?:3(?:[157]\d|35|49|9[1-68])|4(?:1[124-9]|2[179]|[35][1-9]|6[47-9]|7\d|8[23])|5(?:[1357]\d|2[37]|4[36]|6[1-46]|80|9[1-9])|6(?:3[1-5]|6[0238]|9[12])|7(?:01|[1579]\d|2[248]|3[014-9]|4[3-6]|6[023689])|8(?:078|1[236-8]|2[5-7]|[37]\d|5[1-9]|8[36-8]|9[1-8])|9(?:0[1-3689]|1[1-79]|3\d|4[13]|5[1-5]|7[0-79]|9[0-35-9]))123',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{5,6})',
+          format: r'$1 $2',
+          leadingDigits:
+              r'85[23](?:100|95)|(?:3(?:[157]\d|35|49|9[1-68])|4(?:[17]\d|2[179]|[35][1-9]|6[47-9]|8[23])|5(?:[1357]\d|2[37]|4[36]|6[1-46]|80|9[1-9])|6(?:3[1-5]|6[0238]|9[12])|7(?:01|[1579]\d|2[248]|3[014-9]|4[3-6]|6[023689])|8(?:1[236-8]|2[5-7]|[37]\d|5[14-9]|8[36-8]|9[1-8])|9(?:0[1-3689]|1[1-79]|[379]\d|4[13]|5[1-5]))(?:100|9[56])',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '(?:4|80)0',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{4})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits:
+              '10[0-79]|2(?:[02-57-9]|1[1-79])|(?:10|21)8(?:0[1-9]|[1-9])',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits:
+              '3(?:[3-59]|7[02-68])|4(?:[26-8]|3[3-9]|5[2-9])|5(?:3[03-9]|[468]|7[028]|9[2-46-9])|6|7(?:[0-247]|3[04-9]|5[0-4689]|6[2368])|8(?:[1-358]|9[1-7])|9(?:[013479]|5[1-5])|(?:[34]1|55|79|87)[02-9]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{7,8})',
+          format: r'$1 $2',
+          leadingDigits: '9',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '80',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{4})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[3-578]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{4})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '1[3-9]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{3})(\d{4})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '[12]',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '13123456789',
     exampleE164: '+8613123456789',
     exampleNational: '131 2345 6789',
@@ -1566,6 +1990,28 @@ const List<Country> kCountries = [
           format: r'$1-$2-$3',
           leadingDigits: '1',
           nationalPrefixFormattingRule: r'0$1')
+    ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{4})',
+          format: r'$1 $2',
+          leadingDigits: '46',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{7})',
+          format: r'$1 $2',
+          leadingDigits: '6|90',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{7})',
+          format: r'$1 $2',
+          leadingDigits: '3[0-357]|9[14]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{3})(\d{7})',
+          format: r'$1 $2 $3',
+          leadingDigits: '1',
+          nationalPrefixFormattingRule: null)
     ],
     exampleNsn: '3211234567',
     exampleE164: '+573211234567',
@@ -1862,6 +2308,23 @@ const List<Country> kCountries = [
           leadingDigits: '1',
           nationalPrefixFormattingRule: null)
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d)(\d{3})(\d{4})',
+          format: r'$1-$2-$3',
+          leadingDigits: '[2-7]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '9',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{3})(\d{3,4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '1',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '991234567',
     exampleE164: '+593991234567',
     exampleNational: '099 123 4567',
@@ -1997,6 +2460,18 @@ const List<Country> kCountries = [
           leadingDigits: '[4-9]',
           nationalPrefixFormattingRule: null)
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[89]00',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '[4-9]',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '612345678',
     exampleE164: '+34612345678',
     exampleNational: '612 34 56 78',
@@ -2065,6 +2540,33 @@ const List<Country> kCountries = [
           format: r'$1 $2',
           leadingDigits: '(?:19|[2568])[1-8]|3(?:0[1-9]|[1-9])|9',
           nationalPrefixFormattingRule: r'0$1')
+    ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{5})',
+          format: r'$1',
+          leadingDigits: '20[2-59]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3,7})',
+          format: r'$1 $2',
+          leadingDigits: '(?:[1-3]0|[68])0|70[07-9]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{4,8})',
+          format: r'$1 $2',
+          leadingDigits: '[14]|2[09]|50|7[135]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{6,10})',
+          format: r'$1 $2',
+          leadingDigits: '7',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{4,9})',
+          format: r'$1 $2',
+          leadingDigits: '(?:19|[2568])[1-8]|3(?:0[1-9]|[1-9])|9',
+          nationalPrefixFormattingRule: null)
     ],
     exampleNsn: '412345678',
     exampleE164: '+358412345678',
@@ -2174,6 +2676,18 @@ const List<Country> kCountries = [
           format: r'$1 $2 $3 $4 $5',
           leadingDigits: '[1-79]',
           nationalPrefixFormattingRule: r'0$1')
+    ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '8',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{2})(\d{2})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4 $5',
+          leadingDigits: '[1-79]',
+          nationalPrefixFormattingRule: null)
     ],
     exampleNsn: '612345678',
     exampleE164: '+33612345678',
@@ -2370,6 +2884,18 @@ const List<Country> kCountries = [
           format: r'$1 $2 $3',
           leadingDigits: '[2358]',
           nationalPrefixFormattingRule: r'0$1')
+    ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{5})',
+          format: r'$1 $2',
+          leadingDigits: '8',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[2358]',
+          nationalPrefixFormattingRule: null)
     ],
     exampleNsn: '231234567',
     exampleE164: '+233231234567',
@@ -2673,6 +3199,13 @@ const List<Country> kCountries = [
           leadingDigits: '8',
           nationalPrefixFormattingRule: null)
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{4})',
+          format: r'$1-$2',
+          leadingDigits: '[237-9]',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '91234567',
     exampleE164: '+50491234567',
     exampleNational: '9123-4567',
@@ -2838,6 +3371,53 @@ const List<Country> kCountries = [
           pattern: r'(\d{2})(\d{4})(\d{3})(\d{4})',
           format: r'$1 $2 $3 $4',
           leadingDigits: '0',
+          nationalPrefixFormattingRule: null)
+    ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d)(\d{3})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '15',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{5,9})',
+          format: r'$1 $2',
+          leadingDigits: '2[124]|[36]1',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{5,7})',
+          format: r'$1 $2',
+          leadingDigits: '800',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{5,8})',
+          format: r'$1 $2',
+          leadingDigits: '[2-79]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3,4})(\d{3})',
+          format: r'$1-$2-$3',
+          leadingDigits: '8[1-35-9]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{6,8})',
+          format: r'$1 $2',
+          leadingDigits: '1',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '804',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d)(\d{3})(\d{3})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '80',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{4})(\d{4,5})',
+          format: r'$1-$2-$3',
+          leadingDigits: '8',
           nationalPrefixFormattingRule: null)
     ],
     exampleNsn: '812345678',
@@ -3043,6 +3623,56 @@ const List<Country> kCountries = [
           leadingDigits: '18',
           nationalPrefixFormattingRule: null)
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{8})',
+          format: r'$1',
+          leadingDigits: '5(?:0|2(?:21|3)|3(?:0|3[23])|616|717|8888)',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{4,5})',
+          format: r'$1 $2',
+          leadingDigits: '1800',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '140',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{4})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits:
+              '11|2[02]|33|4[04]|79(?:[124-6]|3(?:[02-9]|1[0-24-9])|7(?:1|9[1-6]))|80(?:[2-4]|6[0-589])',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits:
+              '1(?:2[0-24]|3[0-25]|4[145]|[59][14]|6[1-9]|7[1257]|8[1-57-9])|2(?:1[257]|3[013]|4[01]|5[0137]|6[058]|78|8[1568]|9[14])|3(?:26|4[1-3]|5[34]|6[01489]|7[02-46]|8[159])|4(?:1[36]|2[1-47]|3[15]|5[12]|6[0-26-9]|7[0-24-9]|8[013-57]|9[014-7])|5(?:1[025]|22|[36][25]|4[28]|[578]1|9[15])|6(?:12(?:[2-6]|7[0-8])|74[2-7])|7(?:3171|5[15][2-6]|61[346]|88(?:[2-7]|82))|8(?:70[2-6]|84(?:[2356]|7[19])|91(?:[3-6]|7[19]))|73[134][2-6]|8(?:16|2[014]|3[126]|6[136]|7[78]|83)(?:[2-6]|7[19])|(?:1(?:29|60|8[06])|261|552|6(?:[2-4]1|5[17]|6[13]|7(?:1|4[0189])|80)|7(?:12|88[01]))[2-7]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{3})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits:
+              r'1(?:[2-479]|5(?:[0236-9]|5[013-9]))|[2-5]|6(?:2(?:84|95)|355|8(?:28[235-7]|3))|73179|807(?:1|9[1-3])|(?:1552|6(?:(?:1[1358]|2[2457]|3[2-4]|4[235-7]|5[2-689]|6[24578])\d|7(?:[23569]\d|8[0-57-9])|8(?:[14-6]\d|2[0-79]))|7(?:1(?:[013-8]\d|9[6-9])|3(?:2[0-49]|9[2-57])|5(?:2[1-3]|9[0-6])|6(?:0[5689]|2[5-9]|3[02-8]|4\d|5[0-367])|70[13-7]))[2-7]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{5})(\d{5})',
+          format: r'$1 $2',
+          leadingDigits: '16|[6-9]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{2,4})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '18[06]0',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{3})(\d{3})(\d{3})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '18',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '8123456789',
     exampleE164: '+918123456789',
     exampleNational: '081234 56789',
@@ -3174,6 +3804,59 @@ const List<Country> kCountries = [
           format: r'$1',
           leadingDigits: '1(?:1|92)',
           nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{4,6})',
+          format: r'$1 $2',
+          leadingDigits: '0[26]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3,6})',
+          format: r'$1 $2',
+          leadingDigits:
+              '0[13-57-9][0159]|8(?:03|4[17]|9(?:2|3[04]|[45][0-4]))',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{2,6})',
+          format: r'$1 $2',
+          leadingDigits: '0(?:[13-579][2-46-8]|8[236-8])',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{4})',
+          format: r'$1 $2',
+          leadingDigits: '894',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3,4})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '0[26]|5',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{3,4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '1(?:44|[679])|[378]|43',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3,4})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '0[13-57-9][0159]|14',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{4})(\d{5})',
+          format: r'$1 $2 $3',
+          leadingDigits: '0[26]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '0',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{4})(\d{4,5})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[03]',
+          nationalPrefixFormattingRule: null)
+    ],
+    intlFormats: [
       PhoneFormat(
           pattern: r'(\d{2})(\d{4,6})',
           format: r'$1 $2',
@@ -3380,6 +4063,50 @@ const List<Country> kCountries = [
           pattern: r'(\d{4})(\d{6})(\d{6,7})',
           format: r'$1-$2-$3',
           leadingDigits: '0',
+          nationalPrefixFormattingRule: null)
+    ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{3})',
+          format: r'$1-$2-$3',
+          leadingDigits: '(?:12|57|99)0',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d)(\d{4})',
+          format: r'$1-$2-$3',
+          leadingDigits:
+              '1(?:267|3(?:7[247]|9[278])|466|5(?:47|58|64)|6(?:3[245]|48|5[4-68]))|499[2468]|5(?:769|979[2-69])|7468|8(?:3(?:8[7-9]|96[2457-9])|477|51[2-9])|9(?:802|9(?:1[23]|69))|1(?:45|58)[67]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{4})',
+          format: r'$1-$2-$3',
+          leadingDigits: '60',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{4})(\d{4})',
+          format: r'$1-$2-$3',
+          leadingDigits: '3|4(?:2(?:0|9[02-69])|7(?:0[019]|1))|6[1-9]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{4})',
+          format: r'$1-$2-$3',
+          leadingDigits:
+              '1(?:1|5(?:4[018]|5[017])|77|88|9[69])|2(?:2[127]|3[0-269]|4[59]|5(?:[1-3]|5[0-69]|9(?:17|99))|6(?:2|4[016-9])|7(?:[1-35]|8[0189])|8(?:[16]|3[0134]|9[0-5])|9(?:[028]|17))|4(?:2(?:[13-79]|8[014-6])|3[0-57]|[45]|6[248]|7[2-47]|9[29])|5(?:2|3(?:[045]|9(?:[0-58]|6[4-9]|7[0-35689]))|4[0-369]|5[29]|8[02389]|9[0-3])|7(?:2[02-46-9]|34|[58]|6[0249]|7[57]|9(?:[23]|4[0-59]|5[01569]|6[0167]))|8(?:2(?:[1258]|4[0-39]|9[0169])|3(?:[29]|60|7(?:[017-9]|6[6-8]))|49|51|6(?:[0-24]|36[2-57-9]|5(?:[0-389]|5[23])|6(?:[01]|9[178])|7(?:2[2-468]|3[78])|9[0145])|7[0-468]|8[68])|9(?:4[15]|5[138]|7[156]|8[189]|9(?:[1289]|3(?:31|4[357])|4[0178]))|(?:8294|96)[1-3]|2(?:57|93)[015-9]|(?:223|8699)[014-9]|(?:25[0468]|422|838)[01]|(?:48|8292|9[23])[1-9]|(?:47[59]|59[89]|8(?:68|9))[019]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{2})(\d{4})',
+          format: r'$1-$2-$3',
+          leadingDigits: '[14]|[289][2-9]|5[3-9]|7[2-4679]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{4})',
+          format: r'$1-$2-$3',
+          leadingDigits: '800',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{4})(\d{4})',
+          format: r'$1-$2-$3',
+          leadingDigits: '[25-9]',
           nationalPrefixFormattingRule: null)
     ],
     exampleNsn: '9012345678',
@@ -3606,6 +4333,43 @@ const List<Country> kCountries = [
           pattern: r'(\d{5})(\d{2})(\d{3})(\d{4})',
           format: r'$1 $2 $3 $4',
           leadingDigits: '0',
+          nationalPrefixFormattingRule: null)
+    ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3,4})',
+          format: r'$1-$2',
+          leadingDigits: '(?:3[1-3]|[46][1-4]|5[1-5])1',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{4})',
+          format: r'$1-$2',
+          leadingDigits: '1',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{3,4})(\d{4})',
+          format: r'$1-$2-$3',
+          leadingDigits: '2',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{4})',
+          format: r'$1-$2-$3',
+          leadingDigits: '[36]0|8',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3,4})(\d{4})',
+          format: r'$1-$2-$3',
+          leadingDigits: '[1346]|5[1-5]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{4})(\d{4})',
+          format: r'$1-$2-$3',
+          leadingDigits: '[57]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{5})(\d{4})',
+          format: r'$1-$2-$3',
+          leadingDigits: '5',
           nationalPrefixFormattingRule: null)
     ],
     exampleNsn: '1020000000',
@@ -4027,6 +4791,23 @@ const List<Country> kCountries = [
           leadingDigits: '[67]',
           nationalPrefixFormattingRule: r'0$1')
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '4',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '[389]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{2})(\d{2})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4 $5',
+          leadingDigits: '[67]',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '612345678',
     exampleE164: '+377612345678',
     exampleNational: '06 12 34 56 78',
@@ -4173,6 +4954,13 @@ const List<Country> kCountries = [
           format: r'$1',
           leadingDigits: '67(?:0[09]|[59]9|77|8[89])|74(?:0[02]|44|55)',
           nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '[24-9]',
+          nationalPrefixFormattingRule: null)
+    ],
+    intlFormats: [
       PhoneFormat(
           pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
           format: r'$1 $2 $3 $4',
@@ -4496,6 +5284,18 @@ const List<Country> kCountries = [
           leadingDigits: '[2-9]',
           nationalPrefixFormattingRule: null)
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{4})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '33|5[56]|81',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[2-9]',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '2221234567',
     exampleE164: '+522221234567',
     exampleNational: '222 123 4567',
@@ -4616,6 +5416,13 @@ const List<Country> kCountries = [
           format: r'$1',
           leadingDigits: '5[6-8]',
           nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{2})(\d{2})',
+          format: r'$1.$2.$3',
+          leadingDigits: '[02-57-9]',
+          nationalPrefixFormattingRule: null)
+    ],
+    intlFormats: [
       PhoneFormat(
           pattern: r'(\d{2})(\d{2})(\d{2})',
           format: r'$1.$2.$3',
@@ -4788,6 +5595,38 @@ const List<Country> kCountries = [
           leadingDigits: '9',
           nationalPrefixFormattingRule: r'0$1')
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{4,7})',
+          format: r'$1 $2',
+          leadingDigits: '[89]0',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{7})',
+          format: r'$1 $2',
+          leadingDigits: '66',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{8})',
+          format: r'$1 $2',
+          leadingDigits: '6',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '1[16-8]|2[259]|3[124]|4[17-9]|5[124679]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[1-578]|91',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{5})',
+          format: r'$1 $2 $3',
+          leadingDigits: '9',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '612345678',
     exampleE164: '+31612345678',
     exampleNational: '06 12345678',
@@ -4844,6 +5683,23 @@ const List<Country> kCountries = [
           pattern: r'(\d{4})(\d{2})(\d{5})',
           format: r'$1-$2-$3',
           leadingDigits: '1',
+          nationalPrefixFormattingRule: null)
+    ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d)(\d{7})',
+          format: r'$1-$2',
+          leadingDigits: '1[2-6]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{6})',
+          format: r'$1-$2',
+          leadingDigits: '1[01]|[2-8]|9(?:[1-59]|[67][2-6])',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{7})',
+          format: r'$1-$2',
+          leadingDigits: '9',
           nationalPrefixFormattingRule: null)
     ],
     exampleNsn: '9841234567',
@@ -5410,6 +6266,49 @@ const List<Country> kCountries = [
           leadingDigits: '9',
           nationalPrefixFormattingRule: null)
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3,6})',
+          format: r'$1 $2',
+          leadingDigits: '[2-9]0',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{5})',
+          format: r'$1 $2',
+          leadingDigits: '3[289]|4[246-8]|61|7[1-3]|8[1-36]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{4,5})',
+          format: r'$1 $2',
+          leadingDigits:
+              '2[279]|3[13-5]|4[359]|5|6(?:[34]|7[1-46-8])|7[46-8]|85',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{3,4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '2[14-68]|3[26-9]|4[1246-8]|6(?:1|75)|7[1-35]|8[1-36]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '87',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{6})',
+          format: r'$1 $2',
+          leadingDigits: '9(?:[5-79]|8[1-7])',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[2-8]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '9',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '961456789',
     exampleE164: '+595961456789',
     exampleNational: '0961 456789',
@@ -5557,6 +6456,35 @@ const List<Country> kCountries = [
           format: r'$1 $2 $3 $4',
           leadingDigits: '8',
           nationalPrefixFormattingRule: r'8 ($1)')
+    ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{2})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits:
+              '7(?:1(?:[0-356]2|4[29]|7|8[27])|2(?:13[03-69]|62[013-9]))|72[1-57-9]2',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{5})(\d)(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits:
+              '7(?:1(?:0(?:[356]|4[023])|[18]|2(?:3[013-9]|5)|3[45]|43[013-79]|5(?:3[1-8]|4[1-7]|5)|6(?:3[0-35-9]|[4-6]))|2(?:1(?:3[178]|[45])|[24-689]|3[35]|7[457]))|7(?:14|23)4[0-8]|71(?:33|45)[1-79]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '7',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{2})(\d{2})',
+          format: r'$1 $2-$3-$4',
+          leadingDigits: '[349]|8(?:[02-7]|1[1-8])',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{4})(\d{3})(\d{3})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '8',
+          nationalPrefixFormattingRule: null)
     ],
     exampleNsn: '9123456789',
     exampleE164: '+79123456789',
@@ -5755,6 +6683,70 @@ const List<Country> kCountries = [
           leadingDigits: '[26]',
           nationalPrefixFormattingRule: r'0$1')
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{2,3})(\d{2})',
+          format: r'$1 $2 $3',
+          leadingDigits: '20',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{4})',
+          format: r'$1 $2',
+          leadingDigits: '9(?:00|39|44|9)',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{2})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[12][136]|3[356]|4[0246]|6[03]|90[1-9]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{2,3})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '8',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{2,3})(\d{2})',
+          format: r'$1 $2 $3',
+          leadingDigits:
+              '1[2457]|2(?:[247-9]|5[0138])|3[0247-9]|4[1357-9]|5[0-35-9]|6(?:[125689]|4[02-57]|7[0-2])|9(?:[125-8]|3[02-5]|4[0-3])',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{2,3})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '9(?:00|39|44)',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{2,3})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '1[13689]|2[0136]|3[1356]|4[0246]|54|6[03]|90[1-9]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '10|7',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{3})(\d{3})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '8',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{2})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits:
+              '[13-5]|2(?:[247-9]|5[0138])|6(?:[124-689]|7[0-2])|9(?:[125-8]|3[02-5]|4[0-3])',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{2})(\d{2})(\d{3})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '9',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4 $5',
+          leadingDigits: '[26]',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '701234567',
     exampleE164: '+46701234567',
     exampleNational: '070-123 45 67',
@@ -5773,6 +6765,28 @@ const List<Country> kCountries = [
           format: r'$1',
           leadingDigits: '1(?:[013-8]|9(?:0[1-9]|[1-9]))|77',
           nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{4})',
+          format: r'$1 $2',
+          leadingDigits: '[369]|8(?:0[1-9]|[1-9])',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '8',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{4})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '7',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '1',
+          nationalPrefixFormattingRule: null)
+    ],
+    intlFormats: [
       PhoneFormat(
           pattern: r'(\d{4})(\d{4})',
           format: r'$1 $2',
@@ -5898,6 +6912,33 @@ const List<Country> kCountries = [
           leadingDigits: '[3-5]',
           nationalPrefixFormattingRule: r'0$1')
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d)(\d{2})(\d{3,4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '21',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{2})(\d{2,3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[3-5][1-8]1[67]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d)(\d{3})(\d{3})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '2',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[689]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '[3-5]',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '912123456',
     exampleE164: '+421912123456',
     exampleNational: '0912 123 456',
@@ -5935,6 +6976,18 @@ const List<Country> kCountries = [
           format: r'$1',
           leadingDigits: '[89]',
           nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '[5-7]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{6})',
+          format: r'$1 $2',
+          leadingDigits: '0',
+          nationalPrefixFormattingRule: null)
+    ],
+    intlFormats: [
       PhoneFormat(
           pattern: r'(\d{2})(\d{2})(\d{2})(\d{2})',
           format: r'$1 $2 $3 $4',
@@ -6451,6 +7504,28 @@ const List<Country> kCountries = [
           leadingDigits: '80',
           nationalPrefixFormattingRule: r'0$1')
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '512|8[01589]|90',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '5[0-79]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '[24][1-8]|3[1-9]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{6,7})',
+          format: r'$1 $2 $3',
+          leadingDigits: '80',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '5012345678',
     exampleE164: '+905012345678',
     exampleNational: '0501 234 56 78',
@@ -6675,6 +7750,18 @@ const List<Country> kCountries = [
           leadingDigits: '[2-9]',
           nationalPrefixFormattingRule: null)
     ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{4})',
+          format: r'$1-$2',
+          leadingDigits: '310',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{4})',
+          format: r'$1-$2-$3',
+          leadingDigits: '[2-9]',
+          nationalPrefixFormattingRule: null)
+    ],
     exampleNsn: '2015550123',
     exampleE164: '+12015550123',
     exampleNational: '(201) 555-0123',
@@ -6863,6 +7950,33 @@ const List<Country> kCountries = [
           format: r'$1 $2 $3',
           leadingDigits: '2',
           nationalPrefixFormattingRule: r'0$1')
+    ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{4})(\d{4,6})',
+          format: r'$1 $2',
+          leadingDigits: '1(?:2[02]|[89])',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{3})(\d{2})(\d{2})',
+          format: r'$1 $2 $3 $4',
+          leadingDigits: '1[26]|6',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[357-9]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{4})(\d{4})',
+          format: r'$1 $2 $3',
+          leadingDigits: '2[48]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{4})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '2',
+          nationalPrefixFormattingRule: null)
     ],
     exampleNsn: '912345678',
     exampleE164: '+84912345678',
@@ -7074,6 +8188,18 @@ const List<Country> kCountries = [
           format: r'$1 $2',
           leadingDigits: '[579]',
           nationalPrefixFormattingRule: r'0$1')
+    ],
+    intlFormats: [
+      PhoneFormat(
+          pattern: r'(\d{3})(\d{3})(\d{3})',
+          format: r'$1 $2 $3',
+          leadingDigits: '[28]',
+          nationalPrefixFormattingRule: null),
+      PhoneFormat(
+          pattern: r'(\d{2})(\d{7})',
+          format: r'$1 $2',
+          leadingDigits: '[579]',
+          nationalPrefixFormattingRule: null)
     ],
     exampleNsn: '955123456',
     exampleE164: '+260955123456',
