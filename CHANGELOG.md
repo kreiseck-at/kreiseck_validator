@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.3.0
+
+- Global phone support: validation, normalization and formatting for every
+  country, derived from libphonenumber (Apache-2.0; see NOTICE).
+- `Country` now covers all countries with uniform metadata: `iso2`,
+  `callingCode`, `displayName`, `flag`, and synthetic `example` numbers.
+  Look up via `Country.fromIso2` / `Country.fromCallingCode`; enumerate via
+  `Country.values`. **Breaking:** `Country` changed from a 3-value enum to a
+  class; only `Country.de/at/ch` remain as named constants.
+- Uniform, strict validation (`possibleLengths` + national pattern) with a new
+  `IssueCode.phoneInvalid` for structural mismatches.
+- AT/DE/CH display formatting re-baselined to libphonenumber grouping.
+- Austrian type classification unchanged; other countries report
+  `PhoneNumberType.unknown`.
+
 ## 0.2.0
 
 - `Phone.type` and `Phone.parse` (`PhoneInfo`): Austrian number-type
