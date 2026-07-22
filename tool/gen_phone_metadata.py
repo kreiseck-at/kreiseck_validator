@@ -50,13 +50,18 @@ def _formats(meta) -> list[dict]:
     out = []
     for nf in meta.number_format:
         leading = nf.leading_digits_pattern[-1] if nf.leading_digits_pattern else None
+        # The `phonenumbers` package's PhoneMetadata has no separate
+        # metadata-level default (it is already flattened into each
+        # NumberFormat's own rule when the region data was generated), but we
+        # still fall back defensively in case a future data source exposes it.
+        rule = nf.national_prefix_formatting_rule or getattr(
+            meta, "national_prefix_formatting_rule", None
+        )
         out.append({
             "pattern": nf.pattern,
             "format": _fmt_token_normalize(nf.format),
             "leadingDigits": leading,
-            "nationalPrefixFormattingRule": _fmt_token_normalize(
-                nf.national_prefix_formatting_rule
-            ) or None,
+            "nationalPrefixFormattingRule": _fmt_token_normalize(rule) or None,
         })
     return out
 
