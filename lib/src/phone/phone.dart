@@ -148,10 +148,9 @@ class Phone {
     final grouped = formatNsn(formats, nsn,
         international: international, nationalPrefix: c.nationalPrefix);
     if (grouped == null) {
-      // Fallback: E.164 for international, prefixed digits for national.
-      return international
-          ? '+${c.callingCode} $nsn'
-          : '${c.nationalPrefix ?? ''}$nsn';
+      // No format rule matched: fall back to the bare number. Matches
+      // formatNsn, which only adds a trunk prefix via an explicit rule.
+      return international ? '+${c.callingCode} $nsn' : nsn;
     }
     return international ? '+${c.callingCode} $grouped' : grouped;
   }
