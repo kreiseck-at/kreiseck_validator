@@ -34,23 +34,33 @@ class Phone {
             Country.values.where((c) => c.callingCode == cc).toList();
         if (candidates.isEmpty) continue;
         final nsn = d.substring(len);
-        // Prefer a candidate whose pattern+length fully validates.
-        for (final c in candidates) {
+        // Among candidates sharing a calling code, prefer the main region
+        // (e.g. US for +1) so an ambiguous number is not attributed to an
+        // alphabetically-earlier co-tenant (e.g. CA).
+        final main = Country.fromCallingCode(cc);
+        final ordered = <Country>[
+          if (main != null && candidates.contains(main)) main,
+          for (final c in candidates)
+            if (!identical(c, main)) c,
+        ];
+        for (final c in ordered) {
           if (_lengthOk(c, nsn) && _matchesPattern(c, nsn)) return (c, nsn);
-          // Also try stripping an accidentally-included national prefix,
-          // e.g. "+43 (0) 660 ..." where the writer included the
-          // parenthetical "(0)" from the international display convention.
-          final np = c.nationalPrefix;
-          if (np != null && nsn.startsWith(np)) {
-            final stripped = nsn.substring(np.length);
+        }
+        // Tolerate an accidentally-included trunk "0" from the international
+        // "(0)" display convention, e.g. "+43 (0) 660 ...". Only a single
+        // leading zero is stripped, and only when the raw number matched no
+        // candidate, so strict validation is preserved for real numbers.
+        if (nsn.startsWith('0')) {
+          final stripped = nsn.substring(1);
+          for (final c in ordered) {
             if (_lengthOk(c, stripped) && _matchesPattern(c, stripped)) {
               return (c, stripped);
             }
           }
         }
-        // Fall back to the main region for display/length checks.
-        final main = Country.fromCallingCode(cc) ?? candidates.first;
-        return (main, nsn);
+        // No candidate validates: return the main region (or first) with the
+        // raw nsn so the caller can report the specific length/pattern error.
+        return (main ?? candidates.first, nsn);
       }
       return (null, '');
     }
@@ -115,24 +125,16 @@ class Phone {
         Invalid(:final issues) => throw FormatException(issues.first.message),
       };
 
-  /// Splits a normalized E.164 string into (country, nationalNumber).
+  /// Splits a normalized E.164 string into (country, nationalNumber),
+  /// reusing the same calling-code resolution (and main-region preference)
+  /// as [validate].
   static (Country, String) _ccCountry(String e164) {
-    final d = e164.substring(1);
-    for (final len in const [3, 2, 1]) {
-      if (d.length <= len) continue;
-      final cc = d.substring(0, len);
-      final candidates =
-          Country.values.where((c) => c.callingCode == cc).toList();
-      if (candidates.isEmpty) continue;
-      final nsn = d.substring(len);
-      for (final c in candidates) {
-        if (_lengthOk(c, nsn) && _matchesPattern(c, nsn)) return (c, nsn);
-      }
-      final main = Country.fromCallingCode(cc) ?? candidates.first;
-      return (main, nsn);
+    final (c, nsn) = _resolve(e164, null);
+    if (c == null) {
+      // Should not happen for an already-validated E.164.
+      throw const FormatException('Unresolvable calling code.');
     }
-    // Should not happen for a validated E.164.
-    throw const FormatException('Unresolvable calling code.');
+    return (c, nsn);
   }
 
   /// Formats [input] internationally (`+43 1 234567`) or nationally

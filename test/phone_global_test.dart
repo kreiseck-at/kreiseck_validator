@@ -110,5 +110,11 @@ void main() {
     test('parse yields null for invalid input', () {
       expect(Phone.parse('nope'), isNull);
     });
+
+    test('NANP +1 resolves to the main region (US), not a co-tenant', () {
+      final info = Phone.parse('+12015550123');
+      expect(info, isNotNull);
+      expect(info!.country.iso2, 'US');
+    });
   });
 }
