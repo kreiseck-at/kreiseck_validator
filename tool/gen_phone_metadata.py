@@ -31,7 +31,7 @@ DART_OUT = os.path.join(ROOT, "lib", "src", "common", "country.g.dart")
 # generator does NOT touch.
 VECTORS_GLOBAL_OUT = os.path.join(ROOT, "test", "vectors", "phone_global.json")
 
-# ISO2 codes that are Dart reserved words cannot be `Country.<code>` members.
+# Countries exposed as named `Country.<code>` constants (convenience shortcuts).
 _DACH = {"AT": "_atData", "DE": "_deData", "CH": "_chData"}
 
 # Example number type preference: mobile first, then fixed line.

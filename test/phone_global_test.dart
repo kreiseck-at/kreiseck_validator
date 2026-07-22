@@ -48,6 +48,10 @@ void main() {
       expect(Phone.isValid('0316 123456', country: Country.at), isTrue);
     });
 
+    test('tolerates an accidental "(0)" trunk after the country code', () {
+      expect(Phone.normalize('+43 (0) 660 1234567'), '+436601234567');
+    });
+
     test('too short is rejected by length', () {
       final r = Phone.validate('+331', country: null);
       expect(r, isA<Invalid>());
