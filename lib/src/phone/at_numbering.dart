@@ -112,21 +112,4 @@ abstract final class AtNumbering {
 
     return const AtClass(PhoneNumberType.unknown, '');
   }
-
-  /// Formats an Austrian national significant [national] number with
-  /// type-aware spacing. [international] chooses `+43 <area> <rest>` vs
-  /// `0<area> <rest>`. Never throws; unknown area codes use an approximate
-  /// 2- or 4-digit split.
-  static String format(String national, {required bool international}) {
-    final c = classify(national);
-    var area = c.prefix;
-    if (area.isEmpty) {
-      // Fallback: approximate area code (min 2, max 4 digits) for readability.
-      final len = national.length >= 6 ? 4 : 2;
-      area =
-          national.substring(0, national.length > len ? len : national.length);
-    }
-    final rest = national.substring(area.length);
-    return international ? '+43 $area $rest' : '0$area $rest';
-  }
 }
