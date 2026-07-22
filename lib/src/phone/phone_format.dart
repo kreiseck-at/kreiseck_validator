@@ -42,8 +42,8 @@ String? formatNsn(
     }
     if (!international) {
       final rule = f.nationalPrefixFormattingRule;
-      final np = nationalPrefix ?? '';
       if (rule != null && rule.isNotEmpty) {
+        final np = nationalPrefix ?? '';
         // Pragmatic subset: `$1`/`$FG` = the whole grouped number, `$NP` = the
         // national prefix. Reproduces the common `0$1` case (DACH and most
         // European national forms). Carrier codes (`$CC`) are not supported.
@@ -51,8 +51,6 @@ String? formatNsn(
             .replaceAll(r'$NP', np)
             .replaceAll(r'$FG', out)
             .replaceAll(r'$1', out);
-      } else if (np.isNotEmpty) {
-        out = '$np$out';
       }
     }
     return out;

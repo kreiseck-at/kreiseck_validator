@@ -85,6 +85,16 @@ void main() {
       expect(intl.startsWith('+33 '), isTrue);
     });
 
+    test('US national formatting matches libphonenumber', () {
+      expect(Phone.format('+12015550123', international: false),
+          '(201) 555-0123');
+    });
+
+    test('US international formatting matches libphonenumber', () {
+      expect(Phone.format('+12015550123', international: true),
+          '+1 201-555-0123');
+    });
+
     test('tryFormat returns null on invalid input', () {
       expect(Phone.tryFormat('nope'), isNull);
     });
