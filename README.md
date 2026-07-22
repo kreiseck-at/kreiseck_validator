@@ -36,8 +36,9 @@ dependencies, no network calls, no telemetry.**
 
 - 📧 **Email** — pragmatic syntax validation, `trim` + lower-case normalization, and an
   **offline typo-domain suggestion** (`user@gmial.com` → suggests `user@gmail.com`, no DNS lookup)
-- ☎️ **Phone** — **E.164** validation and normalization, national ↔ international formatting
-  for the **DACH** region (🇩🇪 DE / 🇦🇹 AT / 🇨🇭 CH), tolerant of `+43 (0)…` business-card notation
+- ☎️ **Phone** — **E.164** validation, normalization and national ↔ international formatting
+  for **every country** (libphonenumber-derived metadata), tolerant of `+43 (0)…` business-card
+  notation, plus Austrian number-**type** classification (mobile, landline, VoIP, …)
 - 🔗 **URL / Domain** — scheme/host/TLD plausibility check (accepts `:port`, `?query`,
   `#fragment`), canonical normalization, and a compact display form (`https://www.example.com/` → `example.com`)
 - 🏦 **IBAN** — **ISO 13616 Mod-97** checksum, exact DACH length checks, pretty 4-group formatting
@@ -93,18 +94,41 @@ info?.international;  // '+43 316 123456'
 ```
 
 National input (no `+`, no country code) requires the `country:` argument; without it,
-`validate` returns `Invalid` with `IssueCode.phoneAmbiguousCountry`. For **Austria**,
-`Phone.format` uses geographic area-code spacing (e.g. `01 …` Vienna, `0316 …` Graz)
-derived from the public RTR numbering plan. The area-code table is a **curated subset**
-of the most common Austrian codes; numbers outside it still format with an approximate
-split (and a regional landline may report `type` `landline` without an exact grouping).
-For DE/CH, `Phone.format` falls back to a simple 3-digit prefix grouping.
+`validate` returns `Invalid` with `IssueCode.phoneAmbiguousCountry`. Validation and
+national/international formatting cover **every country**, driven by
+libphonenumber-derived metadata (see [`doc/algorithms.md`](doc/algorithms.md) for the
+formatter's grouping rules and its documented limitations). For **Austria** specifically,
+`Phone.format` also spaces the geographic area code correctly (e.g. `01 …` Vienna,
+`0316 …` Graz), derived from the public RTR numbering plan.
 
 `Phone.type`/`Phone.parse` classify Austrian numbers into `PhoneNumberType` (mobile,
 landline, voip, freephone, sharedCost, premium, corporate) from the same RTR numbering
-plan; this **type classification is Austria-only** — for DE/CH numbers `type` is always
-`PhoneNumberType.unknown`. It classifies the number's **type**, not its current operator:
-number portability means a prefix no longer reliably identifies the carrier.
+plan; this **type classification is Austria-only** — for every other country `type` is
+always `PhoneNumberType.unknown`. It classifies the number's **type**, not its current
+operator: number portability means a prefix no longer reliably identifies the carrier.
+
+### 🌍 Global phone support
+
+`Phone` and `Country` cover **every country**, not just DACH — `Country` exposes a
+flag emoji and synthetic example numbers for every one of them, derived from
+libphonenumber metadata (see [NOTICE](NOTICE)):
+
+```dart
+final fr = Country.fromIso2('FR')!;
+print('${fr.displayName} ${fr.flag}: ${fr.exampleInternational}');
+// France 🇫🇷: +33 6 12 34 56 78
+
+print(Phone.format('+33612345678'));
+// +33 6 12 34 56 78
+print(Phone.format('+33612345678', international: false));
+// 06 12 34 56 78
+```
+
+`Country.values` enumerates all supported countries; `Country.fromCallingCode('1')`
+resolves a shared calling code (e.g. NANP `+1`) to its **main region** (US), so a
+structurally valid Canadian number is still validated and formatted correctly but
+attributed to the US `Country`. Three regions without a distinct ISO country name
+(`AC`, `TA`, `XK`) fall back to their ISO2 code as `displayName`.
 
 ### 🔗 URL
 
@@ -156,7 +180,7 @@ stable enums you can switch on and translate; the English `message` is only a de
 | Type         | isValid | validate | normalize | format | tryFormat | Country scope |
 |--------------|:-------:|:--------:|:---------:|:------:|:---------:|----------------|
 | `Email`      | ✅ | ✅ | ✅ | – (display = normalized) | – | none; offline typo suggestions only |
-| `Phone`      | ✅ | ✅ | ✅ | ✅ | ✅ | DACH (DE/AT/CH): `+49`/`+43`/`+41` + national formats; other calling codes → `phoneUnknownCountry` |
+| `Phone`      | ✅ | ✅ | ✅ | ✅ | ✅ | every country (libphonenumber-derived); AT-only number-type classification |
 | `Url`        | ✅ | ✅ | ✅ | ✅ | ✅ | none (scheme/host/TLD check is global) |
 | `Iban`       | ✅ | ✅ | ✅ | ✅ | ✅ | DACH: checksum + exact length; other countries: checksum only |
 | `CreditCard` | ✅ | ✅ | ✅ | ✅ | ✅ | none (Luhn + network detection is global) |
