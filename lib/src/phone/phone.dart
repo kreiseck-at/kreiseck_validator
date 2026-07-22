@@ -2,33 +2,65 @@ import '../common/country.dart';
 import '../common/issue_code.dart';
 import '../common/validation_result.dart';
 import 'at_numbering.dart';
+import 'phone_format.dart';
 import 'phone_info.dart';
 import 'phone_number_type.dart';
 
-/// Validation, normalization (to E.164) and formatting of phone numbers.
-///
-/// International scope is E.164 syntax only; national parsing and pretty
-/// formatting are provided for DACH (DE/AT/CH). See `doc/algorithms.md`.
+/// Validation, normalization (to E.164) and formatting of phone numbers for
+/// every country, using libphonenumber-derived metadata. See `doc/algorithms.md`.
 class Phone {
   Phone._();
-
-  /// Calling code -> country for the DACH set.
-  static const Map<String, Country> _byCallingCode = {
-    '49': Country.de,
-    '43': Country.at,
-    '41': Country.ch,
-  };
-
-  /// National-number length bounds (subscriber digits, excluding country code).
-  static const Map<Country, (int, int)> _natLen = {
-    Country.de: (6, 11),
-    Country.at: (7, 11),
-    Country.ch: (9, 9),
-  };
 
   static final RegExp _allowedChars = RegExp(r'^\+?[0-9\s\-/().]+$');
 
   static String _digits(String s) => s.replaceAll(RegExp(r'[^0-9]'), '');
+
+  static bool _matchesPattern(Country c, String nsn) =>
+      RegExp('^(?:${c.pattern})\$').hasMatch(nsn);
+
+  static bool _lengthOk(Country c, String nsn) =>
+      c.possibleLengths.isEmpty || c.possibleLengths.contains(nsn.length);
+
+  /// Resolves the (country, nationalSignificantNumber) for [input].
+  /// Returns null country when it cannot be determined.
+  static (Country?, String) _resolve(String trimmed, Country? hint) {
+    if (trimmed.startsWith('+')) {
+      final d = _digits(trimmed);
+      // Longest matching calling code (1-3 digits).
+      for (final len in const [3, 2, 1]) {
+        if (d.length <= len) continue;
+        final cc = d.substring(0, len);
+        final candidates =
+            Country.values.where((c) => c.callingCode == cc).toList();
+        if (candidates.isEmpty) continue;
+        final nsn = d.substring(len);
+        // Prefer a candidate whose pattern+length fully validates.
+        for (final c in candidates) {
+          if (_lengthOk(c, nsn) && _matchesPattern(c, nsn)) return (c, nsn);
+          // Also try stripping an accidentally-included national prefix,
+          // e.g. "+43 (0) 660 ..." where the writer included the
+          // parenthetical "(0)" from the international display convention.
+          final np = c.nationalPrefix;
+          if (np != null && nsn.startsWith(np)) {
+            final stripped = nsn.substring(np.length);
+            if (_lengthOk(c, stripped) && _matchesPattern(c, stripped)) {
+              return (c, stripped);
+            }
+          }
+        }
+        // Fall back to the main region for display/length checks.
+        final main = Country.fromCallingCode(cc) ?? candidates.first;
+        return (main, nsn);
+      }
+      return (null, '');
+    }
+    // National input: needs a country hint; strip the trunk prefix.
+    if (hint == null) return (null, '');
+    var d = _digits(trimmed);
+    final np = hint.nationalPrefix;
+    if (np != null && d.startsWith(np)) d = d.substring(np.length);
+    return (hint, d);
+  }
 
   /// Validates [input], returning [Valid] with the E.164 normalized form.
   static ValidationResult validate(String input, {Country? country}) {
@@ -42,41 +74,34 @@ class Phone {
           [ValidationIssue(IssueCode.phoneBadChars, 'Bad characters.')]);
     }
 
-    String cc;
-    String national;
-    if (trimmed.startsWith('+')) {
-      final d = _digits(trimmed);
-      cc = _byCallingCode.keys.firstWhere(d.startsWith, orElse: () => '');
-      if (cc.isEmpty) {
-        return const Invalid([
-          ValidationIssue(IssueCode.phoneUnknownCountry, 'Unknown country.')
-        ]);
-      }
-      national = d.substring(cc.length);
-      if (national.startsWith('0')) national = national.substring(1);
-    } else {
-      if (country == null) {
-        return const Invalid([
-          ValidationIssue(IssueCode.phoneAmbiguousCountry, 'Country required.')
-        ]);
-      }
-      cc = country.callingCode;
-      var d = _digits(trimmed);
-      if (d.startsWith('0')) d = d.substring(1); // national trunk prefix
-      national = d;
+    final (resolved, nsn) = _resolve(trimmed, country);
+    if (resolved == null) {
+      final code = trimmed.startsWith('+')
+          ? IssueCode.phoneUnknownCountry
+          : IssueCode.phoneAmbiguousCountry;
+      final msg =
+          trimmed.startsWith('+') ? 'Unknown country.' : 'Country required.';
+      return Invalid([ValidationIssue(code, msg)]);
     }
 
-    final resolved = _byCallingCode[cc]!;
-    final (min, max) = _natLen[resolved]!;
-    if (national.length < min) {
-      return const Invalid(
-          [ValidationIssue(IssueCode.phoneTooShort, 'Too short.')]);
+    final lengths = resolved.possibleLengths;
+    if (lengths.isNotEmpty) {
+      final min = lengths.first;
+      final max = lengths.last;
+      if (nsn.length < min) {
+        return const Invalid(
+            [ValidationIssue(IssueCode.phoneTooShort, 'Too short.')]);
+      }
+      if (nsn.length > max) {
+        return const Invalid(
+            [ValidationIssue(IssueCode.phoneTooLong, 'Too long.')]);
+      }
     }
-    if (national.length > max) {
+    if (!_matchesPattern(resolved, nsn)) {
       return const Invalid(
-          [ValidationIssue(IssueCode.phoneTooLong, 'Too long.')]);
+          [ValidationIssue(IssueCode.phoneInvalid, 'Not a valid number.')]);
     }
-    return Valid('+$cc$national');
+    return Valid('+${resolved.callingCode}$nsn');
   }
 
   /// True when [validate] returns [Valid].
@@ -90,20 +115,41 @@ class Phone {
         Invalid(:final issues) => throw FormatException(issues.first.message),
       };
 
-  /// Formats [input] internationally (`+43 660 1234567`) or nationally
-  /// (`0660 1234567`) when [international] is false. Throws [FormatException].
+  /// Splits a normalized E.164 string into (country, nationalNumber).
+  static (Country, String) _ccCountry(String e164) {
+    final d = e164.substring(1);
+    for (final len in const [3, 2, 1]) {
+      if (d.length <= len) continue;
+      final cc = d.substring(0, len);
+      final candidates =
+          Country.values.where((c) => c.callingCode == cc).toList();
+      if (candidates.isEmpty) continue;
+      final nsn = d.substring(len);
+      for (final c in candidates) {
+        if (_lengthOk(c, nsn) && _matchesPattern(c, nsn)) return (c, nsn);
+      }
+      final main = Country.fromCallingCode(cc) ?? candidates.first;
+      return (main, nsn);
+    }
+    // Should not happen for a validated E.164.
+    throw const FormatException('Unresolvable calling code.');
+  }
+
+  /// Formats [input] internationally (`+43 1 234567`) or nationally
+  /// (`01 234567`) when [international] is false. Throws [FormatException].
   static String format(String input,
       {Country? country, bool international = true}) {
     final e164 = normalize(input, country: country);
-    final d = e164.substring(1);
-    final cc = _byCallingCode.keys.firstWhere(d.startsWith);
-    final national = d.substring(cc.length);
-    if (cc == '43') {
-      return AtNumbering.format(national, international: international);
+    final (c, nsn) = _ccCountry(e164);
+    final grouped = formatNsn(c.formats, nsn,
+        international: international, nationalPrefix: c.nationalPrefix);
+    if (grouped == null) {
+      // Fallback: E.164 for international, prefixed digits for national.
+      return international
+          ? '+${c.callingCode} $nsn'
+          : '${c.nationalPrefix ?? ''}$nsn';
     }
-    final area = national.substring(0, 3);
-    final rest = national.substring(3);
-    return international ? '+$cc $area $rest' : '0$area $rest';
+    return international ? '+${c.callingCode} $grouped' : grouped;
   }
 
   /// Like [format] but returns null on invalid input.
@@ -116,21 +162,14 @@ class Phone {
     }
   }
 
-  /// Splits a normalized E.164 string into (callingCode, nationalNumber).
-  static (String, String) _ccNational(String e164) {
-    final d = e164.substring(1);
-    final cc = _byCallingCode.keys.firstWhere(d.startsWith);
-    return (cc, d.substring(cc.length));
-  }
-
-  /// Classifies [input] by Austrian number type. Returns
-  /// [PhoneNumberType.unknown] for invalid input or non-AT numbers.
+  /// Classifies [input] by number type. Returns [PhoneNumberType.unknown] for
+  /// invalid input or countries without classification data (all but AT).
   static PhoneNumberType type(String input, {Country? country}) {
     final result = validate(input, country: country);
     if (result is! Valid) return PhoneNumberType.unknown;
-    final (cc, national) = _ccNational(result.normalized);
-    if (cc != '43') return PhoneNumberType.unknown;
-    return AtNumbering.classify(national).type;
+    final (c, nsn) = _ccCountry(result.normalized);
+    if (c.iso2 != 'AT') return PhoneNumberType.unknown;
+    return AtNumbering.classify(nsn).type;
   }
 
   /// Parses [input] into a [PhoneInfo] bundle, or null if invalid.
@@ -138,14 +177,12 @@ class Phone {
     final result = validate(input, country: country);
     if (result is! Valid) return null;
     final e164 = result.normalized;
-    final (cc, national) = _ccNational(e164);
-    final resolved = _byCallingCode[cc]!;
-    final numberType = resolved == Country.at
-        ? AtNumbering.classify(national).type
-        : PhoneNumberType.unknown;
+    final (c, nsn) = _ccCountry(e164);
+    final numberType =
+        c.iso2 == 'AT' ? AtNumbering.classify(nsn).type : PhoneNumberType.unknown;
     return PhoneInfo(
       e164: e164,
-      country: resolved,
+      country: c,
       type: numberType,
       national: format(input, country: country, international: false),
       international: format(input, country: country, international: true),
