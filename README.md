@@ -44,7 +44,8 @@ dependencies, no network calls, no telemetry.**
 - 🏦 **IBAN** — **ISO 13616 Mod-97** checksum, per-country length checks, pretty
   4-group formatting, and **`parse`** into an `IbanInfo` (country, bank/branch/
   account codes; **Austrian, German and Swiss bank name + BIC** from bundled
-  OeNB / Bundesbank / SIX snapshots)
+  OeNB / Bundesbank / SIX snapshots); per-country **format descriptors + example
+  IBANs** via `IbanCountry`
 - 💳 **Credit card** — **Luhn** checksum, network detection (Visa / Mastercard / Amex / Discover),
   network-aware grouping (Amex `4-6-5`, else `4-4-4-4`)
 - 🧱 **One consistent API** — `isValid` / `validate` / `normalize` / `format` (+ `tryFormat`) on every type
@@ -153,6 +154,12 @@ final info = Iban.parse('AT72 1200 0002 3457 3201')!;
 info.bankCode; // '12000'
 info.bankName; // 'UniCredit Bank Austria AG'
 info.bic;      // 'BKAUATWW'
+
+final at = IbanCountry.of('AT')!;
+at.length;        // 20
+at.bankCodeLength; // 5
+at.hasBranchCode;  // false
+at.example;        // 'AT61 1904 3002 3457 3201'
 ```
 
 ### 💳 Credit card

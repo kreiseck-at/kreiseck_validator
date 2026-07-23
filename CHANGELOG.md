@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0
+
+- `IbanCountry.of(code)` / `IbanCountry.values` expose each country's IBAN
+  format — total length, bank / branch / account field lengths, whether a
+  branch code exists, and a valid example IBAN (canonical for AT/DE/CH,
+  deterministically generated for the rest).
+
 ## 0.5.0
 
 - `Iban.parse` now resolves `bankName` and `bic` for German and Swiss IBANs, in
