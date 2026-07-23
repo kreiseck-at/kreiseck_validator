@@ -31,21 +31,90 @@ class LicensePlate {
   // DE: district code (1-3 letters) + serial letters (1-2) + serial digits
   // (1-4) + optional historic/electric suffix. Unlike AT, the code and
   // serial-letters groups are NOT disjoint character classes (both are pure
-  // letter runs sitting back-to-back once separators are stripped), so a
-  // greedy first group would over-consume (e.g. `MAB1234` could split as
-  // `MA`+`B`+`1234` just as validly as `M`+`AB`+`1234`). The district-code
-  // group is therefore made *lazy* (`{1,3}?`) so it claims as few letters as
-  // possible, leaving the greedy serial-letters group to claim up to 2 --
-  // matching the overwhelmingly common real-world shape (short code, 1-2
-  // letter serial prefix). A three-letter code followed by a single-letter
-  // serial is the one shape this cannot disambiguate without a table lookup;
-  // accepted as a known limitation (out of scope per the design doc).
+  // letter runs sitting back-to-back once separators are stripped), so which
+  // substring is the code vs. the serial prefix is ambiguous from the
+  // compact form alone (e.g. `MAB1234` could split as `MA`+`B`+`1234` just as
+  // validly as `M`+`AB`+`1234`). This pattern is used only to decide overall
+  // well-formedness (accept/reject); the actual code/serial boundary is
+  // resolved separately by [_splitDe], which is separator- and table-aware.
   static final RegExp _deStructure =
-      RegExp(r'^([A-ZÄÖÜ]{1,3}?)([A-Z]{1,2})(\d{1,4})([HE]?)$');
+      RegExp(r'^([A-ZÄÖÜ]{1,3})([A-Z]{1,2})(\d{1,4})([HE]?)$');
 
   // DE: nationwide authority codes that are not Stadt/Kreis codes (see
   // `tool/data/de-kennzeichen.csv`, which deliberately omits them).
   static const Set<String> _deAuthorityCodes = {'BW', 'BP', 'BD', 'THW'};
+
+  // DE: leading letter run followed by an explicit separator, used to
+  // resolve the code/serial boundary unambiguously when the caller wrote one
+  // in (e.g. `GG-A 1234`, `BOR-X 1234`). Because the letter class and the
+  // separator class are disjoint, the greedy `{1,3}` here is deterministic:
+  // it can only ever match as many letters as actually precede the
+  // separator (up to 3), unlike the compact-form ambiguity above.
+  static final RegExp _deSeparatorSplit =
+      RegExp(r'^([A-ZÄÖÜ]{1,3})[-. ]+(.+)$');
+
+  // DE: a bare serial (letters + digits + optional suffix), used both to
+  // validate the tail of a separator-aware split and to validate candidate
+  // remainders in the table-aware fallback.
+  static final RegExp _deSerial = RegExp(r'^([A-Z]{1,2})(\d{1,4})([HE]?)$');
+
+  static final RegExp _deLettersOnly = RegExp(r'^[A-ZÄÖÜ]+$');
+
+  /// Resolves the DE code/serial split when [trimmedUpper] (the original,
+  /// pre-compaction input) has an explicit separator right after the
+  /// leading letter run, e.g. `GG-A 1234` or `BOR-X 1234`. Returns null when
+  /// there is no such separator, or the remainder is not a valid serial --
+  /// callers then fall back to [_deSplitTableAware].
+  static ({String code, String serialLetters, String digits, String suffix})?
+      _deSplitSeparatorAware(String trimmedUpper) {
+    final m = _deSeparatorSplit.firstMatch(trimmedUpper);
+    if (m == null) return null;
+    final rest = _compact(m.group(2)!);
+    final sm = _deSerial.firstMatch(rest);
+    if (sm == null) return null;
+    return (
+      code: m.group(1)!,
+      serialLetters: sm.group(1)!,
+      digits: sm.group(2)!,
+      suffix: sm.group(3) ?? '',
+    );
+  }
+
+  /// Resolves the DE code/serial split from the compact form alone (no
+  /// separator to go by, e.g. `MAB1234`). Tries code lengths 3, 2, 1 --
+  /// longest first -- among splits whose remainder is a valid serial, and
+  /// prefers the longest one whose code is a known DE district (in
+  /// [kPlateRegions]); falls back to the longest merely-valid split if none
+  /// of them is known.
+  static ({String code, String serialLetters, String digits, String suffix})?
+      _deSplitTableAware(String compact) {
+    ({String code, String serialLetters, String digits, String suffix})?
+        firstValid;
+    for (final len in const [3, 2, 1]) {
+      if (len >= compact.length) continue;
+      final codeCandidate = compact.substring(0, len);
+      if (!_deLettersOnly.hasMatch(codeCandidate)) continue;
+      final sm = _deSerial.firstMatch(compact.substring(len));
+      if (sm == null) continue;
+      final candidate = (
+        code: codeCandidate,
+        serialLetters: sm.group(1)!,
+        digits: sm.group(2)!,
+        suffix: sm.group(3) ?? '',
+      );
+      if (kPlateRegions['DE']!.containsKey(codeCandidate)) return candidate;
+      firstValid ??= candidate;
+    }
+    return firstValid;
+  }
+
+  /// Resolves the DE code/serial split for an already-validated plate.
+  /// Separator-aware splitting takes priority; the table-aware fallback is
+  /// only consulted when no explicit separator disambiguates the code.
+  static ({String code, String serialLetters, String digits, String suffix})
+      _splitDe(String trimmedUpper, String compact) =>
+          _deSplitSeparatorAware(trimmedUpper) ??
+          _deSplitTableAware(compact)!;
 
   static String _compact(String upperTrimmed) =>
       upperTrimmed.replaceAll(RegExp(r'[\s\-.]'), '');
@@ -105,9 +174,9 @@ class LicensePlate {
     return '${m.group(1)}-${m.group(2)}';
   }
 
-  static String _formatDe(String compact) {
-    final m = _deStructure.firstMatch(compact)!;
-    return '${m.group(1)}-${m.group(2)} ${m.group(3)}${m.group(4)}';
+  static String _formatDe(String trimmedUpper, String compact) {
+    final s = _splitDe(trimmedUpper, compact);
+    return '${s.code}-${s.serialLetters} ${s.digits}${s.suffix}';
   }
 
   /// Returns the canonical display form. Throws [FormatException].
@@ -116,7 +185,7 @@ class LicensePlate {
     final resolved = _resolveCountry(country)!;
     return switch (resolved) {
       'AT' => _formatAt(compact),
-      'DE' => _formatDe(compact),
+      'DE' => _formatDe(input.trim().toUpperCase(), compact),
       _ => throw StateError('unreachable: $resolved'),
     };
   }
@@ -174,19 +243,16 @@ class LicensePlate {
           formatted: _formatAt(compact),
         );
       case 'DE':
-        final m = _deStructure.firstMatch(compact)!;
-        final code = m.group(1)!;
-        final serialLetters = m.group(2)!;
-        final digits = m.group(3)!;
-        final suffix = m.group(4) ?? '';
-        final region = kPlateRegions['DE']?[code];
+        final trimmedUpper = input.trim().toUpperCase();
+        final s = _splitDe(trimmedUpper, compact);
+        final region = kPlateRegions['DE']?[s.code];
         return PlateInfo(
           country: 'DE',
-          districtCode: code,
+          districtCode: s.code,
           region: region,
-          serial: '$serialLetters $digits',
-          type: _classifyDe(code, suffix),
-          formatted: _formatDe(compact),
+          serial: '${s.serialLetters} ${s.digits}',
+          type: _classifyDe(s.code, s.suffix),
+          formatted: _formatDe(trimmedUpper, compact),
         );
       default:
         return null;
