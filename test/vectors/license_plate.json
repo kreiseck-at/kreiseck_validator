@@ -15,7 +15,7 @@
   {"input": "!!!", "country": "AT", "isValid": false, "code": "plateBadChars"},
   {"input": "W-", "country": "AT", "isValid": false, "code": "plateBadFormat"},
   {"input": "12345", "country": "AT", "isValid": false, "code": "plateBadFormat"},
-  {"input": "W-12345A", "country": "CH", "isValid": false, "code": "plateUnknownCountry"},
+  {"input": "W-12345A", "country": "CH", "isValid": false, "code": "plateBadFormat"},
 
   {"input": "M-AB 1234", "country": "DE", "isValid": true, "normalized": "MAB1234", "format": "M-AB 1234",
    "parse": {"country": "DE", "districtCode": "M", "region": "München", "serial": "AB 1234", "type": "standard"}},
@@ -43,5 +43,17 @@
    "parse": {"country": "DE", "districtCode": "THW", "region": null, "serial": "AB 1234", "type": "authority"}},
   {"input": "", "country": "DE", "isValid": false, "code": "plateEmpty"},
   {"input": "M-1234", "country": "DE", "isValid": false, "code": "plateBadFormat"},
-  {"input": "M1-AB 1234", "country": "DE", "isValid": false, "code": "plateBadFormat"}
+  {"input": "M1-AB 1234", "country": "DE", "isValid": false, "code": "plateBadFormat"},
+
+  {"input": "ZH 123456", "country": "CH", "isValid": true, "normalized": "ZH123456", "format": "ZH 123456",
+   "parse": {"country": "CH", "districtCode": "ZH", "region": "Zürich", "serial": "123456", "type": "standard"}},
+  {"input": "ge 1", "country": "CH", "isValid": true, "normalized": "GE1", "format": "GE 1",
+   "parse": {"country": "CH", "districtCode": "GE", "region": "Genève", "serial": "1", "type": "standard"}},
+  {"input": "AI-42", "country": "CH", "isValid": true, "normalized": "AI42", "format": "AI 42",
+   "parse": {"country": "CH", "districtCode": "AI", "region": "Appenzell Innerrhoden", "serial": "42", "type": "standard"}},
+  {"input": "QQ 5", "country": "CH", "isValid": false, "code": "plateBadFormat"},
+  {"input": "", "country": "CH", "isValid": false, "code": "plateEmpty"},
+  {"input": "!!!", "country": "CH", "isValid": false, "code": "plateBadChars"},
+  {"input": "ZH", "country": "CH", "isValid": false, "code": "plateBadFormat"},
+  {"input": "ZH 1234567", "country": "CH", "isValid": false, "code": "plateBadFormat"}
 ]

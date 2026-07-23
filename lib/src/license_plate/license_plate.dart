@@ -8,14 +8,14 @@ part 'plate_metadata.g.dart';
 /// Validation, normalization, formatting and parsing of vehicle license
 /// plates ("Kennzeichen"). See `doc/algorithms.md`.
 ///
-/// Currently `AT` and `DE` are modelled; other countries resolve to
+/// Currently `AT`, `DE` and `CH` are modelled; other countries resolve to
 /// [IssueCode.plateUnknownCountry].
 class LicensePlate {
   LicensePlate._();
 
   static final RegExp _allowedChars = RegExp(r'^[A-ZÄÖÜ0-9 \-.]+$');
 
-  static const Set<String> _knownCountries = {'AT', 'DE'};
+  static const Set<String> _knownCountries = {'AT', 'DE', 'CH'};
 
   // AT: code (1-2 letters, greedily matched) + serial (letters/digits).
   // Because the code and serial character classes are disjoint (letters vs.
@@ -59,6 +59,13 @@ class LicensePlate {
   static final RegExp _deSerial = RegExp(r'^([A-Z]{1,2})(\d{1,4})([HE]?)$');
 
   static final RegExp _deLettersOnly = RegExp(r'^[A-ZÄÖÜ]+$');
+
+  // CH: canton code (2 letters) + serial (1-6 digits), e.g. `ZH123456`.
+  // Unlike AT/DE, the canton set is closed and small (26 entries): a
+  // 2-letter prefix that structurally matches but is not a known canton is
+  // rejected as `plateBadFormat` rather than accepted with a null region --
+  // see [_matchesChStructure].
+  static final RegExp _chStructure = RegExp(r'^([A-Z]{2})(\d{1,6})$');
 
   /// Resolves the DE code/serial split when [trimmedUpper] (the original,
   /// pre-compaction input) has an explicit separator right after the
@@ -124,10 +131,21 @@ class LicensePlate {
   static String? _resolveCountry(String? country) =>
       country == null ? 'AT' : country.toUpperCase();
 
+  /// CH's canton set is closed and small: unlike AT/DE (where an unknown
+  /// district/Unterscheidungszeichen still validates with a null [region]),
+  /// a CH plate whose 2-letter prefix is not one of the 26 cantons in
+  /// [kPlateRegions] is `plateBadFormat`, not merely unresolved.
+  static bool _matchesChStructure(String compact) {
+    final m = _chStructure.firstMatch(compact);
+    if (m == null) return false;
+    return kPlateRegions['CH']!.containsKey(m.group(1)!);
+  }
+
   static bool _matchesStructure(String country, String compact) =>
       switch (country) {
         'AT' => _atStructure.hasMatch(compact),
         'DE' => _deStructure.hasMatch(compact),
+        'CH' => _matchesChStructure(compact),
         _ => false,
       };
 
@@ -179,6 +197,11 @@ class LicensePlate {
     return '${s.code}-${s.serialLetters} ${s.digits}${s.suffix}';
   }
 
+  static String _formatCh(String compact) {
+    final m = _chStructure.firstMatch(compact)!;
+    return '${m.group(1)} ${m.group(2)}';
+  }
+
   /// Returns the canonical display form. Throws [FormatException].
   static String format(String input, {String? country}) {
     final compact = normalize(input, country: country);
@@ -186,6 +209,7 @@ class LicensePlate {
     return switch (resolved) {
       'AT' => _formatAt(compact),
       'DE' => _formatDe(input.trim().toUpperCase(), compact),
+      'CH' => _formatCh(compact),
       _ => throw StateError('unreachable: $resolved'),
     };
   }
@@ -222,6 +246,11 @@ class LicensePlate {
     return PlateType.standard;
   }
 
+  /// Classifies a CH plate. There is no reliable text-only signal to
+  /// distinguish federal/diplomatic CH plates from civilian ones, so every
+  /// (structurally valid, known-canton) CH plate classifies as `standard`.
+  static PlateType _classifyCh(String districtCode) => PlateType.standard;
+
   /// Parses [input] into a [PlateInfo], or null when it is not a valid plate.
   static PlateInfo? parse(String input, {String? country}) {
     final r = validate(input, country: country);
@@ -253,6 +282,18 @@ class LicensePlate {
           serial: '${s.serialLetters} ${s.digits}',
           type: _classifyDe(s.code, s.suffix),
           formatted: _formatDe(trimmedUpper, compact),
+        );
+      case 'CH':
+        final m = _chStructure.firstMatch(compact)!;
+        final code = m.group(1)!;
+        final serial = m.group(2)!;
+        return PlateInfo(
+          country: 'CH',
+          districtCode: code,
+          region: kPlateRegions['CH']?[code],
+          serial: serial,
+          type: _classifyCh(code),
+          formatted: _formatCh(compact),
         );
       default:
         return null;
