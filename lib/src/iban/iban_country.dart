@@ -40,8 +40,7 @@ class IbanCountry {
   static IbanCountry _from(String iso2, IbanBban b) {
     final branchStart = b.branchStart;
     final branchEnd = b.branchEnd;
-    final branchLen =
-        branchStart == null ? null : branchEnd! - branchStart;
+    final branchLen = branchStart == null ? null : branchEnd! - branchStart;
     final accountStart = branchEnd ?? b.bankEnd;
     return IbanCountry._(
       iso2: iso2,
@@ -53,10 +52,8 @@ class IbanCountry {
     );
   }
 
-  static String _group(String compact) => RegExp(r'.{1,4}')
-      .allMatches(compact)
-      .map((m) => m.group(0))
-      .join(' ');
+  static String _group(String compact) =>
+      RegExp(r'.{1,4}').allMatches(compact).map((m) => m.group(0)).join(' ');
 
   /// The descriptor for [code] (case-insensitive ISO2), or null if the country
   /// has no known IBAN format.
