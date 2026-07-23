@@ -25,6 +25,7 @@ from phonenumbers import PhoneMetadata, PhoneNumberFormat, PhoneNumberType
 HERE = os.path.dirname(__file__)
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
 JSON_OUT = os.path.join(ROOT, "lib", "src", "phone", "data", "metadata.json")
+JS_JSON_OUT = os.path.join(ROOT, "js", "src", "data", "phone-metadata.json")
 DART_OUT = os.path.join(ROOT, "lib", "src", "common", "country.g.dart")
 # Cross-country coverage. Kept separate from the hand-authored
 # test/vectors/phone.json (DACH cases incl. AT classification), which this
@@ -260,6 +261,11 @@ def main() -> None:
         json.dump(data, f, ensure_ascii=False, indent=2, sort_keys=True)
         f.write("\n")
     print(f"Wrote {len(data['countries'])} countries to {JSON_OUT}")
+    os.makedirs(os.path.dirname(JS_JSON_OUT), exist_ok=True)
+    with open(JS_JSON_OUT, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2, sort_keys=True)
+        f.write("\n")
+    print(f"Wrote {len(data['countries'])} countries to {JS_JSON_OUT}")
     write_dart(data)
     print(f"Wrote Dart registry to {DART_OUT}")
     write_vectors()
