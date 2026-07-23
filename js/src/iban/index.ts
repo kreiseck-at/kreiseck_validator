@@ -149,3 +149,6 @@ function parse(input: string): IbanInfo | null {
 }
 
 export const Iban = { isValid, validate, normalize, format, tryFormat, parse };
+
+export { IbanCountry } from './country';
+export type { IbanCountry as IbanCountryInfo } from './country';
