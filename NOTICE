@@ -17,3 +17,8 @@ German bank reference data (bank sort codes, names and BICs) is derived from the
 Bankleitzahlen directory published by the Deutsche Bundesbank. Swiss bank
 reference data is derived from the SIX Bank Master published by SIX Interbank
 Clearing. Both are used under their respective terms.
+
+German license-plate region data (Unterscheidungszeichen and their assigned
+Stadt/Kreis) is derived from the Kraftfahrt-Bundesamt's official list, an
+amtliches Werk in the public domain under German copyright law. Other plate
+region tables are compiled from public administrative sources.
