@@ -7,6 +7,7 @@ export 'src/common/validation_result.dart';
 export 'src/credit_card/credit_card.dart';
 export 'src/email/email.dart';
 export 'src/iban/iban.dart';
+export 'src/iban/iban_country.dart';
 export 'src/iban/iban_info.dart';
 export 'src/phone/phone.dart';
 export 'src/phone/phone_format.dart';
