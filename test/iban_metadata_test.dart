@@ -37,5 +37,17 @@ void main() {
     test('fictional textbook BLZ 19043 is absent', () {
       expect(kBanks['AT']!['19043'], isNull);
     });
+
+    test('resolves a German bank by BLZ (head office)', () {
+      final b = kBanks['DE']!['37040044']!;
+      expect(b.name, 'Commerzbank');
+      expect(b.bic, 'COBADEFF');
+    });
+
+    test('resolves a Swiss bank by zero-padded BC number', () {
+      final b = kBanks['CH']!['00100']!;
+      expect(b.name, 'Schweizerische Nationalbank');
+      expect(b.bic, 'SNBZCHZZ');
+    });
   });
 }

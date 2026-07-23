@@ -4,7 +4,9 @@
   {"input": "AT61 1904 3002 3457 3201", "isValid": true, "normalized": "AT611904300234573201", "format": "AT61 1904 3002 3457 3201",
    "parse": {"country": "AT", "checkDigits": "61", "bankCode": "19043", "branchCode": null, "accountNumber": "00234573201", "bankName": null, "bic": null}},
   {"input": "DE89 3704 0044 0532 0130 00", "isValid": true, "normalized": "DE89370400440532013000",
-   "parse": {"country": "DE", "checkDigits": "89", "bankCode": "37040044", "branchCode": null, "accountNumber": "0532013000", "bankName": null, "bic": null}},
+   "parse": {"country": "DE", "checkDigits": "89", "bankCode": "37040044", "branchCode": null, "accountNumber": "0532013000", "bankName": "Commerzbank", "bic": "COBADEFF"}},
+  {"input": "CH25 0010 0000 0012 3456 7", "isValid": true, "normalized": "CH2500100000001234567",
+   "parse": {"country": "CH", "checkDigits": "25", "bankCode": "00100", "branchCode": null, "accountNumber": "000001234567", "bankName": "Schweizerische Nationalbank", "bic": "SNBZCHZZ"}},
   {"input": "AT611904300234573200", "isValid": false, "code": "ibanBadChecksum"},
   {"input": "DE8937040044053201", "isValid": false, "code": "ibanBadLength"}
 ]
