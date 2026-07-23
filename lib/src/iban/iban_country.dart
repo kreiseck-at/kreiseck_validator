@@ -5,6 +5,10 @@ import 'iban_metadata.dart';
 ///
 /// Obtained via [IbanCountry.of] or [IbanCountry.values]. Derived from the same
 /// bundled metadata that drives IBAN validation.
+///
+/// The field lengths need not add up to [length]: a few countries (e.g. Italy
+/// and San Marino) place a national check character between the check digits
+/// and the bank code, and that character belongs to none of the three fields.
 class IbanCountry {
   const IbanCountry._({
     required this.iso2,
