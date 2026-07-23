@@ -86,6 +86,19 @@ place provisional check digits `00`, rearrange as `BBAN + country +
 `iban_check_digits('AT', '1904300234573201')` returns `'61'`,
 reproducing the example above.
 
+**Structural parsing** (`Iban.parse`, returning an `IbanInfo`) splits the
+compact IBAN into bank/branch/account codes using `kIbanBban`
+(`lib/src/iban/iban_metadata.g.dart`), a per-country table of BBAN field
+offsets sourced from the SWIFT IBAN Registry. Those offsets are absolute
+indices into the full IBAN string, so every offset from the registry's
+BBAN-relative layout is shifted by 4 to account for the leading country
+code and check digits (e.g. Germany's bank code, positions 0-7 within the
+BBAN, becomes `bankStart: 4, bankEnd: 12`). For Austrian IBANs, `parse`
+additionally looks up the extracted bank code (BLZ) in `kAtBanks`, a table
+built from a snapshot of the OeNB (Oesterreichische Nationalbank) SEPA
+directory, to fill in the bank's registered name and BIC; other countries,
+and unrecognized Austrian BLZs, leave those two fields `null`.
+
 ## E.164 structure and the national trunk prefix
 
 `Phone.validate`/`normalize` (`lib/src/phone/phone.dart`) accept
