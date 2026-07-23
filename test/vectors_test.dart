@@ -66,6 +66,29 @@ void main() {
     }
   });
 
+  group('license_plate', () {
+    for (final c in _load('license_plate.json')) {
+      final input = c['input']! as String;
+      final country = c['country'] as String?;
+      _check(
+          'license_plate',
+          c,
+          () => LicensePlate.validate(input, country: country),
+          () => LicensePlate.format(input, country: country));
+      if (c.containsKey('parse')) {
+        test('license_plate parse: $input', () {
+          final info = LicensePlate.parse(input, country: country)!;
+          final p = c['parse']! as Map<String, Object?>;
+          expect(info.country, p['country']);
+          expect(info.districtCode, p['districtCode']);
+          expect(info.region, p['region']);
+          expect(info.serial, p['serial']);
+          expect(info.type.name, p['type']);
+        });
+      }
+    }
+  });
+
   group('url', () {
     for (final c in _load('url.json')) {
       final input = c['input']! as String;
