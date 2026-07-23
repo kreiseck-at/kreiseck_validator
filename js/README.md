@@ -1,8 +1,8 @@
 # @kreiseck/validator
 
 Validate, normalize and format the input every app collects — **email, phone,
-URL, IBAN and credit-card** — in a few lines of TypeScript. Zero dependencies,
-DACH-aware.
+URL, IBAN, credit-card and license plate** — in a few lines of TypeScript. Zero
+dependencies, DACH-aware.
 
 This is the TypeScript/JavaScript port of the
 [`kreiseck_validator`](https://pub.dev/packages/kreiseck_validator) Dart
@@ -105,6 +105,29 @@ CreditCard.format('378282246310005');        // '3782 822463 10005'  (Amex 4-6-5
 CreditCard.network('4111111111111111');      // 'visa'
 ```
 
+### License plate
+
+```ts
+import { LicensePlate } from '@kreiseck/validator/license-plate';
+
+LicensePlate.isValid('W-12345A', { country: 'AT' });  // true
+LicensePlate.format('m ab1234', { country: 'DE' });   // 'M-AB 1234'
+
+const info = LicensePlate.parse('W-12345A', { country: 'AT' })!;
+info.districtCode; // 'W'
+info.region;       // 'Wien'
+info.type;         // 'standard'
+```
+
+Covers **Austria, Germany, Switzerland, Croatia and Turkey**
+(`country: 'AT' | 'DE' | 'CH' | 'HR' | 'TR'`). Plates have no checksum, so
+`validate` checks a per-country grammar plus a curated code → region table;
+`parse`'s `region` is `null` when the code is structurally valid but not in
+the table (AT/DE only — CH/HR/TR require a known code). `type` classifies
+special-purpose plates (diplomatic, authority, military, historic, seasonal,
+electric, …) on a **best-effort** basis and defaults to `'standard'` when a
+country's special forms aren't (yet) identifiable from the plate text alone.
+
 All `format`/`normalize` calls throw `FormatError` on invalid input, with
 one exception: `Email.normalize` doesn't validate at all — it's a pure
 `trim` + lower-case transform, so it never throws. Use `tryFormat` for a
@@ -137,6 +160,7 @@ import { Phone } from '@kreiseck/validator/phone';
 import { Email } from '@kreiseck/validator/email';
 import { Url } from '@kreiseck/validator/url';
 import { CreditCard } from '@kreiseck/validator/credit-card';
+import { LicensePlate } from '@kreiseck/validator/license-plate';
 ```
 
 Each subpath ships its own ESM, CommonJS and `.d.ts` build.

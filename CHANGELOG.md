@@ -1,10 +1,27 @@
 # Changelog
 
-## Unreleased
+## 0.7.0
 
+- New `LicensePlate` module: validation, normalization, formatting and
+  `parse` for vehicle registration plates ("Kennzeichen") across **Austria,
+  Germany, Switzerland, Croatia and Turkey** (`country: 'AT' | 'DE' | 'CH' |
+  'HR' | 'TR'`).
+- `LicensePlate.parse` returns a `PlateInfo` — district/canton/province code,
+  the resolved region name (from a curated code → region table; `null` when
+  the code is unrecognized), the serial part, a `PlateType` classification
+  and the canonical `formatted` display form.
+- Plates have no checksum: `validate` is a per-country grammar plus the
+  region table. AT/DE accept a structurally valid but unlisted code (region
+  `null`, still valid); CH/HR/TR require the code to be one of their known
+  cantons/cities/provinces.
+- `PlateType` classification (diplomatic, authority, military, temporary,
+  seasonal, historic, electric) is rule-based per country and **best-effort**
+  — it never blocks validation and defaults to `standard` when a country's
+  special forms aren't identifiable from the plate text alone.
+- Five new `IssueCode`s: `plateEmpty`, `plateBadChars`, `plateBadFormat`,
+  `plateUnknownCountry`, `plateAmbiguousCountry`.
 - A TypeScript port, `@kreiseck/validator`, now lives under `js/`; parity with
-  this package is enforced by the shared vectors in `test/vectors/` (no Dart
-  behaviour or version change).
+  this package is enforced by the shared vectors in `test/vectors/`.
 
 ## 0.6.0
 

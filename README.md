@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>Validate, normalize and pretty-format the input every app collects —<br>
-  email, phone, URL, IBAN and credit-card — in a few lines of Dart.</b><br>
+  email, phone, URL, IBAN, credit-card and license plate — in a few lines of Dart.</b><br>
   Zero dependencies. Hand-written algorithms. DACH-aware.
 </p>
 
@@ -23,9 +23,9 @@
 
 `kreiseck_validator` is a small, **zero-dependency Dart package** for **validating**,
 **normalizing** and **formatting** the kinds of user input almost every app collects:
-**email addresses, phone numbers, URLs/domains, IBANs and credit-card numbers**. Every
-type follows the same four-operation API — `isValid`, `validate`, `normalize`, `format` —
-so once you learn one, you know them all.
+**email addresses, phone numbers, URLs/domains, IBANs, credit-card numbers and license
+plates**. Every type follows the same four-operation API — `isValid`, `validate`,
+`normalize`, `format` — so once you learn one, you know them all.
 
 It is built and maintained by **[Kreiseck Software Solutions](https://kreiseck.com)**, an
 Austrian software company. Every algorithm (Luhn, IBAN Mod-97, E.164 phone parsing, an
@@ -48,6 +48,10 @@ dependencies, no network calls, no telemetry.**
   IBANs** via `IbanCountry`
 - 💳 **Credit card** — **Luhn** checksum, network detection (Visa / Mastercard / Amex / Discover),
   network-aware grouping (Amex `4-6-5`, else `4-4-4-4`)
+- 🚘 **License plate** — grammar + region-table validation for **Austria, Germany,
+  Switzerland, Croatia and Turkey**, plus **`parse`** into a `PlateInfo` (district/canton/
+  province code, official region name, serial) with best-effort special-plate
+  **classification** (diplomatic, authority, military, historic, electric, …)
 - 🧱 **One consistent API** — `isValid` / `validate` / `normalize` / `format` (+ `tryFormat`) on every type
 - 🪶 **Zero dependencies** · **Apache-2.0** · **null-safe** · works on **all Dart & Flutter platforms**
 
@@ -171,6 +175,27 @@ CreditCard.format('378282246310005');         // '3782 822463 10005'  (Amex 4-6-
 CreditCard.network('4111111111111111');       // CardNetwork.visa
 ```
 
+### 🚘 License plate
+
+```dart
+LicensePlate.isValid('W-12345A', country: 'AT');   // true
+LicensePlate.format('m ab1234', country: 'DE');    // 'M-AB 1234'
+
+final info = LicensePlate.parse('W-12345A', country: 'AT')!;
+info.districtCode; // 'W'
+info.region;       // 'Wien'
+info.type;         // PlateType.standard
+```
+
+Covers **Austria, Germany, Switzerland, Croatia and Turkey** (`country: 'AT' | 'DE' |
+'CH' | 'HR' | 'TR'`). Plates have no checksum, so `validate` checks a per-country grammar
+plus a curated code → region table; `parse`'s `region` is `null` when the code is
+structurally valid but not in the table (AT/DE only — CH/HR/TR require a known code).
+`type` classifies special-purpose plates (diplomatic, authority, military, historic,
+seasonal, electric, …) on a **best-effort** basis and defaults to `PlateType.standard`
+when a country's special forms aren't (yet) identifiable from the plate text alone — see
+[`doc/algorithms.md`](doc/algorithms.md).
+
 All `format`/`normalize` calls throw `FormatException` on invalid input, with one
 exception: `Email.normalize` doesn't validate at all — it's a pure `trim` + lower-case
 transform, so it never throws. Use `tryFormat` for a null-returning variant instead of a
@@ -199,6 +224,7 @@ stable enums you can switch on and translate; the English `message` is only a de
 | `Url`        | ✅ | ✅ | ✅ | ✅ | ✅ | none (scheme/host/TLD check is global) |
 | `Iban`       | ✅ | ✅ | ✅ | ✅ | ✅ | checksum + per-country length for every registry country; `parse` bank/BIC lookup is AT/DE/CH |
 | `CreditCard` | ✅ | ✅ | ✅ | ✅ | ✅ | none (Luhn + network detection is global) |
+| `LicensePlate` | ✅ | ✅ | ✅ | ✅ | ✅ | grammar + region-table validation and `parse` for AT/DE/CH/HR/TR |
 
 ## 🪶 Zero dependencies, Apache-2.0
 
