@@ -70,5 +70,23 @@ void main() {
       expect(Iban.parse('AT61 1904 3002 3457 3200'), isNull); // bad checksum
       expect(Iban.parse('not an iban'), isNull);
     });
+
+    test('country with a branch code splits bank and branch (IT)', () {
+      final info = Iban.parse('IT60X0542811101000000123456')!;
+      expect(info.country.iso2, 'IT');
+      expect(info.bankCode, '05428');
+      expect(info.branchCode, '11101');
+      expect(info.accountNumber, '000000123456');
+      expect(info.bankName, isNull);
+      expect(info.bic, isNull);
+    });
+
+    test('country with a zero-width bank slice yields null bankCode (AO)', () {
+      final info = Iban.parse('AO14006900000000001234567')!;
+      expect(info.country.iso2, 'AO');
+      expect(info.bankCode, isNull);
+      expect(info.branchCode, isNull);
+      expect(info.accountNumber, '006900000000001234567');
+    });
   });
 }
