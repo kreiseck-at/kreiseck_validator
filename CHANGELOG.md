@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0
+
+- `Iban.parse` returns an `IbanInfo` with the country, check digits and
+  bank / branch / account codes for every country whose BBAN layout is known
+  (SWIFT IBAN Registry). Austrian IBANs additionally resolve the bank name and
+  BIC from a bundled snapshot of the OeNB SEPA directory.
+- IBAN length validation now covers all registry countries, not only DE/AT/CH.
+
 ## 0.3.0
 
 - Global phone support: validation, normalization and formatting for every

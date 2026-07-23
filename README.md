@@ -41,7 +41,9 @@ dependencies, no network calls, no telemetry.**
   notation, plus Austrian number-**type** classification (mobile, landline, VoIP, …)
 - 🔗 **URL / Domain** — scheme/host/TLD plausibility check (accepts `:port`, `?query`,
   `#fragment`), canonical normalization, and a compact display form (`https://www.example.com/` → `example.com`)
-- 🏦 **IBAN** — **ISO 13616 Mod-97** checksum, exact DACH length checks, pretty 4-group formatting
+- 🏦 **IBAN** — **ISO 13616 Mod-97** checksum, per-country length checks, pretty
+  4-group formatting, and **`parse`** into an `IbanInfo` (country, bank/branch/
+  account codes; **Austrian bank name + BIC** from a bundled OeNB snapshot)
 - 💳 **Credit card** — **Luhn** checksum, network detection (Visa / Mastercard / Amex / Discover),
   network-aware grouping (Amex `4-6-5`, else `4-4-4-4`)
 - 🧱 **One consistent API** — `isValid` / `validate` / `normalize` / `format` (+ `tryFormat`) on every type
@@ -145,6 +147,11 @@ Url.format('https://www.example.com/');       // 'example.com'
 Iban.isValid('AT61 1904 3002 3457 3201');     // true
 Iban.normalize('at611904300234573201');       // 'AT611904300234573201'
 Iban.format('AT611904300234573201');          // 'AT61 1904 3002 3457 3201'
+
+final info = Iban.parse('AT72 1200 0002 3457 3201')!;
+info.bankCode; // '12000'
+info.bankName; // 'UniCredit Bank Austria AG'
+info.bic;      // 'BKAUATWW'
 ```
 
 ### 💳 Credit card
@@ -182,7 +189,7 @@ stable enums you can switch on and translate; the English `message` is only a de
 | `Email`      | ✅ | ✅ | ✅ | – (display = normalized) | – | none; offline typo suggestions only |
 | `Phone`      | ✅ | ✅ | ✅ | ✅ | ✅ | every country (libphonenumber-derived); AT-only number-type classification |
 | `Url`        | ✅ | ✅ | ✅ | ✅ | ✅ | none (scheme/host/TLD check is global) |
-| `Iban`       | ✅ | ✅ | ✅ | ✅ | ✅ | DACH: checksum + exact length; other countries: checksum only |
+| `Iban`       | ✅ | ✅ | ✅ | ✅ | ✅ | checksum + per-country length for every registry country; `parse` bank/BIC lookup is AT-only |
 | `CreditCard` | ✅ | ✅ | ✅ | ✅ | ✅ | none (Luhn + network detection is global) |
 
 ## 🪶 Zero dependencies, Apache-2.0
