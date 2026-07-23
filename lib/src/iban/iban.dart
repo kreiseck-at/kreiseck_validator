@@ -99,7 +99,7 @@ class Iban {
     final s = r.normalized;
     final code = s.substring(0, 2);
     final country = Country.fromIso2(code);
-    if (country == null) return null; // unreachable for real IBAN countries
+    if (country == null) return null; // TF has an IBAN spec but no Country entry
     final struct = kIbanBban[code];
     String? bankCode;
     String? branchCode;
