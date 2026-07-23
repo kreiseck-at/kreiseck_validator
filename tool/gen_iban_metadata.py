@@ -35,6 +35,40 @@ DE_PAGE = "https://www.bundesbank.de/de/startseite/bankleitzahlendateien-csv--92
 SIX_URL = "https://api.six-group.com/api/epcd/bankmaster/v3/bankmaster_V3.csv"
 
 
+DACH_EXAMPLES = {
+    "AT": "AT611904300234573201",
+    "DE": "DE89370400440532013000",
+    "CH": "CH9300762011623852957",
+}
+
+
+def _iban_check_digits(country: str, bban: str) -> str:
+    """The two ISO 13616 check digits for `country` + `bban` (Mod-97)."""
+    rearranged = bban + country + "00"
+    numeric = "".join(
+        str(ord(ch) - 55) if ch.isalpha() else ch for ch in rearranged)
+    rem = 0
+    for i in range(0, len(numeric), 7):
+        rem = int(f"{rem}{numeric[i:i + 7]}") % 97
+    return f"{98 - rem:02d}"
+
+
+def _synth_bban(bban_spec: str) -> str:
+    """A deterministic BBAN honouring `bban_spec` tokens (`n` digit, `a`
+    letter, `c` alphanumeric), filled with a fixed repeating pattern."""
+    out = []
+    for length, typ in re.findall(r"(\d+)!?([nac])", bban_spec):
+        n = int(length)
+        if typ == "n":
+            fill = "".join("1234567890"[i % 10] for i in range(n))
+        elif typ == "a":
+            fill = "".join("ABCDEFGHIJKLMNOPQRSTUVWXYZ"[i % 26] for i in range(n))
+        else:
+            fill = "".join("ABCDEFGHIJ0123456789"[i % 20] for i in range(n))
+        out.append(fill)
+    return "".join(out)
+
+
 def bban_structures() -> dict:
     """ISO2 -> dict(length, bank_start, bank_end, branch_start, branch_end).
 
@@ -62,6 +96,11 @@ def bban_structures() -> dict:
         if branch.end > branch.start:
             entry["branch_start"] = 4 + branch.start
             entry["branch_end"] = 4 + branch.end
+        if cc in DACH_EXAMPLES:
+            entry["example"] = DACH_EXAMPLES[cc]
+        else:
+            bban = _synth_bban(spec.bban_spec)
+            entry["example"] = f"{cc}{_iban_check_digits(cc, bban)}{bban}"
         out[cc] = entry
     return out
 
@@ -202,7 +241,8 @@ def main() -> None:
         buf.write(
             f"  '{cc}': IbanBban(length: {e['length']}, "
             f"bankStart: {e['bank_start']}, bankEnd: {e['bank_end']}, "
-            f"branchStart: {bs}, branchEnd: {be}),\n"
+            f"branchStart: {bs}, branchEnd: {be}, "
+            f"example: '{e['example']}'),\n"
         )
     buf.write("};\n\n")
 

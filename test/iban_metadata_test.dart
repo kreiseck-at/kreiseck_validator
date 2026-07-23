@@ -25,6 +25,10 @@ void main() {
       expect(kIbanBban['DE']!.length, 22);
       expect(kIbanBban['CH']!.length, 21);
     });
+
+    test('carries a canonical AT example IBAN', () {
+      expect(kIbanBban['AT']!.example, 'AT611904300234573201');
+    });
   });
 
   group('kBanks', () {

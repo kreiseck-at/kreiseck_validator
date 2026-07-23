@@ -10,6 +10,7 @@ class IbanBban {
     required this.bankEnd,
     this.branchStart,
     this.branchEnd,
+    required this.example,
   });
 
   /// Total IBAN length for this country.
@@ -26,6 +27,9 @@ class IbanBban {
 
   /// End of the branch identifier slice, or null when there is none.
   final int? branchEnd;
+
+  /// A valid example IBAN for this country, in compact form.
+  final String example;
 }
 
 /// A bank resolved from its national bank code (BLZ / BC number).
