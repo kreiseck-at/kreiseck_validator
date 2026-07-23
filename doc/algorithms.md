@@ -103,6 +103,18 @@ rows; Swiss lookups use the 5-digit, zero-padded BC number against the SIX
 Bank Master published by SIX Interbank Clearing. Other countries, and
 unrecognized bank codes, leave those two fields `null`.
 
+**Per-country format descriptors** (`IbanCountry`, backed by the same
+`kIbanBban` table) carry, alongside the field lengths, one valid `example`
+IBAN per country. For Austria, Germany and Switzerland this is the
+respective country's canonical, publicly documented example IBAN. For every
+other country there is no well-known example to fall back on, so one is
+built deterministically from the SWIFT registry's `bban_spec`: each `n`
+(digit), `a` (letter) or `c` (alphanumeric) run in the spec is filled with a
+fixed, repeating pattern (`1234567890`, `A`-`Z`, or `ABCDEFGHIJ0123456789`
+respectively), then the two check digits are computed for that BBAN with
+the same Mod-97 procedure used everywhere else in this package, so every
+generated example passes `Iban.validate`.
+
 ## E.164 structure and the national trunk prefix
 
 `Phone.validate`/`normalize` (`lib/src/phone/phone.dart`) accept
