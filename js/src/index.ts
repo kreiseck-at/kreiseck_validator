@@ -2,3 +2,4 @@ export * from './common/types';
 export { FormatError } from './common/errors';
 export { Email } from './email/index';
 export { Url } from './url/index';
+export { CreditCard, type CardNetwork } from './credit-card/index';
