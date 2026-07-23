@@ -55,5 +55,20 @@
   {"input": "", "country": "CH", "isValid": false, "code": "plateEmpty"},
   {"input": "!!!", "country": "CH", "isValid": false, "code": "plateBadChars"},
   {"input": "ZH", "country": "CH", "isValid": false, "code": "plateBadFormat"},
-  {"input": "ZH 1234567", "country": "CH", "isValid": false, "code": "plateBadFormat"}
+  {"input": "ZH 1234567", "country": "CH", "isValid": false, "code": "plateBadFormat"},
+
+  {"input": "ZG 1234-AB", "country": "HR", "isValid": true, "normalized": "ZG1234AB", "format": "ZG 1234-AB",
+   "parse": {"country": "HR", "districtCode": "ZG", "region": "Zagreb", "serial": "1234-AB", "type": "standard"}},
+  {"input": "ST 123-A", "country": "HR", "isValid": true, "normalized": "ST123A", "format": "ST 123-A",
+   "parse": {"country": "HR", "districtCode": "ST", "region": "Split", "serial": "123-A", "type": "standard"}},
+  {"input": "vž 1234-ab", "country": "HR", "isValid": true, "normalized": "VŽ1234AB", "format": "VŽ 1234-AB",
+   "parse": {"country": "HR", "districtCode": "VŽ", "region": "Varaždin", "serial": "1234-AB", "type": "standard"}},
+  {"input": "DU1234AB", "country": "HR", "isValid": true, "normalized": "DU1234AB", "format": "DU 1234-AB",
+   "parse": {"country": "HR", "districtCode": "DU", "region": "Dubrovnik", "serial": "1234-AB", "type": "standard"}},
+  {"input": "QQ 1234-AB", "country": "HR", "isValid": false, "code": "plateBadFormat"},
+  {"input": "ZG 12-A", "country": "HR", "isValid": false, "code": "plateBadFormat"},
+  {"input": "ZG 1234-ABC", "country": "HR", "isValid": false, "code": "plateBadFormat"},
+  {"input": "ZH 123456", "country": "HR", "isValid": false, "code": "plateBadFormat"},
+  {"input": "", "country": "HR", "isValid": false, "code": "plateEmpty"},
+  {"input": "!!!", "country": "HR", "isValid": false, "code": "plateBadChars"}
 ]
