@@ -29,4 +29,10 @@ enum IssueCode {
   cardBadChars,
   cardBadLength,
   cardBadLuhn,
+  // license plate
+  plateEmpty,
+  plateBadChars,
+  plateBadFormat,
+  plateUnknownCountry,
+  plateAmbiguousCountry,
 }

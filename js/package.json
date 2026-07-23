@@ -44,7 +44,8 @@
     "./phone":      { "types": "./dist/phone/index.d.ts", "import": "./dist/phone/index.js", "require": "./dist/phone/index.cjs" },
     "./url":        { "types": "./dist/url/index.d.ts",   "import": "./dist/url/index.js",   "require": "./dist/url/index.cjs" },
     "./iban":       { "types": "./dist/iban/index.d.ts",  "import": "./dist/iban/index.js",  "require": "./dist/iban/index.cjs" },
-    "./credit-card":{ "types": "./dist/credit-card/index.d.ts", "import": "./dist/credit-card/index.js", "require": "./dist/credit-card/index.cjs" }
+    "./credit-card":{ "types": "./dist/credit-card/index.d.ts", "import": "./dist/credit-card/index.js", "require": "./dist/credit-card/index.cjs" },
+    "./license-plate":{ "types": "./dist/license-plate/index.d.ts", "import": "./dist/license-plate/index.js", "require": "./dist/license-plate/index.cjs" }
   },
   "scripts": {
     "build": "tsup",

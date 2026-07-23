@@ -4,7 +4,8 @@ export type IssueCode =
   | 'phoneAmbiguousCountry' | 'phoneUnknownCountry' | 'phoneInvalid'
   | 'urlEmpty' | 'urlBadScheme' | 'urlBadHost' | 'urlBadTld'
   | 'ibanEmpty' | 'ibanBadChars' | 'ibanBadChecksum' | 'ibanBadLength'
-  | 'cardEmpty' | 'cardBadChars' | 'cardBadLength' | 'cardBadLuhn';
+  | 'cardEmpty' | 'cardBadChars' | 'cardBadLength' | 'cardBadLuhn'
+  | 'plateEmpty' | 'plateBadChars' | 'plateBadFormat' | 'plateUnknownCountry' | 'plateAmbiguousCountry';
 
 export interface ValidationIssue { readonly code: IssueCode; readonly message: string }
 export interface Suggestion { readonly value: string; readonly reason: string }

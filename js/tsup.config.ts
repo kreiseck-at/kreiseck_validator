@@ -8,6 +8,7 @@ export default defineConfig({
     'src/url/index.ts',
     'src/iban/index.ts',
     'src/credit-card/index.ts',
+    'src/license-plate/index.ts',
   ],
   format: ['esm', 'cjs'],
   dts: true,
