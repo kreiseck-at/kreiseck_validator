@@ -26,4 +26,19 @@ void main() {
     expect(
         Iban.format('DE89370400440532013000'), 'DE89 3704 0044 0532 0130 00');
   });
+
+  test('length is enforced for non-DACH registry countries', () {
+    // FR IBANs are 27 chars; a 26-char FR string must be rejected on length.
+    final r = Iban.validate('FR761234567890123456789012');
+    expect(r, isA<Invalid>());
+    expect((r as Invalid).issues.first.code, IssueCode.ibanBadLength);
+  });
+
+  test('DACH length behaviour is unchanged', () {
+    expect(Iban.isValid('AT72 1200 0002 3457 3201'), isTrue);
+    expect(
+      (Iban.validate('DE8937040044053201') as Invalid).issues.first.code,
+      IssueCode.ibanBadLength,
+    );
+  });
 }

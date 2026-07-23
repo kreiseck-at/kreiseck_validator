@@ -7,13 +7,10 @@ import 'iban_metadata.dart';
 /// Validation, normalization and formatting of IBANs.
 ///
 /// The ISO 13616 check digits are verified with the Mod-97 algorithm
-/// (see `doc/algorithms.md`). Length is enforced for DACH countries; other
-/// countries are accepted on checksum alone.
+/// (see `doc/algorithms.md`). Length is enforced for every country with a
+/// known BBAN layout; other countries are accepted on checksum alone.
 class Iban {
   Iban._();
-
-  /// Known IBAN lengths for the DACH scope.
-  static const Map<String, int> _dachLengths = {'DE': 22, 'AT': 20, 'CH': 21};
 
   static final RegExp _structure = RegExp(r'^[A-Z]{2}[0-9]{2}[0-9A-Z]+$');
 
@@ -56,7 +53,7 @@ class Iban {
       ]);
     }
     final country = s.substring(0, 2);
-    final expected = _dachLengths[country];
+    final expected = kIbanBban[country]?.length;
     if (expected != null && s.length != expected) {
       return const Invalid(
           [ValidationIssue(IssueCode.ibanBadLength, 'Wrong length.')]);
