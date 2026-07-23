@@ -1,8 +1,40 @@
 {
   "name": "@kreiseck/validator",
   "version": "0.6.0",
-  "description": "Validate, normalize and format email, phone, URL, IBAN and credit-card input. Zero dependencies, DACH-aware.",
+  "description": "Validate, normalize and format email, phone, URL, IBAN and credit-card input. Zero dependencies, DACH-aware. By Kreiseck.",
+  "keywords": [
+    "kreiseck",
+    "validator",
+    "validation",
+    "iban",
+    "bic",
+    "email",
+    "phone",
+    "url",
+    "credit-card",
+    "luhn",
+    "mod-97",
+    "e164",
+    "dach",
+    "austria",
+    "germany",
+    "switzerland",
+    "typescript",
+    "zero-dependency",
+    "normalize",
+    "format"
+  ],
   "license": "Apache-2.0",
+  "author": "Kreiseck Software Solutions (https://kreiseck.com)",
+  "homepage": "https://kreiseck.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kreiseck-at/kreiseck_validator.git",
+    "directory": "js"
+  },
+  "bugs": {
+    "url": "https://github.com/kreiseck-at/kreiseck_validator/issues"
+  },
   "type": "module",
   "sideEffects": false,
   "files": ["dist"],
