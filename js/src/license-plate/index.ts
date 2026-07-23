@@ -28,25 +28,90 @@ const AT_DIPLOMATIC_RE = /^[A-Z]D$/;
 // DE: district code (1-3 letters) + serial letters (1-2) + serial digits
 // (1-4) + optional historic/electric suffix. Unlike AT, the code and
 // serial-letters groups are NOT disjoint character classes (both are pure
-// letter runs sitting back-to-back once separators are stripped), so a
-// greedy first group would over-consume (e.g. `MAB1234` could split as
-// `MA`+`B`+`1234` just as validly as `M`+`AB`+`1234`). The district-code
-// group is therefore made *lazy* (`{1,3}?`) so it claims as few letters as
-// possible, leaving the greedy serial-letters group to claim up to 2 --
-// matching the overwhelmingly common real-world shape (short code, 1-2
-// letter serial prefix). A three-letter code followed by a single-letter
-// serial is the one shape this cannot disambiguate without a table lookup;
-// accepted as a known limitation (out of scope per the design doc).
-const DE_STRUCTURE_RE = /^([A-ZÄÖÜ]{1,3}?)([A-Z]{1,2})(\d{1,4})([HE]?)$/;
+// letter runs sitting back-to-back once separators are stripped), so which
+// substring is the code vs. the serial prefix is ambiguous from the compact
+// form alone (e.g. `MAB1234` could split as `MA`+`B`+`1234` just as validly
+// as `M`+`AB`+`1234`). This pattern is used only to decide overall
+// well-formedness (accept/reject); the actual code/serial boundary is
+// resolved separately by splitDe, which is separator- and table-aware.
+const DE_STRUCTURE_RE = /^([A-ZÄÖÜ]{1,3})([A-Z]{1,2})(\d{1,4})([HE]?)$/;
 
 // DE: nationwide authority codes that are not Stadt/Kreis codes (see
 // tool/data/de-kennzeichen.csv, which deliberately omits them).
 const DE_AUTHORITY_CODES = new Set(['BW', 'BP', 'BD', 'THW']);
 
+// DE: leading letter run followed by an explicit separator, used to resolve
+// the code/serial boundary unambiguously when the caller wrote one in (e.g.
+// `GG-A 1234`, `BOR-X 1234`). Because the letter class and the separator
+// class are disjoint, the greedy `{1,3}` here is deterministic: it can only
+// ever match as many letters as actually precede the separator (up to 3),
+// unlike the compact-form ambiguity above.
+const DE_SEPARATOR_SPLIT_RE = /^([A-ZÄÖÜ]{1,3})[-. ]+(.+)$/;
+
+// DE: a bare serial (letters + digits + optional suffix), used both to
+// validate the tail of a separator-aware split and to validate candidate
+// remainders in the table-aware fallback.
+const DE_SERIAL_RE = /^([A-Z]{1,2})(\d{1,4})([HE]?)$/;
+
+const DE_LETTERS_ONLY_RE = /^[A-ZÄÖÜ]+$/;
+
 const SEPARATOR_RE = /[\s\-.]/g;
 
 function compact(upperTrimmed: string): string {
   return upperTrimmed.replace(SEPARATOR_RE, '');
+}
+
+interface DeSplit {
+  code: string;
+  serialLetters: string;
+  digits: string;
+  suffix: string;
+}
+
+// Resolves the DE code/serial split when trimmedUpper (the original,
+// pre-compaction input) has an explicit separator right after the leading
+// letter run, e.g. `GG-A 1234` or `BOR-X 1234`. Returns null when there is
+// no such separator, or the remainder is not a valid serial -- callers then
+// fall back to deSplitTableAware.
+function deSplitSeparatorAware(trimmedUpper: string): DeSplit | null {
+  const m = DE_SEPARATOR_SPLIT_RE.exec(trimmedUpper);
+  if (m === null) return null;
+  const rest = compact(m[2]);
+  const sm = DE_SERIAL_RE.exec(rest);
+  if (sm === null) return null;
+  return { code: m[1], serialLetters: sm[1], digits: sm[2], suffix: sm[3] ?? '' };
+}
+
+// Resolves the DE code/serial split from the compact form alone (no
+// separator to go by, e.g. `MAB1234`). Tries code lengths 3, 2, 1 -- longest
+// first -- among splits whose remainder is a valid serial, and prefers the
+// longest one whose code is a known DE district (in kPlateRegions); falls
+// back to the longest merely-valid split if none of them is known.
+function deSplitTableAware(compacted: string): DeSplit | null {
+  let firstValid: DeSplit | null = null;
+  for (const len of [3, 2, 1]) {
+    if (len >= compacted.length) continue;
+    const codeCandidate = compacted.slice(0, len);
+    if (!DE_LETTERS_ONLY_RE.test(codeCandidate)) continue;
+    const sm = DE_SERIAL_RE.exec(compacted.slice(len));
+    if (sm === null) continue;
+    const candidate: DeSplit = {
+      code: codeCandidate,
+      serialLetters: sm[1],
+      digits: sm[2],
+      suffix: sm[3] ?? '',
+    };
+    if (kPlateRegions['DE']?.[codeCandidate] !== undefined) return candidate;
+    if (firstValid === null) firstValid = candidate;
+  }
+  return firstValid;
+}
+
+// Resolves the DE code/serial split for an already-validated plate.
+// Separator-aware splitting takes priority; the table-aware fallback is
+// only consulted when no explicit separator disambiguates the code.
+function splitDe(trimmedUpper: string, compacted: string): DeSplit {
+  return deSplitSeparatorAware(trimmedUpper) ?? deSplitTableAware(compacted)!;
 }
 
 // Resolves the country to validate against. An omitted country infers AT;
@@ -105,9 +170,9 @@ function formatAt(compacted: string): string {
   return `${m[1]}-${m[2]}`;
 }
 
-function formatDe(compacted: string): string {
-  const m = DE_STRUCTURE_RE.exec(compacted)!;
-  return `${m[1]}-${m[2]} ${m[3]}${m[4]}`;
+function formatDe(trimmedUpper: string, compacted: string): string {
+  const s = splitDe(trimmedUpper, compacted);
+  return `${s.code}-${s.serialLetters} ${s.digits}${s.suffix}`;
 }
 
 // Returns the canonical display form. Throws FormatError.
@@ -118,7 +183,7 @@ function format(input: string, options: PlateOptions = {}): string {
     case 'AT':
       return formatAt(compacted);
     case 'DE':
-      return formatDe(compacted);
+      return formatDe(input.trim().toUpperCase(), compacted);
     default:
       throw new Error(`unreachable: ${resolved}`);
   }
@@ -177,19 +242,16 @@ function parse(input: string, options: PlateOptions = {}): PlateInfo | null {
       };
     }
     case 'DE': {
-      const m = DE_STRUCTURE_RE.exec(compacted)!;
-      const code = m[1];
-      const serialLetters = m[2];
-      const digits = m[3];
-      const suffix = m[4] ?? '';
-      const region = kPlateRegions['DE']?.[code] ?? null;
+      const trimmedUpper = input.trim().toUpperCase();
+      const s = splitDe(trimmedUpper, compacted);
+      const region = kPlateRegions['DE']?.[s.code] ?? null;
       return {
         country: 'DE',
-        districtCode: code,
+        districtCode: s.code,
         region,
-        serial: `${serialLetters} ${digits}`,
-        type: classifyDe(code, suffix),
-        formatted: formatDe(compacted),
+        serial: `${s.serialLetters} ${s.digits}`,
+        type: classifyDe(s.code, s.suffix),
+        formatted: formatDe(trimmedUpper, compacted),
       };
     }
     default:
