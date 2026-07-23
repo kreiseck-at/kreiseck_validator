@@ -1,6 +1,8 @@
 export * from './common/types';
 export { FormatError } from './common/errors';
 export { Email } from './email/index';
+export { Phone } from './phone/index';
+export type { Country, PhoneInfo, PhoneNumberType } from './phone/types';
 export { Url } from './url/index';
 export { CreditCard, type CardNetwork } from './credit-card/index';
 export { Iban, type IbanInfo } from './iban/index';
