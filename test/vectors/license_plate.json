@@ -15,5 +15,25 @@
   {"input": "!!!", "country": "AT", "isValid": false, "code": "plateBadChars"},
   {"input": "W-", "country": "AT", "isValid": false, "code": "plateBadFormat"},
   {"input": "12345", "country": "AT", "isValid": false, "code": "plateBadFormat"},
-  {"input": "W-12345A", "country": "DE", "isValid": false, "code": "plateUnknownCountry"}
+  {"input": "W-12345A", "country": "CH", "isValid": false, "code": "plateUnknownCountry"},
+
+  {"input": "M-AB 1234", "country": "DE", "isValid": true, "normalized": "MAB1234", "format": "M-AB 1234",
+   "parse": {"country": "DE", "districtCode": "M", "region": "München", "serial": "AB 1234", "type": "standard"}},
+  {"input": "b-xy 12h", "country": "DE", "isValid": true, "normalized": "BXY12H", "format": "B-XY 12H",
+   "parse": {"country": "DE", "districtCode": "B", "region": "Berlin", "serial": "XY 12", "type": "historic"}},
+  {"input": "K-CV 40E", "country": "DE", "isValid": true, "normalized": "KCV40E", "format": "K-CV 40E",
+   "parse": {"country": "DE", "districtCode": "K", "region": "Köln", "serial": "CV 40", "type": "electric"}},
+  {"input": "GG-AA 1", "country": "DE", "isValid": true, "normalized": "GGAA1", "format": "GG-AA 1",
+   "parse": {"country": "DE", "districtCode": "GG", "region": "Groß-Gerau", "serial": "AA 1", "type": "standard"}},
+  {"input": "QX-AB 1234", "country": "DE", "isValid": true, "normalized": "QXAB1234", "format": "QX-AB 1234",
+   "parse": {"country": "DE", "districtCode": "QX", "region": null, "serial": "AB 1234", "type": "standard"}},
+  {"input": "Y-AB 1234", "country": "DE", "isValid": true, "normalized": "YAB1234", "format": "Y-AB 1234",
+   "parse": {"country": "DE", "districtCode": "Y", "region": null, "serial": "AB 1234", "type": "military"}},
+  {"input": "BW-AB 1234", "country": "DE", "isValid": true, "normalized": "BWAB1234", "format": "BW-AB 1234",
+   "parse": {"country": "DE", "districtCode": "BW", "region": null, "serial": "AB 1234", "type": "authority"}},
+  {"input": "THW-AB 1234", "country": "DE", "isValid": true, "normalized": "THWAB1234", "format": "THW-AB 1234",
+   "parse": {"country": "DE", "districtCode": "THW", "region": null, "serial": "AB 1234", "type": "authority"}},
+  {"input": "", "country": "DE", "isValid": false, "code": "plateEmpty"},
+  {"input": "M-1234", "country": "DE", "isValid": false, "code": "plateBadFormat"},
+  {"input": "M1-AB 1234", "country": "DE", "isValid": false, "code": "plateBadFormat"}
 ]
