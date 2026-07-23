@@ -53,8 +53,8 @@ function validate(input: string, options: Options = {}): ValidationResult {
 }
 
 // True when validate returns a valid result.
-function isValid(input: string, options: Options = {}): boolean {
-  return validate(input, options).ok;
+function isValid(input: string): boolean {
+  return validate(input).ok;
 }
 
 // Returns the canonical URL: explicit scheme (default defaultScheme),
