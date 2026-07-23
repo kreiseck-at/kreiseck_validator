@@ -1,5 +1,8 @@
+import '../common/country.dart';
 import '../common/issue_code.dart';
 import '../common/validation_result.dart';
+import 'iban_info.dart';
+import 'iban_metadata.dart';
 
 /// Validation, normalization and formatting of IBANs.
 ///
@@ -87,5 +90,51 @@ class Iban {
     } on FormatException {
       return null;
     }
+  }
+
+  /// Parses [input] into an [IbanInfo], or null when it is not a valid IBAN.
+  ///
+  /// Structural fields are filled for any country with a known BBAN layout;
+  /// `bankName` / `bic` are filled only for Austrian IBANs with a known BLZ.
+  static IbanInfo? parse(String input) {
+    final r = validate(input);
+    if (r is! Valid) return null;
+    final s = r.normalized;
+    final code = s.substring(0, 2);
+    final country = Country.fromIso2(code);
+    if (country == null) return null; // unreachable for real IBAN countries
+    final struct = kIbanBban[code];
+    String? bankCode;
+    String? branchCode;
+    String? accountNumber;
+    if (struct != null && s.length == struct.length) {
+      final rawBank = s.substring(struct.bankStart, struct.bankEnd);
+      bankCode = rawBank.isEmpty ? null : rawBank;
+      final bStart = struct.branchStart;
+      final bEnd = struct.branchEnd;
+      if (bStart != null && bEnd != null) {
+        branchCode = s.substring(bStart, bEnd);
+      }
+      accountNumber = s.substring(bEnd ?? struct.bankEnd);
+    }
+    String? bankName;
+    String? bic;
+    if (code == 'AT' && bankCode != null) {
+      final bank = kAtBanks[bankCode];
+      if (bank != null) {
+        bankName = bank.name;
+        bic = bank.bic;
+      }
+    }
+    return IbanInfo(
+      country: country,
+      checkDigits: s.substring(2, 4),
+      bankCode: bankCode,
+      branchCode: branchCode,
+      accountNumber: accountNumber,
+      bankName: bankName,
+      bic: bic,
+      formatted: format(input),
+    );
   }
 }
