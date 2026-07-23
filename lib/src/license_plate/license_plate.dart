@@ -8,15 +8,15 @@ part 'plate_metadata.g.dart';
 /// Validation, normalization, formatting and parsing of vehicle license
 /// plates ("Kennzeichen"). See `doc/algorithms.md`.
 ///
-/// Currently `AT`, `DE`, `CH` and `HR` are modelled; other countries resolve
-/// to [IssueCode.plateUnknownCountry].
+/// Currently `AT`, `DE`, `CH`, `HR` and `TR` are modelled; other countries
+/// resolve to [IssueCode.plateUnknownCountry].
 class LicensePlate {
   LicensePlate._();
 
   static final RegExp _allowedChars =
       RegExp(r'^[A-ZÄÖÜČŠŽ0-9 \-.]+$');
 
-  static const Set<String> _knownCountries = {'AT', 'DE', 'CH', 'HR'};
+  static const Set<String> _knownCountries = {'AT', 'DE', 'CH', 'HR', 'TR'};
 
   // AT: code (1-2 letters, greedily matched) + serial (letters/digits).
   // Because the code and serial character classes are disjoint (letters vs.
@@ -77,6 +77,15 @@ class LicensePlate {
   // unambiguous.
   static final RegExp _hrStructure =
       RegExp(r'^([A-ZČŠŽ]{2})(\d{3,4})([A-Z]{1,2})$');
+
+  // TR: province code (2 digits) + serial letters (1-3) + serial digits
+  // (2-4), e.g. `34ABC123`. Like CH/HR, the province set is closed and
+  // small (81 entries, 01-81): a 2-digit prefix that structurally matches
+  // but is not a known province is rejected as `plateBadFormat` -- see
+  // [_matchesTrStructure]. The digit and letter groups are disjoint
+  // character classes, so the split is always unambiguous.
+  static final RegExp _trStructure =
+      RegExp(r'^(\d{2})([A-Z]{1,3})(\d{2,4})$');
 
   /// Resolves the DE code/serial split when [trimmedUpper] (the original,
   /// pre-compaction input) has an explicit separator right after the
@@ -161,12 +170,23 @@ class LicensePlate {
     return kPlateRegions['HR']!.containsKey(m.group(1)!);
   }
 
+  /// TR's province set is closed and small, same as CH/HR: a TR plate whose
+  /// 2-digit prefix is not one of the 81 provinces in [kPlateRegions] is
+  /// `plateBadFormat`, not merely unresolved (e.g. `82`, which does not
+  /// exist).
+  static bool _matchesTrStructure(String compact) {
+    final m = _trStructure.firstMatch(compact);
+    if (m == null) return false;
+    return kPlateRegions['TR']!.containsKey(m.group(1)!);
+  }
+
   static bool _matchesStructure(String country, String compact) =>
       switch (country) {
         'AT' => _atStructure.hasMatch(compact),
         'DE' => _deStructure.hasMatch(compact),
         'CH' => _matchesChStructure(compact),
         'HR' => _matchesHrStructure(compact),
+        'TR' => _matchesTrStructure(compact),
         _ => false,
       };
 
@@ -228,6 +248,11 @@ class LicensePlate {
     return '${m.group(1)} ${m.group(2)}-${m.group(3)}';
   }
 
+  static String _formatTr(String compact) {
+    final m = _trStructure.firstMatch(compact)!;
+    return '${m.group(1)} ${m.group(2)} ${m.group(3)}';
+  }
+
   /// Returns the canonical display form. Throws [FormatException].
   static String format(String input, {String? country}) {
     final compact = normalize(input, country: country);
@@ -237,6 +262,7 @@ class LicensePlate {
       'DE' => _formatDe(input.trim().toUpperCase(), compact),
       'CH' => _formatCh(compact),
       'HR' => _formatHr(compact),
+      'TR' => _formatTr(compact),
       _ => throw StateError('unreachable: $resolved'),
     };
   }
@@ -283,6 +309,12 @@ class LicensePlate {
   /// from civilian ones, so every (structurally valid, known-code) HR plate
   /// classifies as `standard`.
   static PlateType _classifyHr(String districtCode) => PlateType.standard;
+
+  /// Classifies a TR plate. As with CH/HR, there is no reliable text-only
+  /// signal to distinguish special (diplomatic, military, ...) TR plates
+  /// from civilian ones, so every (structurally valid, known-province) TR
+  /// plate classifies as `standard`.
+  static PlateType _classifyTr(String districtCode) => PlateType.standard;
 
   /// Parses [input] into a [PlateInfo], or null when it is not a valid plate.
   static PlateInfo? parse(String input, {String? country}) {
@@ -340,6 +372,19 @@ class LicensePlate {
           serial: '$digits-$letters',
           type: _classifyHr(code),
           formatted: _formatHr(compact),
+        );
+      case 'TR':
+        final m = _trStructure.firstMatch(compact)!;
+        final code = m.group(1)!;
+        final letters = m.group(2)!;
+        final digits = m.group(3)!;
+        return PlateInfo(
+          country: 'TR',
+          districtCode: code,
+          region: kPlateRegions['TR']?[code],
+          serial: '$letters $digits',
+          type: _classifyTr(code),
+          formatted: _formatTr(compact),
         );
       default:
         return null;

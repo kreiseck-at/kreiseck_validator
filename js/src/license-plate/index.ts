@@ -7,12 +7,12 @@ import type { PlateInfo, PlateOptions, PlateType } from './types';
 // Validation, normalization, formatting and parsing of vehicle license
 // plates ("Kennzeichen").
 //
-// Currently AT, DE, CH and HR are modelled; other countries resolve to
+// Currently AT, DE, CH, HR and TR are modelled; other countries resolve to
 // 'plateUnknownCountry'.
 
 const ALLOWED_CHARS_RE = /^[A-ZÄÖÜČŠŽ0-9 \-.]+$/;
 
-const KNOWN_COUNTRIES = new Set(['AT', 'DE', 'CH', 'HR']);
+const KNOWN_COUNTRIES = new Set(['AT', 'DE', 'CH', 'HR', 'TR']);
 
 // AT: code (1-2 letters, greedily matched) + serial (letters/digits).
 // Because the code and serial character classes are disjoint (letters vs.
@@ -70,6 +70,14 @@ const CH_STRUCTURE_RE = /^([A-Z]{2})(\d{1,6})$/;
 // groups are disjoint character classes, so the split is always
 // unambiguous.
 const HR_STRUCTURE_RE = /^([A-ZČŠŽ]{2})(\d{3,4})([A-Z]{1,2})$/;
+
+// TR: province code (2 digits) + serial letters (1-3) + serial digits
+// (2-4), e.g. `34ABC123`. Like CH/HR, the province set is closed and small
+// (81 entries, 01-81): a 2-digit prefix that structurally matches but is
+// not a known province is rejected as plateBadFormat -- see
+// matchesTrStructure. The digit and letter groups are disjoint character
+// classes, so the split is always unambiguous.
+const TR_STRUCTURE_RE = /^(\d{2})([A-Z]{1,3})(\d{2,4})$/;
 
 const SEPARATOR_RE = /[\s\-.]/g;
 
@@ -155,6 +163,15 @@ function matchesHrStructure(compacted: string): boolean {
   return kPlateRegions['HR']?.[m[1]] !== undefined;
 }
 
+// TR's province set is closed and small, same as CH/HR: a TR plate whose
+// 2-digit prefix is not one of the 81 provinces in kPlateRegions is
+// plateBadFormat, not merely unresolved (e.g. `82`, which does not exist).
+function matchesTrStructure(compacted: string): boolean {
+  const m = TR_STRUCTURE_RE.exec(compacted);
+  if (m === null) return false;
+  return kPlateRegions['TR']?.[m[1]] !== undefined;
+}
+
 function matchesStructure(country: string, compacted: string): boolean {
   switch (country) {
     case 'AT':
@@ -165,6 +182,8 @@ function matchesStructure(country: string, compacted: string): boolean {
       return matchesChStructure(compacted);
     case 'HR':
       return matchesHrStructure(compacted);
+    case 'TR':
+      return matchesTrStructure(compacted);
     default:
       return false;
   }
@@ -224,6 +243,11 @@ function formatHr(compacted: string): string {
   return `${m[1]} ${m[2]}-${m[3]}`;
 }
 
+function formatTr(compacted: string): string {
+  const m = TR_STRUCTURE_RE.exec(compacted)!;
+  return `${m[1]} ${m[2]} ${m[3]}`;
+}
+
 // Returns the canonical display form. Throws FormatError.
 function format(input: string, options: PlateOptions = {}): string {
   const compacted = normalize(input, options);
@@ -237,6 +261,8 @@ function format(input: string, options: PlateOptions = {}): string {
       return formatCh(compacted);
     case 'HR':
       return formatHr(compacted);
+    case 'TR':
+      return formatTr(compacted);
     default:
       throw new Error(`unreachable: ${resolved}`);
   }
@@ -285,6 +311,14 @@ function classifyCh(_districtCode: string): PlateType {
 // civilian ones, so every (structurally valid, known-code) HR plate
 // classifies as standard.
 function classifyHr(_districtCode: string): PlateType {
+  return 'standard';
+}
+
+// Classifies a TR plate. As with CH/HR, there is no reliable text-only
+// signal to distinguish special (diplomatic, military, ...) TR plates from
+// civilian ones, so every (structurally valid, known-province) TR plate
+// classifies as standard.
+function classifyTr(_districtCode: string): PlateType {
   return 'standard';
 }
 
@@ -348,6 +382,20 @@ function parse(input: string, options: PlateOptions = {}): PlateInfo | null {
         serial: `${digits}-${letters}`,
         type: classifyHr(code),
         formatted: formatHr(compacted),
+      };
+    }
+    case 'TR': {
+      const m = TR_STRUCTURE_RE.exec(compacted)!;
+      const code = m[1];
+      const letters = m[2];
+      const digits = m[3];
+      return {
+        country: 'TR',
+        districtCode: code,
+        region: kPlateRegions['TR']?.[code] ?? null,
+        serial: `${letters} ${digits}`,
+        type: classifyTr(code),
+        formatted: formatTr(compacted),
       };
     }
     default:

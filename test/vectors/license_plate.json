@@ -70,5 +70,21 @@
   {"input": "ZG 1234-ABC", "country": "HR", "isValid": false, "code": "plateBadFormat"},
   {"input": "ZH 123456", "country": "HR", "isValid": false, "code": "plateBadFormat"},
   {"input": "", "country": "HR", "isValid": false, "code": "plateEmpty"},
-  {"input": "!!!", "country": "HR", "isValid": false, "code": "plateBadChars"}
+  {"input": "!!!", "country": "HR", "isValid": false, "code": "plateBadChars"},
+
+  {"input": "34 ABC 123", "country": "TR", "isValid": true, "normalized": "34ABC123", "format": "34 ABC 123",
+   "parse": {"country": "TR", "districtCode": "34", "region": "İstanbul", "serial": "ABC 123", "type": "standard"}},
+  {"input": "06 A 1234", "country": "TR", "isValid": true, "normalized": "06A1234", "format": "06 A 1234",
+   "parse": {"country": "TR", "districtCode": "06", "region": "Ankara", "serial": "A 1234", "type": "standard"}},
+  {"input": "81 abc 12", "country": "TR", "isValid": true, "normalized": "81ABC12", "format": "81 ABC 12",
+   "parse": {"country": "TR", "districtCode": "81", "region": "Düzce", "serial": "ABC 12", "type": "standard"}},
+  {"input": "01A99", "country": "TR", "isValid": true, "normalized": "01A99", "format": "01 A 99",
+   "parse": {"country": "TR", "districtCode": "01", "region": "Adana", "serial": "A 99", "type": "standard"}},
+  {"input": "82 A 1", "country": "TR", "isValid": false, "code": "plateBadFormat"},
+  {"input": "82 A 12", "country": "TR", "isValid": false, "code": "plateBadFormat"},
+  {"input": "00 A 12", "country": "TR", "isValid": false, "code": "plateBadFormat"},
+  {"input": "34 ABCD 123", "country": "TR", "isValid": false, "code": "plateBadFormat"},
+  {"input": "34 A 1", "country": "TR", "isValid": false, "code": "plateBadFormat"},
+  {"input": "", "country": "TR", "isValid": false, "code": "plateEmpty"},
+  {"input": "!!!", "country": "TR", "isValid": false, "code": "plateBadChars"}
 ]
