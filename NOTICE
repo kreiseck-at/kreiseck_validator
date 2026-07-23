@@ -12,3 +12,8 @@ Austrian bank reference data (bank sort codes, names and BICs) is derived from
 the SEPA payment directory published by the Oesterreichische Nationalbank
 (OeNB), used under its terms. IBAN structure data is derived from the SWIFT IBAN
 Registry as bundled by the schwifty project.
+
+German bank reference data (bank sort codes, names and BICs) is derived from the
+Bankleitzahlen directory published by the Deutsche Bundesbank. Swiss bank
+reference data is derived from the SIX Bank Master published by SIX Interbank
+Clearing. Both are used under their respective terms.

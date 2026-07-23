@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0
+
+- `Iban.parse` now resolves `bankName` and `bic` for German and Swiss IBANs, in
+  addition to Austrian ones, from bundled snapshots of the Deutsche Bundesbank
+  Bankleitzahlen directory and the SIX Bank Master.
+- The internal bank-enrichment table is now country-keyed (`AT` / `DE` / `CH`).
+
 ## 0.4.0
 
 - `Iban.parse` returns an `IbanInfo` with the country, check digits and
