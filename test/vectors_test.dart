@@ -50,6 +50,19 @@ void main() {
     for (final c in _load('iban.json')) {
       final input = c['input']! as String;
       _check('iban', c, () => Iban.validate(input), () => Iban.format(input));
+      if (c.containsKey('parse')) {
+        test('iban parse: $input', () {
+          final info = Iban.parse(input)!;
+          final p = c['parse']! as Map<String, Object?>;
+          expect(info.country.iso2, p['country']);
+          expect(info.checkDigits, p['checkDigits']);
+          expect(info.bankCode, p['bankCode']);
+          expect(info.branchCode, p['branchCode']);
+          expect(info.accountNumber, p['accountNumber']);
+          expect(info.bankName, p['bankName']);
+          expect(info.bic, p['bic']);
+        });
+      }
     }
   });
 
