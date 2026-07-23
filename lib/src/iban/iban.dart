@@ -92,7 +92,8 @@ class Iban {
   /// Parses [input] into an [IbanInfo], or null when it is not a valid IBAN.
   ///
   /// Structural fields are filled for any country with a known BBAN layout;
-  /// `bankName` / `bic` are filled only for Austrian IBANs with a known BLZ.
+  /// `bankName` / `bic` are filled for Austrian, German and Swiss IBANs with
+  /// a known bank code.
   static IbanInfo? parse(String input) {
     final r = validate(input);
     if (r is! Valid) return null;

@@ -45,14 +45,23 @@ void main() {
       expect(info.bic, isNull);
     });
 
-    test('DE IBAN splits bank code, no branch, no enrichment', () {
+    test('DE IBAN splits bank code and enriches from the Bundesbank table', () {
       final info = Iban.parse('DE89 3704 0044 0532 0130 00')!;
       expect(info.country.iso2, 'DE');
       expect(info.bankCode, '37040044');
       expect(info.branchCode, isNull);
       expect(info.accountNumber, '0532013000');
-      expect(info.bankName, isNull);
-      expect(info.bic, isNull);
+      expect(info.bankName, 'Commerzbank');
+      expect(info.bic, 'COBADEFF');
+    });
+
+    test('CH IBAN splits BC number and enriches from the SIX table', () {
+      final info = Iban.parse('CH25 0010 0000 0012 3456 7')!;
+      expect(info.country.iso2, 'CH');
+      expect(info.bankCode, '00100');
+      expect(info.accountNumber, '000001234567');
+      expect(info.bankName, 'Schweizerische Nationalbank');
+      expect(info.bic, 'SNBZCHZZ');
     });
 
     test('valid IBAN for a country without a structure entry', () {
