@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- A TypeScript port, `@kreiseck/validator`, now lives under `js/`; parity with
+  this package is enforced by the shared vectors in `test/vectors/` (no Dart
+  behaviour or version change).
+
 ## 0.6.0
 
 - `IbanCountry.of(code)` / `IbanCountry.values` expose each country's IBAN
