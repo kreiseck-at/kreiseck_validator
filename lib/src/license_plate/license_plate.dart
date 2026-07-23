@@ -88,11 +88,17 @@ class LicensePlate {
     }
   }
 
-  /// Classifies a valid [districtCode] into a [PlateType]. AT: a state
-  /// letter followed by `D` is the diplomatic-corps convention; everything
-  /// else is a standard civilian plate.
-  static PlateType _classify(String districtCode) =>
-      _diplomatic.hasMatch(districtCode) ? PlateType.diplomatic : PlateType.standard;
+  /// Classifies a [districtCode] into a [PlateType]. AT: known district codes
+  /// (present in [kPlateRegions]) are always `standard`, even when they
+  /// happen to match the diplomatic pattern (e.g. `MD` is Mödling, not a
+  /// diplomatic code); only when the code is unknown does a state letter
+  /// followed by `D` fall back to the diplomatic-corps convention.
+  static PlateType _classify(String districtCode, String? region) {
+    if (region != null) return PlateType.standard;
+    return _diplomatic.hasMatch(districtCode)
+        ? PlateType.diplomatic
+        : PlateType.standard;
+  }
 
   /// Parses [input] into a [PlateInfo], or null when it is not a valid plate.
   static PlateInfo? parse(String input, {String? country}) {
@@ -103,12 +109,13 @@ class LicensePlate {
     final code = m.group(1)!;
     final serial = m.group(2)!;
     final resolved = _resolveCountry(country)!;
+    final region = kPlateRegions[resolved]?[code];
     return PlateInfo(
       country: resolved,
       districtCode: code,
-      region: kPlateRegions[resolved]?[code],
+      region: region,
       serial: serial,
-      type: _classify(code),
+      type: _classify(code, region),
       formatted: format(input, country: country),
     );
   }

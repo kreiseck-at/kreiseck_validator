@@ -86,10 +86,13 @@ function tryFormat(input: string, options: PlateOptions = {}): string | null {
   }
 }
 
-// Classifies a valid districtCode into a PlateType. AT: a state letter
-// followed by D is the diplomatic-corps convention; everything else is a
-// standard civilian plate.
-function classify(districtCode: string): PlateType {
+// Classifies a districtCode into a PlateType. AT: known district codes
+// (present in kPlateRegions) are always standard, even when they happen to
+// match the diplomatic pattern (e.g. MD is Mödling, not a diplomatic code);
+// only when the code is unknown does a state letter followed by D fall back
+// to the diplomatic-corps convention.
+function classify(districtCode: string, region: string | null): PlateType {
+  if (region !== null) return 'standard';
   return DIPLOMATIC_RE.test(districtCode) ? 'diplomatic' : 'standard';
 }
 
@@ -102,12 +105,13 @@ function parse(input: string, options: PlateOptions = {}): PlateInfo | null {
   const code = m[1];
   const serial = m[2];
   const resolved = resolveCountry(options.country);
+  const region = kPlateRegions[resolved]?.[code] ?? null;
   return {
     country: resolved,
     districtCode: code,
-    region: kPlateRegions[resolved]?.[code] ?? null,
+    region,
     serial,
-    type: classify(code),
+    type: classify(code, region),
     formatted: format(input, options),
   };
 }

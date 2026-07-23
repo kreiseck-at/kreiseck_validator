@@ -7,6 +7,8 @@
    "parse": {"country": "AT", "districtCode": "K", "region": "Klagenfurt", "serial": "1", "type": "standard"}},
   {"input": "WD-4711", "country": "AT", "isValid": true, "normalized": "WD4711", "format": "WD-4711",
    "parse": {"country": "AT", "districtCode": "WD", "region": null, "serial": "4711", "type": "diplomatic"}},
+  {"input": "MD-123", "country": "AT", "isValid": true, "normalized": "MD123", "format": "MD-123",
+   "parse": {"country": "AT", "districtCode": "MD", "region": "Mödling", "serial": "123", "type": "standard"}},
   {"input": "XX-99", "country": "AT", "isValid": true, "normalized": "XX99", "format": "XX-99",
    "parse": {"country": "AT", "districtCode": "XX", "region": null, "serial": "99", "type": "standard"}},
   {"input": "", "country": "AT", "isValid": false, "code": "plateEmpty"},
