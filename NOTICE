@@ -7,3 +7,8 @@ Authors, licensed under the Apache License, Version 2.0.
 Derived data was generated from the "phonenumbers" Python distribution,
 version 9.0.34, and reduced to the fields used by this package. See
 tool/gen_phone_metadata.py for the extraction process.
+
+Austrian bank reference data (bank sort codes, names and BICs) is derived from
+the SEPA payment directory published by the Oesterreichische Nationalbank
+(OeNB), used under its terms. IBAN structure data is derived from the SWIFT IBAN
+Registry as bundled by the schwifty project.
