@@ -7,12 +7,12 @@ import type { PlateInfo, PlateOptions, PlateType } from './types';
 // Validation, normalization, formatting and parsing of vehicle license
 // plates ("Kennzeichen").
 //
-// Currently AT and DE are modelled; other countries resolve to
+// Currently AT, DE and CH are modelled; other countries resolve to
 // 'plateUnknownCountry'.
 
 const ALLOWED_CHARS_RE = /^[A-ZÄÖÜ0-9 \-.]+$/;
 
-const KNOWN_COUNTRIES = new Set(['AT', 'DE']);
+const KNOWN_COUNTRIES = new Set(['AT', 'DE', 'CH']);
 
 // AT: code (1-2 letters, greedily matched) + serial (letters/digits).
 // Because the code and serial character classes are disjoint (letters vs.
@@ -54,6 +54,13 @@ const DE_SEPARATOR_SPLIT_RE = /^([A-ZÄÖÜ]{1,3})[-. ]+(.+)$/;
 const DE_SERIAL_RE = /^([A-Z]{1,2})(\d{1,4})([HE]?)$/;
 
 const DE_LETTERS_ONLY_RE = /^[A-ZÄÖÜ]+$/;
+
+// CH: canton code (2 letters) + serial (1-6 digits), e.g. `ZH123456`. Unlike
+// AT/DE, the canton set is closed and small (26 entries): a 2-letter prefix
+// that structurally matches but is not a known canton is rejected as
+// plateBadFormat rather than accepted with a null region -- see
+// matchesChStructure.
+const CH_STRUCTURE_RE = /^([A-Z]{2})(\d{1,6})$/;
 
 const SEPARATOR_RE = /[\s\-.]/g;
 
@@ -120,12 +127,24 @@ function resolveCountry(country?: string): string {
   return country === undefined ? 'AT' : country.toUpperCase();
 }
 
+// CH's canton set is closed and small: unlike AT/DE (where an unknown
+// district/Unterscheidungszeichen still validates with a null region), a CH
+// plate whose 2-letter prefix is not one of the 26 cantons in kPlateRegions
+// is plateBadFormat, not merely unresolved.
+function matchesChStructure(compacted: string): boolean {
+  const m = CH_STRUCTURE_RE.exec(compacted);
+  if (m === null) return false;
+  return kPlateRegions['CH']?.[m[1]] !== undefined;
+}
+
 function matchesStructure(country: string, compacted: string): boolean {
   switch (country) {
     case 'AT':
       return AT_STRUCTURE_RE.test(compacted);
     case 'DE':
       return DE_STRUCTURE_RE.test(compacted);
+    case 'CH':
+      return matchesChStructure(compacted);
     default:
       return false;
   }
@@ -175,6 +194,11 @@ function formatDe(trimmedUpper: string, compacted: string): string {
   return `${s.code}-${s.serialLetters} ${s.digits}${s.suffix}`;
 }
 
+function formatCh(compacted: string): string {
+  const m = CH_STRUCTURE_RE.exec(compacted)!;
+  return `${m[1]} ${m[2]}`;
+}
+
 // Returns the canonical display form. Throws FormatError.
 function format(input: string, options: PlateOptions = {}): string {
   const compacted = normalize(input, options);
@@ -184,6 +208,8 @@ function format(input: string, options: PlateOptions = {}): string {
       return formatAt(compacted);
     case 'DE':
       return formatDe(input.trim().toUpperCase(), compacted);
+    case 'CH':
+      return formatCh(compacted);
     default:
       throw new Error(`unreachable: ${resolved}`);
   }
@@ -220,6 +246,13 @@ function classifyDe(code: string, suffix: string): PlateType {
   return 'standard';
 }
 
+// Classifies a CH plate. There is no reliable text-only signal to
+// distinguish federal/diplomatic CH plates from civilian ones, so every
+// (structurally valid, known-canton) CH plate classifies as standard.
+function classifyCh(_districtCode: string): PlateType {
+  return 'standard';
+}
+
 // Parses input into a PlateInfo, or null when it is not a valid plate.
 function parse(input: string, options: PlateOptions = {}): PlateInfo | null {
   const r = validate(input, options);
@@ -252,6 +285,20 @@ function parse(input: string, options: PlateOptions = {}): PlateInfo | null {
         serial: `${s.serialLetters} ${s.digits}`,
         type: classifyDe(s.code, s.suffix),
         formatted: formatDe(trimmedUpper, compacted),
+      };
+    }
+    case 'CH': {
+      const m = CH_STRUCTURE_RE.exec(compacted)!;
+      const code = m[1];
+      const serial = m[2];
+      const region = kPlateRegions['CH']?.[code] ?? null;
+      return {
+        country: 'CH',
+        districtCode: code,
+        region,
+        serial,
+        type: classifyCh(code),
+        formatted: formatCh(compacted),
       };
     }
     default:
