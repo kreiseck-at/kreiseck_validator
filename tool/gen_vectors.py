@@ -121,6 +121,7 @@ def main() -> None:
     print('\nIBAN check digits:')
     for country, bban in (
         ('AT', '1904300234573201'),
+        ('AT', '1200000234573201'),
         ('DE', '370400440532013000'),
     ):
         check = iban_check_digits(country, bban)
