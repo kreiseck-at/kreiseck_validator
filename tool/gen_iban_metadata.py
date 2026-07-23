@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import csv
 import io
+import json
 import os
 import re
 import ssl
@@ -30,6 +31,7 @@ from schwifty.registry import Component
 HERE = os.path.dirname(__file__)
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
 OUT = os.path.join(ROOT, "lib", "src", "iban", "iban_metadata.g.dart")
+JSON_OUT = os.path.join(ROOT, "js", "src", "data", "iban-metadata.json")
 OENB_URL = "https://www.oenb.at/docroot/downloads_observ/sepa-zv-vz_gesamt.csv"
 DE_PAGE = "https://www.bundesbank.de/de/startseite/bankleitzahlendateien-csv--926194"
 SIX_URL = "https://api.six-group.com/api/epcd/bankmaster/v3/bankmaster_V3.csv"
@@ -260,6 +262,27 @@ def main() -> None:
         f.write(buf.getvalue())
     counts = ", ".join(f"{cc}={len(directories[cc][1])}" for cc in sorted(directories))
     print(f"Wrote {OUT}: {len(structures)} countries; banks {counts}")
+
+    bban_json = {
+        cc: {
+            "length": e["length"],
+            "bankStart": e["bank_start"],
+            "bankEnd": e["bank_end"],
+            "branchStart": e["branch_start"],
+            "branchEnd": e["branch_end"],
+            "example": e["example"],
+        }
+        for cc, e in structures.items()
+    }
+    banks_json = {
+        cc: {code: {"name": n, "bic": b} for code, (n, b) in directories[cc][1].items()}
+        for cc in directories
+    }
+    os.makedirs(os.path.dirname(JSON_OUT), exist_ok=True)
+    with open(JSON_OUT, "w", encoding="utf-8") as f:
+        json.dump({"bban": bban_json, "banks": banks_json}, f,
+                  ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+    print(f"Wrote {JSON_OUT}")
 
 
 if __name__ == "__main__":
