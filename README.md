@@ -43,7 +43,8 @@ dependencies, no network calls, no telemetry.**
   `#fragment`), canonical normalization, and a compact display form (`https://www.example.com/` → `example.com`)
 - 🏦 **IBAN** — **ISO 13616 Mod-97** checksum, per-country length checks, pretty
   4-group formatting, and **`parse`** into an `IbanInfo` (country, bank/branch/
-  account codes; **Austrian bank name + BIC** from a bundled OeNB snapshot)
+  account codes; **Austrian, German and Swiss bank name + BIC** from bundled
+  OeNB / Bundesbank / SIX snapshots)
 - 💳 **Credit card** — **Luhn** checksum, network detection (Visa / Mastercard / Amex / Discover),
   network-aware grouping (Amex `4-6-5`, else `4-4-4-4`)
 - 🧱 **One consistent API** — `isValid` / `validate` / `normalize` / `format` (+ `tryFormat`) on every type
@@ -189,7 +190,7 @@ stable enums you can switch on and translate; the English `message` is only a de
 | `Email`      | ✅ | ✅ | ✅ | – (display = normalized) | – | none; offline typo suggestions only |
 | `Phone`      | ✅ | ✅ | ✅ | ✅ | ✅ | every country (libphonenumber-derived); AT-only number-type classification |
 | `Url`        | ✅ | ✅ | ✅ | ✅ | ✅ | none (scheme/host/TLD check is global) |
-| `Iban`       | ✅ | ✅ | ✅ | ✅ | ✅ | checksum + per-country length for every registry country; `parse` bank/BIC lookup is AT-only |
+| `Iban`       | ✅ | ✅ | ✅ | ✅ | ✅ | checksum + per-country length for every registry country; `parse` bank/BIC lookup is AT/DE/CH |
 | `CreditCard` | ✅ | ✅ | ✅ | ✅ | ✅ | none (Luhn + network detection is global) |
 
 ## 🪶 Zero dependencies, Apache-2.0

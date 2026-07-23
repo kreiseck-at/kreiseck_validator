@@ -93,11 +93,15 @@ offsets sourced from the SWIFT IBAN Registry. Those offsets are absolute
 indices into the full IBAN string, so every offset from the registry's
 BBAN-relative layout is shifted by 4 to account for the leading country
 code and check digits (e.g. Germany's bank code, positions 0-7 within the
-BBAN, becomes `bankStart: 4, bankEnd: 12`). For Austrian IBANs, `parse`
-additionally looks up the extracted bank code (BLZ) in `kAtBanks`, a table
-built from a snapshot of the OeNB (Oesterreichische Nationalbank) SEPA
-directory, to fill in the bank's registered name and BIC; other countries,
-and unrecognized Austrian BLZs, leave those two fields `null`.
+BBAN, becomes `bankStart: 4, bankEnd: 12`). For Austrian, German and Swiss
+IBANs, `parse` additionally looks up the extracted bank code in `kBanks`, a
+country-keyed table to fill in the bank's registered name and BIC: Austrian
+lookups use the 5-digit BLZ against a snapshot of the OeNB (Oesterreichische
+Nationalbank) SEPA directory; German lookups use the 8-digit BLZ against the
+Deutsche Bundesbank Bankleitzahlen directory, restricted to its head-office
+rows; Swiss lookups use the 5-digit, zero-padded BC number against the SIX
+Bank Master published by SIX Interbank Clearing. Other countries, and
+unrecognized bank codes, leave those two fields `null`.
 
 ## E.164 structure and the national trunk prefix
 
