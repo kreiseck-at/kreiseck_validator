@@ -8,14 +8,15 @@ part 'plate_metadata.g.dart';
 /// Validation, normalization, formatting and parsing of vehicle license
 /// plates ("Kennzeichen"). See `doc/algorithms.md`.
 ///
-/// Currently `AT`, `DE` and `CH` are modelled; other countries resolve to
-/// [IssueCode.plateUnknownCountry].
+/// Currently `AT`, `DE`, `CH` and `HR` are modelled; other countries resolve
+/// to [IssueCode.plateUnknownCountry].
 class LicensePlate {
   LicensePlate._();
 
-  static final RegExp _allowedChars = RegExp(r'^[A-ZÄÖÜ0-9 \-.]+$');
+  static final RegExp _allowedChars =
+      RegExp(r'^[A-ZÄÖÜČŠŽ0-9 \-.]+$');
 
-  static const Set<String> _knownCountries = {'AT', 'DE', 'CH'};
+  static const Set<String> _knownCountries = {'AT', 'DE', 'CH', 'HR'};
 
   // AT: code (1-2 letters, greedily matched) + serial (letters/digits).
   // Because the code and serial character classes are disjoint (letters vs.
@@ -66,6 +67,16 @@ class LicensePlate {
   // rejected as `plateBadFormat` rather than accepted with a null region --
   // see [_matchesChStructure].
   static final RegExp _chStructure = RegExp(r'^([A-Z]{2})(\d{1,6})$');
+
+  // HR: registration-area code (2 letters, may include Č/Š/Ž) + serial
+  // digits (3-4) + serial letters (1-2), e.g. `ZG1234AB`. Like CH, the
+  // registration-area set is closed and small (34 entries): a 2-letter
+  // prefix that structurally matches but is not a known code is rejected as
+  // `plateBadFormat` -- see [_matchesHrStructure]. Unlike DE, the digit and
+  // letter groups are disjoint character classes, so the split is always
+  // unambiguous.
+  static final RegExp _hrStructure =
+      RegExp(r'^([A-ZČŠŽ]{2})(\d{3,4})([A-Z]{1,2})$');
 
   /// Resolves the DE code/serial split when [trimmedUpper] (the original,
   /// pre-compaction input) has an explicit separator right after the
@@ -141,11 +152,21 @@ class LicensePlate {
     return kPlateRegions['CH']!.containsKey(m.group(1)!);
   }
 
+  /// HR's registration-area set is closed and small, same as CH: an HR
+  /// plate whose 2-letter prefix is not one of the 34 codes in
+  /// [kPlateRegions] is `plateBadFormat`, not merely unresolved.
+  static bool _matchesHrStructure(String compact) {
+    final m = _hrStructure.firstMatch(compact);
+    if (m == null) return false;
+    return kPlateRegions['HR']!.containsKey(m.group(1)!);
+  }
+
   static bool _matchesStructure(String country, String compact) =>
       switch (country) {
         'AT' => _atStructure.hasMatch(compact),
         'DE' => _deStructure.hasMatch(compact),
         'CH' => _matchesChStructure(compact),
+        'HR' => _matchesHrStructure(compact),
         _ => false,
       };
 
@@ -202,6 +223,11 @@ class LicensePlate {
     return '${m.group(1)} ${m.group(2)}';
   }
 
+  static String _formatHr(String compact) {
+    final m = _hrStructure.firstMatch(compact)!;
+    return '${m.group(1)} ${m.group(2)}-${m.group(3)}';
+  }
+
   /// Returns the canonical display form. Throws [FormatException].
   static String format(String input, {String? country}) {
     final compact = normalize(input, country: country);
@@ -210,6 +236,7 @@ class LicensePlate {
       'AT' => _formatAt(compact),
       'DE' => _formatDe(input.trim().toUpperCase(), compact),
       'CH' => _formatCh(compact),
+      'HR' => _formatHr(compact),
       _ => throw StateError('unreachable: $resolved'),
     };
   }
@@ -250,6 +277,12 @@ class LicensePlate {
   /// distinguish federal/diplomatic CH plates from civilian ones, so every
   /// (structurally valid, known-canton) CH plate classifies as `standard`.
   static PlateType _classifyCh(String districtCode) => PlateType.standard;
+
+  /// Classifies an HR plate. As with CH, there is no reliable text-only
+  /// signal to distinguish special (diplomatic, military, ...) HR plates
+  /// from civilian ones, so every (structurally valid, known-code) HR plate
+  /// classifies as `standard`.
+  static PlateType _classifyHr(String districtCode) => PlateType.standard;
 
   /// Parses [input] into a [PlateInfo], or null when it is not a valid plate.
   static PlateInfo? parse(String input, {String? country}) {
@@ -294,6 +327,19 @@ class LicensePlate {
           serial: serial,
           type: _classifyCh(code),
           formatted: _formatCh(compact),
+        );
+      case 'HR':
+        final m = _hrStructure.firstMatch(compact)!;
+        final code = m.group(1)!;
+        final digits = m.group(2)!;
+        final letters = m.group(3)!;
+        return PlateInfo(
+          country: 'HR',
+          districtCode: code,
+          region: kPlateRegions['HR']?[code],
+          serial: '$digits-$letters',
+          type: _classifyHr(code),
+          formatted: _formatHr(compact),
         );
       default:
         return null;

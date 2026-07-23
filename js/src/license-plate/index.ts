@@ -7,12 +7,12 @@ import type { PlateInfo, PlateOptions, PlateType } from './types';
 // Validation, normalization, formatting and parsing of vehicle license
 // plates ("Kennzeichen").
 //
-// Currently AT, DE and CH are modelled; other countries resolve to
+// Currently AT, DE, CH and HR are modelled; other countries resolve to
 // 'plateUnknownCountry'.
 
-const ALLOWED_CHARS_RE = /^[A-ZÄÖÜ0-9 \-.]+$/;
+const ALLOWED_CHARS_RE = /^[A-ZÄÖÜČŠŽ0-9 \-.]+$/;
 
-const KNOWN_COUNTRIES = new Set(['AT', 'DE', 'CH']);
+const KNOWN_COUNTRIES = new Set(['AT', 'DE', 'CH', 'HR']);
 
 // AT: code (1-2 letters, greedily matched) + serial (letters/digits).
 // Because the code and serial character classes are disjoint (letters vs.
@@ -61,6 +61,15 @@ const DE_LETTERS_ONLY_RE = /^[A-ZÄÖÜ]+$/;
 // plateBadFormat rather than accepted with a null region -- see
 // matchesChStructure.
 const CH_STRUCTURE_RE = /^([A-Z]{2})(\d{1,6})$/;
+
+// HR: registration-area code (2 letters, may include Č/Š/Ž) + serial digits
+// (3-4) + serial letters (1-2), e.g. `ZG1234AB`. Like CH, the
+// registration-area set is closed and small (34 entries): a 2-letter prefix
+// that structurally matches but is not a known code is rejected as
+// plateBadFormat -- see matchesHrStructure. Unlike DE, the digit and letter
+// groups are disjoint character classes, so the split is always
+// unambiguous.
+const HR_STRUCTURE_RE = /^([A-ZČŠŽ]{2})(\d{3,4})([A-Z]{1,2})$/;
 
 const SEPARATOR_RE = /[\s\-.]/g;
 
@@ -137,6 +146,15 @@ function matchesChStructure(compacted: string): boolean {
   return kPlateRegions['CH']?.[m[1]] !== undefined;
 }
 
+// HR's registration-area set is closed and small, same as CH: an HR plate
+// whose 2-letter prefix is not one of the 34 codes in kPlateRegions is
+// plateBadFormat, not merely unresolved.
+function matchesHrStructure(compacted: string): boolean {
+  const m = HR_STRUCTURE_RE.exec(compacted);
+  if (m === null) return false;
+  return kPlateRegions['HR']?.[m[1]] !== undefined;
+}
+
 function matchesStructure(country: string, compacted: string): boolean {
   switch (country) {
     case 'AT':
@@ -145,6 +163,8 @@ function matchesStructure(country: string, compacted: string): boolean {
       return DE_STRUCTURE_RE.test(compacted);
     case 'CH':
       return matchesChStructure(compacted);
+    case 'HR':
+      return matchesHrStructure(compacted);
     default:
       return false;
   }
@@ -199,6 +219,11 @@ function formatCh(compacted: string): string {
   return `${m[1]} ${m[2]}`;
 }
 
+function formatHr(compacted: string): string {
+  const m = HR_STRUCTURE_RE.exec(compacted)!;
+  return `${m[1]} ${m[2]}-${m[3]}`;
+}
+
 // Returns the canonical display form. Throws FormatError.
 function format(input: string, options: PlateOptions = {}): string {
   const compacted = normalize(input, options);
@@ -210,6 +235,8 @@ function format(input: string, options: PlateOptions = {}): string {
       return formatDe(input.trim().toUpperCase(), compacted);
     case 'CH':
       return formatCh(compacted);
+    case 'HR':
+      return formatHr(compacted);
     default:
       throw new Error(`unreachable: ${resolved}`);
   }
@@ -250,6 +277,14 @@ function classifyDe(code: string, suffix: string): PlateType {
 // distinguish federal/diplomatic CH plates from civilian ones, so every
 // (structurally valid, known-canton) CH plate classifies as standard.
 function classifyCh(_districtCode: string): PlateType {
+  return 'standard';
+}
+
+// Classifies an HR plate. As with CH, there is no reliable text-only signal
+// to distinguish special (diplomatic, military, ...) HR plates from
+// civilian ones, so every (structurally valid, known-code) HR plate
+// classifies as standard.
+function classifyHr(_districtCode: string): PlateType {
   return 'standard';
 }
 
@@ -299,6 +334,20 @@ function parse(input: string, options: PlateOptions = {}): PlateInfo | null {
         serial,
         type: classifyCh(code),
         formatted: formatCh(compacted),
+      };
+    }
+    case 'HR': {
+      const m = HR_STRUCTURE_RE.exec(compacted)!;
+      const code = m[1];
+      const digits = m[2];
+      const letters = m[3];
+      return {
+        country: 'HR',
+        districtCode: code,
+        region: kPlateRegions['HR']?.[code] ?? null,
+        serial: `${digits}-${letters}`,
+        type: classifyHr(code),
+        formatted: formatHr(compacted),
       };
     }
     default:
