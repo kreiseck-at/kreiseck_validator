@@ -28,10 +28,10 @@ class IbanBban {
   final int? branchEnd;
 }
 
-/// An Austrian bank resolved from its sort code (Bankleitzahl).
-class AtBank {
+/// A bank resolved from its national bank code (BLZ / BC number).
+class Bank {
   /// Creates a bank record.
-  const AtBank(this.name, this.bic);
+  const Bank(this.name, this.bic);
 
   /// Registered bank name.
   final String name;

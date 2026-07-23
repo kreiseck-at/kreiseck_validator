@@ -116,8 +116,8 @@ class Iban {
     }
     String? bankName;
     String? bic;
-    if (code == 'AT' && bankCode != null) {
-      final bank = kAtBanks[bankCode];
+    if (bankCode != null) {
+      final bank = kBanks[code]?[bankCode];
       if (bank != null) {
         bankName = bank.name;
         bic = bank.bic;

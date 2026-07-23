@@ -27,15 +27,15 @@ void main() {
     });
   });
 
-  group('kAtBanks', () {
+  group('kBanks', () {
     test('resolves Bank Austria by BLZ, XXX filler stripped', () {
-      final b = kAtBanks['12000']!;
+      final b = kBanks['AT']!['12000']!;
       expect(b.name, 'UniCredit Bank Austria AG');
       expect(b.bic, 'BKAUATWW');
     });
 
     test('fictional textbook BLZ 19043 is absent', () {
-      expect(kAtBanks['19043'], isNull);
+      expect(kBanks['AT']!['19043'], isNull);
     });
   });
 }
