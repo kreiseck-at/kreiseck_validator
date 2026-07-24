@@ -141,6 +141,30 @@ void main() {
     }
   });
 
+  group('vin', () {
+    for (final c in _load('vin.json')) {
+      final input = c['input']! as String;
+      _check('vin', c, () => Vin.validate(input), () => Vin.format(input));
+      if (c.containsKey('parse')) {
+        test('vin parse: $input', () {
+          final info = Vin.parse(input)!;
+          final p = c['parse']! as Map<String, Object?>;
+          if (p.containsKey('wmi')) expect(info.wmi, p['wmi']);
+          if (p.containsKey('vds')) expect(info.vds, p['vds']);
+          if (p.containsKey('vis')) expect(info.vis, p['vis']);
+          if (p.containsKey('checkDigit')) {
+            expect(info.checkDigit, p['checkDigit']);
+          }
+          if (p.containsKey('checkDigitValid')) {
+            expect(info.checkDigitValid, p['checkDigitValid']);
+          }
+          if (p.containsKey('modelYear')) expect(info.modelYear, p['modelYear']);
+          if (p.containsKey('plantCode')) expect(info.plantCode, p['plantCode']);
+        });
+      }
+    }
+  });
+
   group('license_plate', () {
     for (final c in _load('license_plate.json')) {
       final input = c['input']! as String;

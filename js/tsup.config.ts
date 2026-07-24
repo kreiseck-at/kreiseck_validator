@@ -12,6 +12,7 @@ export default defineConfig({
     'src/iccid/index.ts',
     'src/mac-address/index.ts',
     'src/license-plate/index.ts',
+    'src/vin/index.ts',
   ],
   format: ['esm', 'cjs'],
   dts: true,

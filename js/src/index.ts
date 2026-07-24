@@ -16,3 +16,5 @@ export { MacAddress } from './mac-address/index';
 export type { MacInfo, MacNotation, MacFormatOptions, MacAddressType } from './mac-address/types';
 export { LicensePlate } from './license-plate/index';
 export type { PlateInfo, PlateType } from './license-plate/types';
+export { Vin } from './vin/index';
+export type { VinInfo } from './vin/types';

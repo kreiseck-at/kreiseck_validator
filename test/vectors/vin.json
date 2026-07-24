@@ -1,0 +1,9 @@
+[
+  {"input": "1HGCM82633A004352", "isValid": true, "normalized": "1HGCM82633A004352",
+   "parse": {"wmi": "1HG", "vds": "CM8263", "vis": "3A004352", "checkDigit": "3", "checkDigitValid": true, "modelYear": 2003, "plantCode": "A"}},
+  {"input": "1hgcm82633a004352", "isValid": true, "normalized": "1HGCM82633A004352"},
+  {"input": "WVWZZZ1JZXW000001", "isValid": true, "normalized": "WVWZZZ1JZXW000001",
+   "parse": {"wmi": "WVW", "modelYear": 1999}},
+  {"input": "1HGCM82633A00435", "isValid": false, "code": "vinBadLength"},
+  {"input": "1HGCM8263IA004352", "isValid": false, "code": "vinBadChars"}
+]
