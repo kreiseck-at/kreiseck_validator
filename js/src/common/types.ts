@@ -6,7 +6,8 @@ export type IssueCode =
   | 'ibanEmpty' | 'ibanBadChars' | 'ibanBadChecksum' | 'ibanBadLength'
   | 'cardEmpty' | 'cardBadChars' | 'cardBadLength' | 'cardBadLuhn'
   | 'plateEmpty' | 'plateBadChars' | 'plateBadFormat' | 'plateUnknownCountry' | 'plateAmbiguousCountry'
-  | 'imeiEmpty' | 'imeiBadChars' | 'imeiBadLength' | 'imeiBadChecksum';
+  | 'imeiEmpty' | 'imeiBadChars' | 'imeiBadLength' | 'imeiBadChecksum'
+  | 'iccidEmpty' | 'iccidBadChars' | 'iccidBadLength' | 'iccidBadChecksum';
 
 export interface ValidationIssue { readonly code: IssueCode; readonly message: string }
 export interface Suggestion { readonly value: string; readonly reason: string }

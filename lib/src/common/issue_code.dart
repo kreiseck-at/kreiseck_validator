@@ -40,4 +40,9 @@ enum IssueCode {
   imeiBadChars,
   imeiBadLength,
   imeiBadChecksum,
+  // iccid
+  iccidEmpty,
+  iccidBadChars,
+  iccidBadLength,
+  iccidBadChecksum,
 }
