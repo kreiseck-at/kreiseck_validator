@@ -10,6 +10,7 @@ export default defineConfig({
     'src/credit-card/index.ts',
     'src/imei/index.ts',
     'src/iccid/index.ts',
+    'src/mac-address/index.ts',
     'src/license-plate/index.ts',
   ],
   format: ['esm', 'cjs'],

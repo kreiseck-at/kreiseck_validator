@@ -1,0 +1,90 @@
+[
+  {
+    "input": "00:1A:2B:3C:4D:5E",
+    "isValid": true,
+    "normalized": "00:1a:2b:3c:4d:5e",
+    "parse": { "oui": "00:1a:2b", "nic": "3c:4d:5e", "isUnicast": true, "isMulticast": false, "isUniversal": true, "isLocal": false, "type": "eui48" }
+  },
+  {
+    "input": "00-1A-2B-3C-4D-5E",
+    "isValid": true,
+    "normalized": "00:1a:2b:3c:4d:5e"
+  },
+  {
+    "input": "001A.2B3C.4D5E",
+    "isValid": true,
+    "normalized": "00:1a:2b:3c:4d:5e"
+  },
+  {
+    "input": "001a2b3c4d5e",
+    "isValid": true,
+    "normalized": "00:1a:2b:3c:4d:5e"
+  },
+  {
+    "input": "00:1a:2b:3c:4d:5e",
+    "isValid": true,
+    "format": "00-1a-2b-3c-4d-5e",
+    "notation": "hyphen"
+  },
+  {
+    "input": "00:1a:2b:3c:4d:5e",
+    "isValid": true,
+    "format": "001a.2b3c.4d5e",
+    "notation": "dot"
+  },
+  {
+    "input": "00:1a:2b:3c:4d:5e",
+    "isValid": true,
+    "format": "001a2b3c4d5e",
+    "notation": "bare"
+  },
+  {
+    "input": "00:1a:2b:3c:4d:5e",
+    "isValid": true,
+    "format": "00:1A:2B:3C:4D:5E",
+    "notation": "colon",
+    "upperCase": true
+  },
+  {
+    "input": "01:00:5e:00:00:01",
+    "isValid": true,
+    "parse": { "isUnicast": false, "isMulticast": true, "isUniversal": true, "isLocal": false, "type": "eui48" }
+  },
+  {
+    "input": "02:00:00:00:00:01",
+    "isValid": true,
+    "parse": { "isUnicast": true, "isMulticast": false, "isUniversal": false, "isLocal": true, "type": "eui48" }
+  },
+  {
+    "input": "00:1A:2B:3C:4D:5E:6F:70",
+    "isValid": true,
+    "normalized": "00:1a:2b:3c:4d:5e:6f:70",
+    "parse": { "oui": "00:1a:2b", "nic": "3c:4d:5e:6f:70", "type": "eui64" }
+  },
+  {
+    "input": "001A2B3C4D5E6F70",
+    "isValid": true,
+    "normalized": "00:1a:2b:3c:4d:5e:6f:70",
+    "parse": { "type": "eui64" }
+  },
+  {
+    "input": "",
+    "isValid": false,
+    "code": "macEmpty"
+  },
+  {
+    "input": "00:1A:2B:3C:4D",
+    "isValid": false,
+    "code": "macBadFormat"
+  },
+  {
+    "input": "ZZ:1A:2B:3C:4D:5E",
+    "isValid": false,
+    "code": "macBadFormat"
+  },
+  {
+    "input": "00:1A:2B:3C:4D:5E:6F",
+    "isValid": false,
+    "code": "macBadFormat"
+  }
+]

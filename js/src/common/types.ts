@@ -7,7 +7,8 @@ export type IssueCode =
   | 'cardEmpty' | 'cardBadChars' | 'cardBadLength' | 'cardBadLuhn'
   | 'plateEmpty' | 'plateBadChars' | 'plateBadFormat' | 'plateUnknownCountry' | 'plateAmbiguousCountry'
   | 'imeiEmpty' | 'imeiBadChars' | 'imeiBadLength' | 'imeiBadChecksum'
-  | 'iccidEmpty' | 'iccidBadChars' | 'iccidBadLength' | 'iccidBadChecksum';
+  | 'iccidEmpty' | 'iccidBadChars' | 'iccidBadLength' | 'iccidBadChecksum'
+  | 'macEmpty' | 'macBadFormat';
 
 export interface ValidationIssue { readonly code: IssueCode; readonly message: string }
 export interface Suggestion { readonly value: string; readonly reason: string }

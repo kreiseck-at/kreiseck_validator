@@ -12,5 +12,7 @@ export { Imei } from './imei/index';
 export type { ImeiInfo } from './imei/types';
 export { Iccid } from './iccid/index';
 export type { IccidInfo } from './iccid/types';
+export { MacAddress } from './mac-address/index';
+export type { MacInfo, MacNotation, MacFormatOptions, MacAddressType } from './mac-address/types';
 export { LicensePlate } from './license-plate/index';
 export type { PlateInfo, PlateType } from './license-plate/types';
