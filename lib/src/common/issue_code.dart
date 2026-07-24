@@ -56,4 +56,8 @@ enum IssueCode {
   postalEmpty,
   postalBadFormat,
   postalUnknownCountry,
+  // host
+  hostEmpty,
+  hostBadFormat,
+  hostBadPort,
 }

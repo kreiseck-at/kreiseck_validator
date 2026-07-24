@@ -218,6 +218,23 @@ void main() {
     }
   });
 
+  group('host', () {
+    for (final c in _load('host.json')) {
+      final input = c['input']! as String;
+      _check('host', c, () => Host.validate(input), () => Host.format(input));
+      if (c.containsKey('parse')) {
+        test('host parse: $input', () {
+          final info = Host.parse(input)!;
+          final p = c['parse']! as Map<String, Object?>;
+          if (p.containsKey('host')) expect(info.host, p['host']);
+          if (p.containsKey('type')) expect(info.type.name, p['type']);
+          if (p.containsKey('port')) expect(info.port, p['port']);
+          if (p.containsKey('hasPort')) expect(info.hasPort, p['hasPort']);
+        });
+      }
+    }
+  });
+
   group('email', () {
     for (final c in _load('email.json')) {
       final input = c['input']! as String;

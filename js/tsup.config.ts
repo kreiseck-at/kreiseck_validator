@@ -6,6 +6,7 @@ export default defineConfig({
     'src/email/index.ts',
     'src/phone/index.ts',
     'src/url/index.ts',
+    'src/host/index.ts',
     'src/iban/index.ts',
     'src/credit-card/index.ts',
     'src/imei/index.ts',

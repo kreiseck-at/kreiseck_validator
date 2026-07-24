@@ -49,6 +49,7 @@
     "./email":      { "types": "./dist/email/index.d.ts", "import": "./dist/email/index.js", "require": "./dist/email/index.cjs" },
     "./phone":      { "types": "./dist/phone/index.d.ts", "import": "./dist/phone/index.js", "require": "./dist/phone/index.cjs" },
     "./url":        { "types": "./dist/url/index.d.ts",   "import": "./dist/url/index.js",   "require": "./dist/url/index.cjs" },
+    "./host":       { "types": "./dist/host/index.d.ts",  "import": "./dist/host/index.js",  "require": "./dist/host/index.cjs" },
     "./iban":       { "types": "./dist/iban/index.d.ts",  "import": "./dist/iban/index.js",  "require": "./dist/iban/index.cjs" },
     "./credit-card":{ "types": "./dist/credit-card/index.d.ts", "import": "./dist/credit-card/index.js", "require": "./dist/credit-card/index.cjs" },
     "./imei":       { "types": "./dist/imei/index.d.ts",   "import": "./dist/imei/index.js",   "require": "./dist/imei/index.cjs" },
