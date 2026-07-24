@@ -4,6 +4,8 @@ export { Email } from './email/index';
 export { Phone } from './phone/index';
 export type { Country, PhoneInfo, PhoneNumberType } from './phone/types';
 export { Url } from './url/index';
+export { Host } from './host/index';
+export type { HostInfo, HostType } from './host/types';
 export { CreditCard, type CardNetwork } from './credit-card/index';
 export { Iban, type IbanInfo } from './iban/index';
 export { IbanCountry } from './iban/country';

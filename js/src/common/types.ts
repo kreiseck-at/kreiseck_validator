@@ -10,7 +10,8 @@ export type IssueCode =
   | 'iccidEmpty' | 'iccidBadChars' | 'iccidBadLength' | 'iccidBadChecksum'
   | 'macEmpty' | 'macBadFormat'
   | 'vinEmpty' | 'vinBadChars' | 'vinBadLength'
-  | 'postalEmpty' | 'postalBadFormat' | 'postalUnknownCountry';
+  | 'postalEmpty' | 'postalBadFormat' | 'postalUnknownCountry'
+  | 'hostEmpty' | 'hostBadFormat' | 'hostBadPort';
 
 export interface ValidationIssue { readonly code: IssueCode; readonly message: string }
 export interface Suggestion { readonly value: string; readonly reason: string }
