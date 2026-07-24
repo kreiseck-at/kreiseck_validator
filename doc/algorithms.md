@@ -48,6 +48,18 @@ unchanged by the extraction. `Imei` runs it over all 15 digits (the 15th is
 the check digit); `Iccid` runs it only when the ICCID is 20 digits long
 (19-digit ICCIDs carry no check digit at all).
 
+**IMEISV** (`Imei`, opt-in via `allowSv: true`): a 16-digit variant that
+replaces the 15th Luhn check digit with a 2-digit software version number
+(SVN), so the last two digits of a 16-digit input are never Luhn-checked —
+by definition IMEISV carries no check digit at all. With `allowSv: true`,
+a 15-digit input still runs the ordinary Luhn check above; a 16-digit input
+skips it entirely and is accepted purely on length and digit shape. `parse`
+splits a 16-digit value into `tac` (first 8), `serialNumber` (next 6) and
+`softwareVersion` (last 2), leaving `checkDigit` `null`; a 15-digit value
+keeps `checkDigit` populated and leaves `softwareVersion` `null`. With the
+default `allowSv: false`, a 16-digit input is rejected as `imeiBadLength`,
+exactly as before this option existed.
+
 ## Mod-97 checksum (IBAN)
 
 Used by `Iban.validate` (`lib/src/iban/iban.dart`) to verify the two
@@ -390,6 +402,41 @@ IEEE-assigned OUI block (universal), `1` means it was locally assigned
 (e.g. a hand-configured or virtualized interface). `MacAddress` needs no
 bundled data for any of this — the notation regexes, the bit masks and
 the octet split are all fixed, in-code constants.
+
+## Host classification order and the bracketed-IPv6-port rule
+
+Used by `Host` (`lib/src/host/host.dart`) to classify a bare host — no
+scheme, unlike `Url` — as a hostname, an IPv4 address or an IPv6 address,
+with an optional port.
+
+**Classification order.** A host part is tried against IPv4 first, then
+IPv6, then hostname, and the first match wins: `192.168.1.1` is IPv4 before
+it's ever considered as a (rejected) hostname; a hex-only IPv6 group like
+`::1` fails the IPv4 regex and is then matched as IPv6; anything left over
+falls through to the RFC 1123 hostname grammar (dot-separated labels, each
+1-63 characters of `[A-Za-z0-9-]`, not starting or ending with a hyphen,
+total length ≤ 253 — single-label hosts like `localhost` are allowed).
+
+**IPv6** is validated algorithmically rather than by one giant regex: split
+the address on `::` (at most one such split is allowed — two would make the
+expansion ambiguous), split each side on `:` into groups, and require every
+group to be 1-4 hex digits **except** the last group, which may instead be
+an embedded IPv4 address (`::ffff:192.0.2.1`) counted as two groups. An
+address without `::` must expand to exactly 8 groups; one with `::` must
+expand to 7 or fewer (the `::` stands in for at least one all-zero group).
+
+**Port recognition** differs by host type because IPv6 addresses already
+contain colons: for a hostname or IPv4 host, a single trailing `:port` is
+split off directly (`example.com:8080`, `192.168.1.1:443`). For IPv6, a bare
+address is never split on `:` for a port — `::1` alone parses as the IPv6
+address with no port — a port is only recognised in the **bracketed** form
+`[::1]:8080`, where the brackets unambiguously mark where the address ends
+and the port begins. `Host.normalize` re-applies this rule on the way out:
+an IPv6 host is only wrapped in brackets when a port is present to attach.
+
+A port, when present, must be a decimal integer `0-65535`; anything outside
+that range (or non-numeric) is rejected as `IssueCode.hostBadPort` rather
+than `hostBadFormat`, since the host part itself was otherwise valid.
 
 ## PostalCode per-country patterns (Europe + Turkey)
 

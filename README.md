@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>Validate, normalize and pretty-format the input every app collects —<br>
-  email, phone, URL, IBAN, credit-card, license plate, IMEI, ICCID, MAC address,
+  email, phone, URL, host, IBAN, credit-card, license plate, IMEI, ICCID, MAC address,
   VIN and postal code — in a few lines of Dart.</b><br>
   Zero dependencies. Hand-written algorithms. DACH-aware.
 </p>
@@ -24,7 +24,7 @@
 
 `kreiseck_validator` is a small, **zero-dependency Dart package** for **validating**,
 **normalizing** and **formatting** the kinds of user input almost every app collects:
-**email addresses, phone numbers, URLs/domains, IBANs, credit-card numbers, license
+**email addresses, phone numbers, URLs/domains, hosts, IBANs, credit-card numbers, license
 plates, IMEIs, ICCIDs, MAC addresses, VINs and postal codes**. Every type follows the
 same four-operation API — `isValid`, `validate`, `normalize`, `format` — so once you
 learn one, you know them all.
@@ -43,6 +43,9 @@ dependencies, no network calls, no telemetry.**
   notation, plus Austrian number-**type** classification (mobile, landline, VoIP, …)
 - 🔗 **URL / Domain** — scheme/host/TLD plausibility check (accepts `:port`, `?query`,
   `#fragment`), canonical normalization, and a compact display form (`https://www.example.com/` → `example.com`)
+- 🖧 **Host** — a bare hostname (RFC 1123), IPv4 or IPv6 address with an optional port,
+  classified and parsed into a `HostInfo`; more lenient than `Url` (no scheme required,
+  accepts `localhost` and IP literals)
 - 🏦 **IBAN** — **ISO 13616 Mod-97** checksum, per-country length checks, pretty
   4-group formatting, and **`parse`** into an `IbanInfo` (country, bank/branch/
   account codes; **Austrian, German and Swiss bank name + BIC** from bundled
@@ -55,7 +58,9 @@ dependencies, no network calls, no telemetry.**
   province code, official region name, serial) with best-effort special-plate
   **classification** (diplomatic, authority, military, historic, electric, …)
 - 📱 **IMEI** — **Luhn** checksum over the 15-digit device identifier, plus **`parse`**
-  into an `ImeiInfo` (TAC, serial number, check digit, reporting-body identifier)
+  into an `ImeiInfo` (TAC, serial number, check digit, reporting-body identifier); the
+  opt-in `allowSv` option additionally accepts a 16-digit **IMEISV** (no Luhn), exposing
+  its 2-digit software version via `softwareVersion`
 - 💳 **ICCID** — SIM card identifier (ITU-T E.118): MII + Luhn check on 20-digit cards
   (19-digit cards carry no check digit), plus **`parse`** resolving the issuing
   **country** from the embedded E.164 calling code
@@ -163,6 +168,22 @@ Url.normalize('Example.com/path/');           // 'https://example.com/path'
 Url.format('https://www.example.com/');       // 'example.com'
 ```
 
+### 🖧 Host
+
+```dart
+Host.isValid('example.com:8080');             // true
+Host.isValid('[2001:db8::1]:443');            // true
+
+final h = Host.parse('[::1]:8080')!;
+h.type; // HostType.ipv6
+h.port; // 8080
+```
+
+`Host` classifies a bare host (no scheme) as a hostname, IPv4 or IPv6 address, trying
+IPv4 then IPv6 then hostname in that order. A port is only recognised for IPv6 in the
+bracketed form (`[::1]:8080`) — a bare `::1` parses as IPv6 with no port, since a plain
+trailing `:port` would be ambiguous with the address's own colons.
+
 ### 🏦 IBAN
 
 ```dart
@@ -222,6 +243,16 @@ info.tac;          // '35388008'
 info.serialNumber; // '007874'
 info.checkDigit;   // '2'
 ```
+
+Passing `allowSv: true` additionally accepts a 16-digit **IMEISV** (the IMEI plus a
+2-digit software version, no Luhn check) on every operation:
+
+```dart
+Imei.parse('3538800800787456', allowSv: true)!.softwareVersion; // '56'
+```
+
+For a 16-digit IMEISV, `checkDigit` is `null` (IMEISV has no check digit); for a
+15-digit IMEI, `softwareVersion` is `null`.
 
 ### 💳 ICCID
 
@@ -300,6 +331,7 @@ stable enums you can switch on and translate; the English `message` is only a de
 | `Email`      | ✅ | ✅ | ✅ | – (display = normalized) | – | none; offline typo suggestions only |
 | `Phone`      | ✅ | ✅ | ✅ | ✅ | ✅ | every country (libphonenumber-derived); AT-only number-type classification |
 | `Url`        | ✅ | ✅ | ✅ | ✅ | ✅ | none (scheme/host/TLD check is global) |
+| `Host`       | ✅ | ✅ | ✅ | ✅ | ✅ | none (hostname/IPv4/IPv6 classification is global) |
 | `Iban`       | ✅ | ✅ | ✅ | ✅ | ✅ | checksum + per-country length for every registry country; `parse` bank/BIC lookup is AT/DE/CH |
 | `CreditCard` | ✅ | ✅ | ✅ | ✅ | ✅ | none (Luhn + network detection is global) |
 | `LicensePlate` | ✅ | ✅ | ✅ | ✅ | ✅ | grammar + region-table validation and `parse` for AT/DE/CH/HR/TR |

@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.9.0
+
+- `Imei` gains an opt-in `allowSv` option (default `false`, backward-compatible)
+  accepting a 16-digit **IMEISV** (the 15-digit IMEI structure plus a 2-digit
+  software version number) alongside the existing 15-digit Luhn IMEI. A
+  16-digit value is never Luhn-checked — IMEISV has no check digit. `ImeiInfo`
+  gains `softwareVersion` (set for a 16-digit IMEISV, `null` otherwise) and
+  `checkDigit` becomes nullable (`null` for a 16-digit IMEISV, unchanged for a
+  15-digit IMEI). With the default `allowSv == false`, every existing IMEI
+  vector and behavior is unchanged.
+- New `Host` module: validation, normalization, formatting and `parse` for a
+  bare host — hostname (RFC 1123), IPv4 or IPv6 address — with an optional
+  port. Classification tries IPv4, then IPv6, then hostname. A port is only
+  recognized for IPv6 in the bracketed form (`[::1]:8080`); for hostname/IPv4
+  a single trailing `:port` is split off. `Host.parse` returns a `HostInfo`
+  (`host`, `type`, `port`, `hasPort`). More lenient than `Url` — no scheme
+  required, accepts `localhost` and IP literals — and independent of it.
+- Three new `IssueCode`s: `hostEmpty`, `hostBadFormat`, `hostBadPort`.
+
 ## 0.8.0
 
 - Five new modules: `Imei`, `Iccid`, `MacAddress`, `Vin` and `PostalCode`,
