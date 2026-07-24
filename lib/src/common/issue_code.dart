@@ -35,4 +35,9 @@ enum IssueCode {
   plateBadFormat,
   plateUnknownCountry,
   plateAmbiguousCountry,
+  // imei
+  imeiEmpty,
+  imeiBadChars,
+  imeiBadLength,
+  imeiBadChecksum,
 }

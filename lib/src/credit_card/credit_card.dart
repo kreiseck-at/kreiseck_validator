@@ -1,4 +1,5 @@
 import '../common/issue_code.dart';
+import '../common/luhn.dart';
 import '../common/validation_result.dart';
 
 /// Recognized card networks.
@@ -51,22 +52,6 @@ class CreditCard {
     return CardNetwork.unknown;
   }
 
-  /// True when [input] passes the Luhn checksum (digits weighted right-to-left).
-  static bool _luhnOk(String digits) {
-    var sum = 0;
-    var alt = false;
-    for (var i = digits.length - 1; i >= 0; i--) {
-      var d = digits.codeUnitAt(i) - 0x30;
-      if (alt) {
-        d *= 2;
-        if (d > 9) d -= 9;
-      }
-      sum += d;
-      alt = !alt;
-    }
-    return sum % 10 == 0;
-  }
-
   static const Map<CardNetwork, Set<int>> _lengths = {
     CardNetwork.visa: {13, 16, 19},
     CardNetwork.mastercard: {16},
@@ -102,7 +87,7 @@ class CreditCard {
         ValidationIssue(IssueCode.cardBadLength, 'Implausible card length.')
       ]);
     }
-    if (!_luhnOk(s)) {
+    if (!luhnOk(s)) {
       return const Invalid(
           [ValidationIssue(IssueCode.cardBadLuhn, 'Fails the Luhn checksum.')]);
     }

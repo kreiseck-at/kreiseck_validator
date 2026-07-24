@@ -1,0 +1,7 @@
+// Structured data parsed out of an IMEI by Imei.parse.
+export interface ImeiInfo {
+  tac: string;
+  serialNumber: string;
+  checkDigit: string;
+  reportingBodyIdentifier: string;
+}

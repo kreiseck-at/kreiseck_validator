@@ -66,6 +66,23 @@ void main() {
     }
   });
 
+  group('imei', () {
+    for (final c in _load('imei.json')) {
+      final input = c['input']! as String;
+      _check('imei', c, () => Imei.validate(input), () => Imei.format(input));
+      if (c.containsKey('parse')) {
+        test('imei parse: $input', () {
+          final info = Imei.parse(input)!;
+          final p = c['parse']! as Map<String, Object?>;
+          expect(info.tac, p['tac']);
+          expect(info.serialNumber, p['serialNumber']);
+          expect(info.checkDigit, p['checkDigit']);
+          expect(info.reportingBodyIdentifier, p['reportingBodyIdentifier']);
+        });
+      }
+    }
+  });
+
   group('license_plate', () {
     for (final c in _load('license_plate.json')) {
       final input = c['input']! as String;
