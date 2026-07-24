@@ -8,5 +8,7 @@ export { CreditCard, type CardNetwork } from './credit-card/index';
 export { Iban, type IbanInfo } from './iban/index';
 export { IbanCountry } from './iban/country';
 export type { IbanCountry as IbanCountryInfo } from './iban/country';
+export { Imei } from './imei/index';
+export type { ImeiInfo } from './imei/types';
 export { LicensePlate } from './license-plate/index';
 export type { PlateInfo, PlateType } from './license-plate/types';

@@ -1,0 +1,9 @@
+[
+  {"input": "353880080078742", "isValid": true, "normalized": "353880080078742", "format": "353880080078742",
+   "parse": {"tac": "35388008", "serialNumber": "007874", "checkDigit": "2", "reportingBodyIdentifier": "35"}},
+  {"input": "3538 8008 0078 742", "isValid": true, "normalized": "353880080078742"},
+  {"input": "", "isValid": false, "code": "imeiEmpty"},
+  {"input": "353880080078741", "isValid": false, "code": "imeiBadChecksum"},
+  {"input": "12345", "isValid": false, "code": "imeiBadLength"},
+  {"input": "35388008007874X", "isValid": false, "code": "imeiBadChars"}
+]

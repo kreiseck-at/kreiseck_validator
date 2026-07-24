@@ -9,6 +9,8 @@ export 'src/email/email.dart';
 export 'src/iban/iban.dart';
 export 'src/iban/iban_country.dart';
 export 'src/iban/iban_info.dart';
+export 'src/imei/imei.dart';
+export 'src/imei/imei_info.dart';
 export 'src/license_plate/license_plate.dart';
 export 'src/license_plate/plate_info.dart';
 export 'src/license_plate/plate_type.dart';

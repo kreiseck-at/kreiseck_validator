@@ -5,7 +5,8 @@ export type IssueCode =
   | 'urlEmpty' | 'urlBadScheme' | 'urlBadHost' | 'urlBadTld'
   | 'ibanEmpty' | 'ibanBadChars' | 'ibanBadChecksum' | 'ibanBadLength'
   | 'cardEmpty' | 'cardBadChars' | 'cardBadLength' | 'cardBadLuhn'
-  | 'plateEmpty' | 'plateBadChars' | 'plateBadFormat' | 'plateUnknownCountry' | 'plateAmbiguousCountry';
+  | 'plateEmpty' | 'plateBadChars' | 'plateBadFormat' | 'plateUnknownCountry' | 'plateAmbiguousCountry'
+  | 'imeiEmpty' | 'imeiBadChars' | 'imeiBadLength' | 'imeiBadChecksum';
 
 export interface ValidationIssue { readonly code: IssueCode; readonly message: string }
 export interface Suggestion { readonly value: string; readonly reason: string }
