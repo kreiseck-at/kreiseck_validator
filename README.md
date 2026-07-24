@@ -6,7 +6,8 @@
 
 <p align="center">
   <b>Validate, normalize and pretty-format the input every app collects —<br>
-  email, phone, URL, IBAN, credit-card and license plate — in a few lines of Dart.</b><br>
+  email, phone, URL, IBAN, credit-card, license plate, IMEI, ICCID, MAC address,
+  VIN and postal code — in a few lines of Dart.</b><br>
   Zero dependencies. Hand-written algorithms. DACH-aware.
 </p>
 
@@ -23,9 +24,10 @@
 
 `kreiseck_validator` is a small, **zero-dependency Dart package** for **validating**,
 **normalizing** and **formatting** the kinds of user input almost every app collects:
-**email addresses, phone numbers, URLs/domains, IBANs, credit-card numbers and license
-plates**. Every type follows the same four-operation API — `isValid`, `validate`,
-`normalize`, `format` — so once you learn one, you know them all.
+**email addresses, phone numbers, URLs/domains, IBANs, credit-card numbers, license
+plates, IMEIs, ICCIDs, MAC addresses, VINs and postal codes**. Every type follows the
+same four-operation API — `isValid`, `validate`, `normalize`, `format` — so once you
+learn one, you know them all.
 
 It is built and maintained by **[Kreiseck Software Solutions](https://kreiseck.com)**, an
 Austrian software company. Every algorithm (Luhn, IBAN Mod-97, E.164 phone parsing, an
@@ -52,6 +54,20 @@ dependencies, no network calls, no telemetry.**
   Switzerland, Croatia and Turkey**, plus **`parse`** into a `PlateInfo` (district/canton/
   province code, official region name, serial) with best-effort special-plate
   **classification** (diplomatic, authority, military, historic, electric, …)
+- 📱 **IMEI** — **Luhn** checksum over the 15-digit device identifier, plus **`parse`**
+  into an `ImeiInfo` (TAC, serial number, check digit, reporting-body identifier)
+- 💳 **ICCID** — SIM card identifier (ITU-T E.118): MII + Luhn check on 20-digit cards
+  (19-digit cards carry no check digit), plus **`parse`** resolving the issuing
+  **country** from the embedded E.164 calling code
+- 🔌 **MAC address** — EUI-48/64 hardware addresses in **colon, hyphen, Cisco-dot and
+  bare** notation, format conversion between them, and **`parse`** exposing
+  unicast/multicast and universal/local bits plus the OUI/NIC split
+- 🚗 **VIN** — ISO 3779 structure validation (17-char charset, `I`/`O`/`Q` forbidden),
+  plus **`parse`** into a `VinInfo` with the ISO check-digit result and the decoded
+  **model year** (e.g. `Vin.parse('1HGCM82633A004352')!.modelYear` → `2003`)
+- 📮 **Postal code** — curated per-country pattern table for **Europe + Turkey**
+  (51 countries), canonical spacing (`1234AB` → `1234 AB`, `00950` → `00-950`, …) and
+  **`parse`** into a `PostalInfo`
 - 🧱 **One consistent API** — `isValid` / `validate` / `normalize` / `format` (+ `tryFormat`) on every type
 - 🪶 **Zero dependencies** · **Apache-2.0** · **null-safe** · works on **all Dart & Flutter platforms**
 
@@ -196,6 +212,68 @@ seasonal, electric, …) on a **best-effort** basis and defaults to `PlateType.s
 when a country's special forms aren't (yet) identifiable from the plate text alone — see
 [`doc/algorithms.md`](doc/algorithms.md).
 
+### 📱 IMEI
+
+```dart
+Imei.isValid('353880080078742');   // true (passes the Luhn checksum)
+
+final info = Imei.parse('353880080078742')!;
+info.tac;          // '35388008'
+info.serialNumber; // '007874'
+info.checkDigit;   // '2'
+```
+
+### 💳 ICCID
+
+```dart
+Iccid.isValid('8949012345678901234'); // true
+
+final info = Iccid.parse('8949012345678901234')!;
+info.mii;     // '89'
+info.country; // Country for 'DE' (resolved from the embedded E.164 code)
+```
+
+### 🔌 MAC address
+
+```dart
+MacAddress.isValid('00:1A:2B:3C:4D:5E');                     // true
+MacAddress.normalize('00-1A-2B-3C-4D-5E');                   // '00:1a:2b:3c:4d:5e'
+MacAddress.format('00:1A:2B:3C:4D:5E', notation: MacNotation.hyphen); // '00-1a-2b-3c-4d-5e'
+
+final info = MacAddress.parse('00:1A:2B:3C:4D:5E')!;
+info.oui;        // '00:1a:2b'
+info.isUnicast;  // true
+```
+
+### 🚗 VIN
+
+```dart
+Vin.isValid('1HGCM82633A004352');            // true (structurally valid)
+Vin.parse('1HGCM82633A004352')!.modelYear;   // 2003
+
+final info = Vin.parse('1HGCM82633A004352')!;
+info.wmi;               // '1HG'
+info.checkDigitValid;   // true
+```
+
+`Vin.validate` checks **structure only** (17 chars from the ISO 3779 charset); the
+check digit is mandatory only for North American VINs, so its result is exposed via
+`parse`'s `checkDigitValid` instead of blocking validation — see
+[`doc/algorithms.md`](doc/algorithms.md) for the model-year decode.
+
+### 📮 Postal code
+
+```dart
+PostalCode.isValid('1234 AB', country: 'NL');   // true
+PostalCode.format('1234ab', country: 'NL');     // '1234 AB'
+PostalCode.format('00950', country: 'PL');      // '00-950'
+PostalCode.format('sw1a1aa', country: 'GB');    // 'SW1A 1AA'
+```
+
+`country` is required (ISO2) — a bare postal code is ambiguous across countries.
+Covers **Europe + Turkey** (51 countries) from a curated per-country pattern table;
+an unlisted country yields `IssueCode.postalUnknownCountry`.
+
 All `format`/`normalize` calls throw `FormatException` on invalid input, with one
 exception: `Email.normalize` doesn't validate at all — it's a pure `trim` + lower-case
 transform, so it never throws. Use `tryFormat` for a null-returning variant instead of a
@@ -225,6 +303,11 @@ stable enums you can switch on and translate; the English `message` is only a de
 | `Iban`       | ✅ | ✅ | ✅ | ✅ | ✅ | checksum + per-country length for every registry country; `parse` bank/BIC lookup is AT/DE/CH |
 | `CreditCard` | ✅ | ✅ | ✅ | ✅ | ✅ | none (Luhn + network detection is global) |
 | `LicensePlate` | ✅ | ✅ | ✅ | ✅ | ✅ | grammar + region-table validation and `parse` for AT/DE/CH/HR/TR |
+| `Imei`       | ✅ | ✅ | ✅ | ✅ | ✅ | none (Luhn checksum is global) |
+| `Iccid`      | ✅ | ✅ | ✅ | ✅ | ✅ | none for checksum; `parse` country resolution is global (E.164 calling codes) |
+| `MacAddress` | ✅ | ✅ | ✅ | ✅ | ✅ | none (EUI-48/64 notation handling is global) |
+| `Vin`        | ✅ | ✅ | ✅ | ✅ | ✅ | none (structure + check digit + model year are global, ISO 3779) |
+| `PostalCode` | ✅ | ✅ | ✅ | ✅ | ✅ | curated pattern table for Europe + Turkey (51 countries) |
 
 ## 🪶 Zero dependencies, Apache-2.0
 
