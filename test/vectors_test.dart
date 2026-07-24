@@ -76,15 +76,18 @@ void main() {
   group('imei', () {
     for (final c in _load('imei.json')) {
       final input = c['input']! as String;
-      _check('imei', c, () => Imei.validate(input), () => Imei.format(input));
+      final allowSv = c['allowSv'] as bool? ?? false;
+      _check('imei', c, () => Imei.validate(input, allowSv: allowSv),
+          () => Imei.format(input, allowSv: allowSv));
       if (c.containsKey('parse')) {
         test('imei parse: $input', () {
-          final info = Imei.parse(input)!;
+          final info = Imei.parse(input, allowSv: allowSv)!;
           final p = c['parse']! as Map<String, Object?>;
           expect(info.tac, p['tac']);
           expect(info.serialNumber, p['serialNumber']);
           expect(info.checkDigit, p['checkDigit']);
           expect(info.reportingBodyIdentifier, p['reportingBodyIdentifier']);
+          expect(info.softwareVersion, p['softwareVersion']);
         });
       }
     }

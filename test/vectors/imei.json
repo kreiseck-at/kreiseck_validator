@@ -5,5 +5,8 @@
   {"input": "", "isValid": false, "code": "imeiEmpty"},
   {"input": "353880080078741", "isValid": false, "code": "imeiBadChecksum"},
   {"input": "12345", "isValid": false, "code": "imeiBadLength"},
-  {"input": "35388008007874X", "isValid": false, "code": "imeiBadChars"}
+  {"input": "35388008007874X", "isValid": false, "code": "imeiBadChars"},
+  {"input": "3538800800787456", "allowSv": true, "isValid": true, "normalized": "3538800800787456",
+   "parse": {"tac": "35388008", "serialNumber": "007874", "checkDigit": null, "softwareVersion": "56", "reportingBodyIdentifier": "35"}},
+  {"input": "3538800800787456", "isValid": false, "code": "imeiBadLength"}
 ]

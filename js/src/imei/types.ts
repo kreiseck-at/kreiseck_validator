@@ -2,6 +2,7 @@
 export interface ImeiInfo {
   tac: string;
   serialNumber: string;
-  checkDigit: string;
+  checkDigit: string | null;
   reportingBodyIdentifier: string;
+  softwareVersion: string | null;
 }
