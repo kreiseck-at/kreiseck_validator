@@ -45,4 +45,7 @@ enum IssueCode {
   iccidBadChars,
   iccidBadLength,
   iccidBadChecksum,
+  // mac address
+  macEmpty,
+  macBadFormat,
 }

@@ -16,6 +16,8 @@ export 'src/imei/imei_info.dart';
 export 'src/license_plate/license_plate.dart';
 export 'src/license_plate/plate_info.dart';
 export 'src/license_plate/plate_type.dart';
+export 'src/mac_address/mac_address.dart';
+export 'src/mac_address/mac_info.dart';
 export 'src/phone/phone.dart';
 export 'src/phone/phone_format.dart';
 export 'src/phone/phone_info.dart';

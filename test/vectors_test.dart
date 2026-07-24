@@ -6,6 +6,13 @@ import 'package:test/test.dart';
 
 Country? _country(String? s) => s == null ? null : Country.fromIso2(s);
 
+MacNotation _notation(String? s) => switch (s) {
+      'hyphen' => MacNotation.hyphen,
+      'dot' => MacNotation.dot,
+      'bare' => MacNotation.bare,
+      _ => MacNotation.colon,
+    };
+
 String? _codeOf(ValidationResult r) =>
     r is Invalid ? r.issues.first.code.name : null;
 
@@ -96,6 +103,39 @@ void main() {
           expect(info.country?.iso2, p['country']);
           expect(info.issuerIdentifier, p['issuerIdentifier']);
           expect(info.checkDigit, p['checkDigit']);
+        });
+      }
+    }
+  });
+
+  group('mac_address', () {
+    for (final c in _load('mac.json')) {
+      final input = c['input']! as String;
+      final notation = _notation(c['notation'] as String?);
+      final upperCase = c['upperCase'] as bool? ?? false;
+      _check(
+          'mac_address',
+          c,
+          () => MacAddress.validate(input),
+          () => MacAddress.format(input,
+              notation: notation, upperCase: upperCase));
+      if (c.containsKey('parse')) {
+        test('mac_address parse: $input', () {
+          final info = MacAddress.parse(input)!;
+          final p = c['parse']! as Map<String, Object?>;
+          if (p.containsKey('oui')) expect(info.oui, p['oui']);
+          if (p.containsKey('nic')) expect(info.nic, p['nic']);
+          if (p.containsKey('isUnicast')) {
+            expect(info.isUnicast, p['isUnicast']);
+          }
+          if (p.containsKey('isMulticast')) {
+            expect(info.isMulticast, p['isMulticast']);
+          }
+          if (p.containsKey('isUniversal')) {
+            expect(info.isUniversal, p['isUniversal']);
+          }
+          if (p.containsKey('isLocal')) expect(info.isLocal, p['isLocal']);
+          if (p.containsKey('type')) expect(info.type.name, p['type']);
         });
       }
     }
