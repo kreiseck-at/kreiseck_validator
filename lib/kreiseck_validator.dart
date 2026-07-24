@@ -23,3 +23,5 @@ export 'src/phone/phone_format.dart';
 export 'src/phone/phone_info.dart';
 export 'src/phone/phone_number_type.dart';
 export 'src/url/url.dart';
+export 'src/vin/vin.dart';
+export 'src/vin/vin_info.dart';

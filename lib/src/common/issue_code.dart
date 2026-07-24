@@ -48,4 +48,8 @@ enum IssueCode {
   // mac address
   macEmpty,
   macBadFormat,
+  // vin
+  vinEmpty,
+  vinBadChars,
+  vinBadLength,
 }
