@@ -1,0 +1,63 @@
+[
+  {
+    "input": "8949 0123 4567 8901 234",
+    "isValid": true,
+    "normalized": "8949012345678901234",
+    "format": "8949012345678901234",
+    "parse": {
+      "mii": "89",
+      "country": "DE",
+      "issuerIdentifier": "012345678901234",
+      "checkDigit": null
+    }
+  },
+  {
+    "input": "89900123456789012342",
+    "isValid": true,
+    "normalized": "89900123456789012342",
+    "format": "89900123456789012342",
+    "parse": {
+      "mii": "89",
+      "country": "TR",
+      "issuerIdentifier": "012345678901234",
+      "checkDigit": "2"
+    }
+  },
+  {
+    "input": "8943098765432109876",
+    "isValid": true,
+    "normalized": "8943098765432109876",
+    "format": "8943098765432109876",
+    "parse": {
+      "mii": "89",
+      "country": "AT",
+      "issuerIdentifier": "098765432109876",
+      "checkDigit": null
+    }
+  },
+  {
+    "input": "",
+    "isValid": false,
+    "code": "iccidEmpty"
+  },
+  {
+    "input": "8949X0000000000206",
+    "isValid": false,
+    "code": "iccidBadChars"
+  },
+  {
+    "input": "890",
+    "isValid": false,
+    "code": "iccidBadLength"
+  },
+  {
+    "input": "88900000000000000000",
+    "isValid": false,
+    "code": "iccidBadLength"
+  },
+  {
+    "input": "89900123456789012343",
+    "isValid": false,
+    "code": "iccidBadChecksum"
+  }
+]

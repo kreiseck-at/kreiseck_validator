@@ -9,6 +9,7 @@ export default defineConfig({
     'src/iban/index.ts',
     'src/credit-card/index.ts',
     'src/imei/index.ts',
+    'src/iccid/index.ts',
     'src/license-plate/index.ts',
   ],
   format: ['esm', 'cjs'],

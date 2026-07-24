@@ -10,5 +10,7 @@ export { IbanCountry } from './iban/country';
 export type { IbanCountry as IbanCountryInfo } from './iban/country';
 export { Imei } from './imei/index';
 export type { ImeiInfo } from './imei/types';
+export { Iccid } from './iccid/index';
+export type { IccidInfo } from './iccid/types';
 export { LicensePlate } from './license-plate/index';
 export type { PlateInfo, PlateType } from './license-plate/types';

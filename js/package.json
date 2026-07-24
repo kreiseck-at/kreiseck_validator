@@ -47,6 +47,7 @@
     "./iban":       { "types": "./dist/iban/index.d.ts",  "import": "./dist/iban/index.js",  "require": "./dist/iban/index.cjs" },
     "./credit-card":{ "types": "./dist/credit-card/index.d.ts", "import": "./dist/credit-card/index.js", "require": "./dist/credit-card/index.cjs" },
     "./imei":       { "types": "./dist/imei/index.d.ts",   "import": "./dist/imei/index.js",   "require": "./dist/imei/index.cjs" },
+    "./iccid":      { "types": "./dist/iccid/index.d.ts",  "import": "./dist/iccid/index.js",  "require": "./dist/iccid/index.cjs" },
     "./license-plate":{ "types": "./dist/license-plate/index.d.ts", "import": "./dist/license-plate/index.js", "require": "./dist/license-plate/index.cjs" }
   },
   "scripts": {

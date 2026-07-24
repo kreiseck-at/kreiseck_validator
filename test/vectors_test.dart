@@ -83,6 +83,24 @@ void main() {
     }
   });
 
+  group('iccid', () {
+    for (final c in _load('iccid.json')) {
+      final input = c['input']! as String;
+      _check(
+          'iccid', c, () => Iccid.validate(input), () => Iccid.format(input));
+      if (c.containsKey('parse')) {
+        test('iccid parse: $input', () {
+          final info = Iccid.parse(input)!;
+          final p = c['parse']! as Map<String, Object?>;
+          expect(info.mii, p['mii']);
+          expect(info.country?.iso2, p['country']);
+          expect(info.issuerIdentifier, p['issuerIdentifier']);
+          expect(info.checkDigit, p['checkDigit']);
+        });
+      }
+    }
+  });
+
   group('license_plate', () {
     for (final c in _load('license_plate.json')) {
       final input = c['input']! as String;
