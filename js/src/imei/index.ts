@@ -8,7 +8,13 @@ import type { ImeiInfo } from './types';
 // Equipment Identity) numbers.
 //
 // Validation requires exactly 15 digits and a passing Luhn checksum over
-// all 15 digits. IMEISV (16-digit, no checksum) is out of scope.
+// all 15 digits. Passing { allowSv: true } also accepts a 16-digit IMEISV
+// (IMEI plus a 2-digit software version number); a 16-digit value is never
+// Luhn-checked, since IMEISV has no check digit.
+
+export interface ImeiOptions {
+  allowSv?: boolean;
+}
 
 const DIGITS_RE = /^[0-9]+$/;
 
@@ -17,9 +23,11 @@ function strip(input: string): string {
   return input.replace(/[\s-]/g, '');
 }
 
-// Validates input, returning a valid result with the compact 15-digit
-// normalized form or an invalid result describing why it was rejected.
-function validate(input: string): ValidationResult {
+// Validates input, returning a valid result with the compact normalized
+// form (15 digits, or 16 when allowSv is true and an IMEISV is given) or an
+// invalid result describing why it was rejected.
+function validate(input: string, options: ImeiOptions = {}): ValidationResult {
+  const allowSv = options.allowSv ?? false;
   const s = strip(input);
   if (s.length === 0) {
     return invalid('imeiEmpty', 'IMEI is empty.');
@@ -27,39 +35,40 @@ function validate(input: string): ValidationResult {
   if (!DIGITS_RE.test(s)) {
     return invalid('imeiBadChars', 'IMEI has invalid characters.');
   }
-  if (s.length !== 15) {
-    return invalid('imeiBadLength', 'IMEI must be 15 digits.');
+  const ok = s.length === 15 || (allowSv && s.length === 16);
+  if (!ok) {
+    return invalid('imeiBadLength', allowSv ? 'IMEI must be 15 or 16 digits.' : 'IMEI must be 15 digits.');
   }
-  if (!luhnOk(s)) {
+  if (s.length === 15 && !luhnOk(s)) {
     return invalid('imeiBadChecksum', 'Fails the Luhn checksum.');
   }
   return valid(s);
 }
 
 // True when validate returns a valid result.
-function isValid(input: string): boolean {
-  return validate(input).ok;
+function isValid(input: string, options: ImeiOptions = {}): boolean {
+  return validate(input, options).ok;
 }
 
-// Returns the compact 15-digit canonical form. Throws FormatError if input
-// is not a valid IMEI.
-function normalize(input: string): string {
-  const r = validate(input);
+// Returns the compact canonical form (15 or 16 digits). Throws FormatError
+// if input is not a valid IMEI.
+function normalize(input: string, options: ImeiOptions = {}): string {
+  const r = validate(input, options);
   if (!r.ok) {
     throw new FormatError(r.issues[0].message);
   }
   return r.normalized;
 }
 
-// Returns the compact 15-digit form. Throws FormatError if invalid.
-function format(input: string): string {
-  return normalize(input);
+// Returns the compact form. Throws FormatError if invalid.
+function format(input: string, options: ImeiOptions = {}): string {
+  return normalize(input, options);
 }
 
 // Like format but returns null instead of throwing on invalid input.
-function tryFormat(input: string): string | null {
+function tryFormat(input: string, options: ImeiOptions = {}): string | null {
   try {
-    return format(input);
+    return format(input, options);
   } catch (e) {
     if (e instanceof FormatError) return null;
     throw e;
@@ -67,15 +76,17 @@ function tryFormat(input: string): string | null {
 }
 
 // Parses input into an ImeiInfo, or null when it is not a valid IMEI.
-function parse(input: string): ImeiInfo | null {
-  const r = validate(input);
+function parse(input: string, options: ImeiOptions = {}): ImeiInfo | null {
+  const r = validate(input, options);
   if (!r.ok) return null;
   const s = r.normalized;
+  const isSv = s.length === 16;
   return {
     tac: s.substring(0, 8),
     serialNumber: s.substring(8, 14),
-    checkDigit: s.substring(14),
+    checkDigit: isSv ? null : s.substring(14),
     reportingBodyIdentifier: s.substring(0, 2),
+    softwareVersion: isSv ? s.substring(14, 16) : null,
   };
 }
 
