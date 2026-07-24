@@ -9,7 +9,8 @@ export type IssueCode =
   | 'imeiEmpty' | 'imeiBadChars' | 'imeiBadLength' | 'imeiBadChecksum'
   | 'iccidEmpty' | 'iccidBadChars' | 'iccidBadLength' | 'iccidBadChecksum'
   | 'macEmpty' | 'macBadFormat'
-  | 'vinEmpty' | 'vinBadChars' | 'vinBadLength';
+  | 'vinEmpty' | 'vinBadChars' | 'vinBadLength'
+  | 'postalEmpty' | 'postalBadFormat' | 'postalUnknownCountry';
 
 export interface ValidationIssue { readonly code: IssueCode; readonly message: string }
 export interface Suggestion { readonly value: string; readonly reason: string }

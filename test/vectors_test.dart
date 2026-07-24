@@ -188,6 +188,26 @@ void main() {
     }
   });
 
+  group('postal_code', () {
+    for (final c in _load('postal_code.json')) {
+      final input = c['input']! as String;
+      final country = c['country']! as String;
+      _check(
+          'postal_code',
+          c,
+          () => PostalCode.validate(input, country: country),
+          () => PostalCode.format(input, country: country));
+      if (c.containsKey('parse')) {
+        test('postal_code parse: $input', () {
+          final info = PostalCode.parse(input, country: country)!;
+          final p = c['parse']! as Map<String, Object?>;
+          expect(info.country, p['country']);
+          expect(info.code, p['code']);
+        });
+      }
+    }
+  });
+
   group('url', () {
     for (final c in _load('url.json')) {
       final input = c['input']! as String;

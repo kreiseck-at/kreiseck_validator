@@ -13,6 +13,7 @@ export default defineConfig({
     'src/mac-address/index.ts',
     'src/license-plate/index.ts',
     'src/vin/index.ts',
+    'src/postal-code/index.ts',
   ],
   format: ['esm', 'cjs'],
   dts: true,
