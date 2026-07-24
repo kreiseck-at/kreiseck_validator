@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.8.0
+
+- Five new modules: `Imei`, `Iccid`, `MacAddress`, `Vin` and `PostalCode`,
+  each with the standard `isValid` / `validate` / `normalize` / `format` (+
+  `tryFormat`) API plus `parse` for structural extraction.
+- `Imei`: 15-digit **Luhn** checksum, `parse` into an `ImeiInfo` (TAC, serial
+  number, check digit, reporting-body identifier). IMEISV (16-digit) is out
+  of scope.
+- `Iccid`: 19- or 20-digit SIM identifiers (ITU-T E.118) starting with the
+  telecom MII `89`; 20-digit ICCIDs carry a **Luhn** check digit, 19-digit
+  ones don't. `parse` returns an `IccidInfo` resolving the issuing
+  **country** from the embedded E.164 calling code.
+- `MacAddress`: EUI-48/64 hardware addresses across colon, hyphen,
+  Cisco-dot and bare notation, with `format(..., notation:)` conversion
+  between them and `parse` exposing the OUI/NIC split plus the
+  unicast/multicast and universal/local bits.
+- `Vin`: ISO 3779 structure validation (17 chars, `I`/`O`/`Q` forbidden).
+  `validate` is **structure-only** — the check digit is mandatory only for
+  North American VINs — so `parse`'s `VinInfo` exposes `checkDigitValid`
+  (ISO 3779 mod-11 weighted checksum) and the decoded **`modelYear`** from
+  character 10, disambiguated by whether character 7 is a letter (2010-2039
+  cycle) or a digit (1980-2009 cycle).
+- `PostalCode`: a curated per-country pattern table covering **Europe plus
+  Turkey (51 countries)**, with canonical per-country spacing (e.g. NL
+  `1234ab` → `1234 AB`, PL `00950` → `00-950`, GB `sw1a1aa` → `SW1A 1AA`)
+  and `parse` into a `PostalInfo`. `country` (ISO2) is required on every
+  operation since a bare code is ambiguous across countries.
+- Internal refactor: `CreditCard`'s Luhn checksum is now a small shared
+  helper (`lib/src/common/luhn.dart`, `js/src/common/luhn.ts`) reused by
+  `Imei` and `Iccid`; `CreditCard`'s own validation behavior is unchanged.
+- Sixteen new `IssueCode`s: `imeiEmpty`, `imeiBadChars`, `imeiBadLength`,
+  `imeiBadChecksum`; `iccidEmpty`, `iccidBadChars`, `iccidBadLength`,
+  `iccidBadChecksum`; `macEmpty`, `macBadFormat`; `vinEmpty`, `vinBadChars`,
+  `vinBadLength`; `postalEmpty`, `postalBadFormat`, `postalUnknownCountry`.
+
 ## 0.7.0
 
 - New `LicensePlate` module: validation, normalization, formatting and

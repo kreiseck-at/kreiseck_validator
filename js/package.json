@@ -1,6 +1,6 @@
 {
   "name": "@kreiseck/validator",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Validate, normalize and format email, phone, URL, IBAN, credit-card and license-plate input. Zero dependencies, DACH-aware. By Kreiseck.",
   "keywords": [
     "kreiseck",
@@ -13,6 +13,11 @@
     "url",
     "credit-card",
     "license-plate",
+    "imei",
+    "iccid",
+    "mac-address",
+    "vin",
+    "postal-code",
     "luhn",
     "mod-97",
     "e164",

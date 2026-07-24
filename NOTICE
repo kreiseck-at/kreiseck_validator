@@ -22,3 +22,7 @@ German license-plate region data (Unterscheidungszeichen and their assigned
 Stadt/Kreis) is derived from the Kraftfahrt-Bundesamt's official list, an
 amtliches Werk in the public domain under German copyright law. Other plate
 region tables are compiled from public administrative sources.
+
+Per-country postal-code patterns are derived from Google's libaddressinput
+(https://github.com/google/libaddressinput) i18n address format data, used
+under its Apache License, Version 2.0.

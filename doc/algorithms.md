@@ -40,6 +40,14 @@ check digit is `1`, giving the well-known test number
 implements exactly this and is how the vectors in
 `test/vectors/credit_card.json` were produced.
 
+The checksum itself lives in a small shared helper, `luhnOk` (Dart:
+`lib/src/common/luhn.dart`; TS: `js/src/common/luhn.ts`), extracted so
+`Imei.validate` and `Iccid.validate` can reuse the exact same digit-summing
+logic instead of duplicating it — `CreditCard`'s own validation behavior is
+unchanged by the extraction. `Imei` runs it over all 15 digits (the 15th is
+the check digit); `Iccid` runs it only when the ICCID is 20 digits long
+(19-digit ICCIDs carry no check digit at all).
+
 ## Mod-97 checksum (IBAN)
 
 Used by `Iban.validate` (`lib/src/iban/iban.dart`) to verify the two
@@ -323,3 +331,80 @@ per-country rules over the code and any suffix (e.g. Germany's trailing `H`/
 a country whose special-plate conventions aren't (yet) reliably
 distinguishable from plate text alone (Switzerland, Croatia, Turkey today)
 always classifies as `standard` rather than guessing.
+
+## VIN check digit and model-year decode (ISO 3779)
+
+Used by `Vin.parse` (`lib/src/vin/vin.dart`) to compute the ISO 3779
+weighted-sum check digit and to decode the model year — neither of which
+`Vin.validate` enforces, since **structure** (17 characters from the
+`A-HJ-NPR-Z0-9` charset — `I`, `O` and `Q` are forbidden to avoid confusion
+with `1`/`0`) is the only thing every VIN scheme agrees on; the check digit
+is mandatory only in North America and frequently absent or non-standard on
+European VINs.
+
+**Check digit** (position 9, 0-indexed 8): each of the 17 characters is
+transliterated to a numeric value (digits keep their value; letters map
+cyclically — `A/J`→1, `B/K/S`→2, `C/L/T`→3, … skipping `I`, `O`, `Q`), then
+each value is multiplied by a fixed per-position weight
+(`[8,7,6,5,4,3,2,10,0,9,8,7,6,5,4,3,2]` — note position 9 itself weighs `0`,
+since it's the digit being checked) and the products summed. The sum mod 11
+gives the expected check character: `0`-`9` as-is, `10` written as `X`.
+`checkDigitValid` just compares this to the VIN's actual character 9.
+
+**Model year** (position 10, 0-indexed 9): each character maps to a
+calendar year via a fixed table (`A`=1980, `B`=1981, … `Y`=2000, then
+`1`=2001, `2`=2002, … `9`=2009). Because manufacturers reuse the same 17
+letter/digit codes on a **30-year cycle**, that single character is
+ambiguous between two years thirty years apart (e.g. `3` alone could mean
+2003 or 2033) — position 10 alone cannot disambiguate. The convention
+disambiguates using **position 7** (0-indexed 6) instead: if it's a
+**letter**, the VIN belongs to the 2010-2039 cycle and 30 years are added to
+the base-table year; if it's a **digit**, the VIN belongs to the base
+1980-2009 cycle and the table year is used unchanged.
+
+Worked example, `1HGCM82633A004352`: transliterating and weighting all 17
+characters and summing the products gives `311`; `311 mod 11 = 3`, matching
+the VIN's own character 9 (`3`), so `checkDigitValid` is `true`. Character
+10 is `3` → base year 2003 from the year table; character 7 is `6`, a
+digit, so no 30-year offset is added — `modelYear` is `2003`.
+
+## MAC address notations and flag bits (EUI-48 / EUI-64)
+
+Used by `MacAddress` (`lib/src/mac_address/mac_address.dart`) to accept and
+convert between the four notations vendors commonly use for the same
+12-hex-digit (EUI-48) or 16-hex-digit (EUI-64) hardware address: colon
+(`aa:bb:cc:dd:ee:ff`), hyphen (`aa-bb-cc-dd-ee-ff`), Cisco dot
+(`aabb.ccdd.eeff`) and bare (`aabbccddeeff`). There is no checksum here
+either — validation is purely "does the input match one of these four
+shapes with the right hex-digit count", and the canonical `normalize` form
+is always lower-case colon-separated.
+
+`parse`'s unicast/multicast and universal/local flags read two individual
+bits out of the **first octet** — the same bit positions IEEE 802
+hardware uses to interpret an address on the wire: the least-significant
+bit (`0x01`) is the I/G (individual/group) bit — `0` means the address
+identifies one station (unicast), `1` means it's a group/multicast
+address; the second-least-significant bit (`0x02`) is the U/L
+(universal/local) bit — `0` means the address comes from an
+IEEE-assigned OUI block (universal), `1` means it was locally assigned
+(e.g. a hand-configured or virtualized interface). `MacAddress` needs no
+bundled data for any of this — the notation regexes, the bit masks and
+the octet split are all fixed, in-code constants.
+
+## PostalCode per-country patterns (Europe + Turkey)
+
+Unlike the checksum-based types above, `PostalCode`
+(`lib/src/postal_code/postal_code.dart`) validates against a **curated
+data table** rather than an algorithm, because postal-code formats are a
+per-country administrative convention with no common structure to derive
+them from. `kPostalPatterns` (`lib/src/postal_code/postal_metadata.g.dart`,
+generated by `tool/gen_postal_metadata.py` from the public i18n
+postal-format data — see [NOTICE](../NOTICE)) maps each of 51 European
+countries (plus Turkey) to an anchored validation regex and a canonical
+spacing rule (e.g. insert a literal separator after N characters, or —
+for the UK-style postcodes used by GB/GG/GI/IM/JE — a space before the
+last three characters regardless of total length). `country` is required
+on every `PostalCode` operation, since the same bare digit string (a plain
+4-digit code, for instance) is a valid postal code in a dozen different
+countries at once; a country missing from the table yields
+`IssueCode.postalUnknownCountry` rather than a guess.

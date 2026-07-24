@@ -1,8 +1,8 @@
 # @kreiseck/validator
 
 Validate, normalize and format the input every app collects — **email, phone,
-URL, IBAN, credit-card and license plate** — in a few lines of TypeScript. Zero
-dependencies, DACH-aware.
+URL, IBAN, credit-card, license plate, IMEI, ICCID, MAC address, VIN and
+postal code** — in a few lines of TypeScript. Zero dependencies, DACH-aware.
 
 This is the TypeScript/JavaScript port of the
 [`kreiseck_validator`](https://pub.dev/packages/kreiseck_validator) Dart
@@ -128,6 +128,78 @@ special-purpose plates (diplomatic, authority, military, historic, seasonal,
 electric, …) on a **best-effort** basis and defaults to `'standard'` when a
 country's special forms aren't (yet) identifiable from the plate text alone.
 
+### IMEI
+
+```ts
+import { Imei } from '@kreiseck/validator/imei';
+
+Imei.isValid('353880080078742');   // true (passes the Luhn checksum)
+
+const info = Imei.parse('353880080078742')!;
+info.tac;          // '35388008'
+info.serialNumber; // '007874'
+info.checkDigit;   // '2'
+```
+
+### ICCID
+
+```ts
+import { Iccid } from '@kreiseck/validator/iccid';
+
+Iccid.isValid('8949012345678901234'); // true
+
+const info = Iccid.parse('8949012345678901234')!;
+info.mii;            // '89'
+info.country?.iso2;  // 'DE' (resolved from the embedded E.164 code)
+```
+
+### MAC address
+
+```ts
+import { MacAddress } from '@kreiseck/validator/mac-address';
+
+MacAddress.isValid('00:1A:2B:3C:4D:5E');                       // true
+MacAddress.normalize('00-1A-2B-3C-4D-5E');                     // '00:1a:2b:3c:4d:5e'
+MacAddress.format('00:1A:2B:3C:4D:5E', { notation: 'hyphen' }); // '00-1a-2b-3c-4d-5e'
+
+const info = MacAddress.parse('00:1A:2B:3C:4D:5E')!;
+info.oui;        // '00:1a:2b'
+info.isUnicast;  // true
+```
+
+### VIN
+
+```ts
+import { Vin } from '@kreiseck/validator/vin';
+
+Vin.isValid('1HGCM82633A004352');          // true (structurally valid)
+Vin.parse('1HGCM82633A004352')!.modelYear; // 2003
+
+const info = Vin.parse('1HGCM82633A004352')!;
+info.wmi;             // '1HG'
+info.checkDigitValid; // true
+```
+
+`Vin.validate` checks **structure only** (17 chars from the ISO 3779 charset);
+the check digit is mandatory only for North American VINs, so its result is
+exposed via `parse`'s `checkDigitValid` instead of blocking validation.
+
+### Postal code
+
+```ts
+import { PostalCode } from '@kreiseck/validator/postal-code';
+
+PostalCode.isValid('1234 AB', { country: 'NL' }); // true
+PostalCode.format('1234ab', { country: 'NL' });   // '1234 AB'
+PostalCode.format('00950', { country: 'PL' });    // '00-950'
+PostalCode.format('sw1a1aa', { country: 'GB' });  // 'SW1A 1AA'
+```
+
+`country` is required (ISO2) — a bare postal code is ambiguous across
+countries. Covers **Europe + Turkey** (51 countries) from a curated
+per-country pattern table; an unlisted country yields the
+`postalUnknownCountry` issue code.
+
 All `format`/`normalize` calls throw `FormatError` on invalid input, with
 one exception: `Email.normalize` doesn't validate at all — it's a pure
 `trim` + lower-case transform, so it never throws. Use `tryFormat` for a
@@ -161,6 +233,11 @@ import { Email } from '@kreiseck/validator/email';
 import { Url } from '@kreiseck/validator/url';
 import { CreditCard } from '@kreiseck/validator/credit-card';
 import { LicensePlate } from '@kreiseck/validator/license-plate';
+import { Imei } from '@kreiseck/validator/imei';
+import { Iccid } from '@kreiseck/validator/iccid';
+import { MacAddress } from '@kreiseck/validator/mac-address';
+import { Vin } from '@kreiseck/validator/vin';
+import { PostalCode } from '@kreiseck/validator/postal-code';
 ```
 
 Each subpath ships its own ESM, CommonJS and `.d.ts` build.
