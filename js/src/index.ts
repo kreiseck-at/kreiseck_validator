@@ -18,3 +18,5 @@ export { LicensePlate } from './license-plate/index';
 export type { PlateInfo, PlateType } from './license-plate/types';
 export { Vin } from './vin/index';
 export type { VinInfo } from './vin/types';
+export { PostalCode } from './postal-code/index';
+export type { PostalInfo } from './postal-code/types';

@@ -50,7 +50,8 @@
     "./iccid":      { "types": "./dist/iccid/index.d.ts",  "import": "./dist/iccid/index.js",  "require": "./dist/iccid/index.cjs" },
     "./mac-address":{ "types": "./dist/mac-address/index.d.ts", "import": "./dist/mac-address/index.js", "require": "./dist/mac-address/index.cjs" },
     "./license-plate":{ "types": "./dist/license-plate/index.d.ts", "import": "./dist/license-plate/index.js", "require": "./dist/license-plate/index.cjs" },
-    "./vin":        { "types": "./dist/vin/index.d.ts",   "import": "./dist/vin/index.js",   "require": "./dist/vin/index.cjs" }
+    "./vin":        { "types": "./dist/vin/index.d.ts",   "import": "./dist/vin/index.js",   "require": "./dist/vin/index.cjs" },
+    "./postal-code":{ "types": "./dist/postal-code/index.d.ts", "import": "./dist/postal-code/index.js", "require": "./dist/postal-code/index.cjs" }
   },
   "scripts": {
     "build": "tsup",

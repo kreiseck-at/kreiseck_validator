@@ -52,4 +52,8 @@ enum IssueCode {
   vinEmpty,
   vinBadChars,
   vinBadLength,
+  // postal code
+  postalEmpty,
+  postalBadFormat,
+  postalUnknownCountry,
 }
