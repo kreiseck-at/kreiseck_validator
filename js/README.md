@@ -1,7 +1,7 @@
 # @kreiseck/validator
 
 Validate, normalize and format the input every app collects — **email, phone,
-URL, IBAN, credit-card, license plate, IMEI, ICCID, MAC address, VIN and
+URL, host, IBAN, credit-card, license plate, IMEI, ICCID, MAC address, VIN and
 postal code** — in a few lines of TypeScript. Zero dependencies, DACH-aware.
 
 This is the TypeScript/JavaScript port of the
@@ -68,6 +68,25 @@ Url.isValid('example.com:8080');          // true
 Url.normalize('Example.com/path/');       // 'https://example.com/path'
 Url.format('https://www.example.com/');   // 'example.com'
 ```
+
+### Host
+
+```ts
+import { Host } from '@kreiseck/validator/host';
+
+Host.isValid('example.com:8080');            // true
+Host.isValid('[2001:db8::1]:443');           // true
+
+const h = Host.parse('[::1]:8080')!;
+h.type; // 'ipv6'
+h.port; // 8080
+```
+
+`Host` classifies a bare host (no scheme) as a hostname, IPv4 or IPv6 address,
+trying IPv4 then IPv6 then hostname in that order. A port is only recognised
+for IPv6 in the bracketed form (`[::1]:8080`) — a bare `::1` parses as IPv6
+with no port, since a plain trailing `:port` would be ambiguous with the
+address's own colons.
 
 ### IBAN
 
@@ -140,6 +159,16 @@ info.tac;          // '35388008'
 info.serialNumber; // '007874'
 info.checkDigit;   // '2'
 ```
+
+Passing `{ allowSv: true }` additionally accepts a 16-digit **IMEISV** (the
+IMEI plus a 2-digit software version, no Luhn check) on every operation:
+
+```ts
+Imei.parse('3538800800787456', { allowSv: true })!.softwareVersion; // '56'
+```
+
+For a 16-digit IMEISV, `checkDigit` is `null` (IMEISV has no check digit);
+for a 15-digit IMEI, `softwareVersion` is `null`.
 
 ### ICCID
 
@@ -231,6 +260,7 @@ import { Iban } from '@kreiseck/validator/iban';
 import { Phone } from '@kreiseck/validator/phone';
 import { Email } from '@kreiseck/validator/email';
 import { Url } from '@kreiseck/validator/url';
+import { Host } from '@kreiseck/validator/host';
 import { CreditCard } from '@kreiseck/validator/credit-card';
 import { LicensePlate } from '@kreiseck/validator/license-plate';
 import { Imei } from '@kreiseck/validator/imei';
