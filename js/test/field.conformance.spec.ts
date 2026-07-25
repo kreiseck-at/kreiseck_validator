@@ -5,6 +5,7 @@ import type { FieldDescriptor } from '../src/common/field';
 import { Imei } from '../src/imei/index';
 import { Iccid } from '../src/iccid/index';
 import { Vin } from '../src/vin/index';
+import { Iban } from '../src/iban/index';
 
 type Options = Record<string, unknown>;
 type DescriptorVec = Options & { type: string; options?: Options };
@@ -24,6 +25,8 @@ function descriptorFor(type: string, o: Options): FieldDescriptor {
       return Iccid.fieldDescriptor();
     case 'vin':
       return Vin.fieldDescriptor();
+    case 'iban':
+      return Iban.fieldDescriptor({ country: o.country as string | undefined });
     default:
       throw new Error(`unknown type ${type}`);
   }
@@ -37,6 +40,8 @@ function partialFor(type: string, input: string, o: Options): string {
       return Iccid.formatPartial(input);
     case 'vin':
       return Vin.formatPartial(input);
+    case 'iban':
+      return Iban.formatPartial(input, { country: o.country as string | undefined });
     default:
       throw new Error(`unknown type ${type}`);
   }

@@ -9,5 +9,12 @@
   { "type": "vin", "options": {}, "input": "1hgcm8", "output": "1HGCM8" },
   { "type": "vin", "options": {}, "input": "1hgc-m8", "output": "1HGCM8" },
   { "type": "vin", "options": {}, "input": "1hgcm82633a004352xx", "output": "1HGCM82633A004352" },
-  { "type": "vin", "options": {}, "input": "iqo", "output": "" }
+  { "type": "vin", "options": {}, "input": "iqo", "output": "" },
+  { "type": "iban", "options": { "country": "AT" }, "input": "a", "output": "A" },
+  { "type": "iban", "options": { "country": "AT" }, "input": "at61", "output": "AT61" },
+  { "type": "iban", "options": { "country": "AT" }, "input": "at611", "output": "AT61 1" },
+  { "type": "iban", "options": { "country": "AT" }, "input": "AT61 1904", "output": "AT61 1904" },
+  { "type": "iban", "options": { "country": "AT" }, "input": "at61190a", "output": "AT61 190A" },
+  { "type": "iban", "options": { "country": "AT" }, "input": "AT611904300234573201999", "output": "AT61 1904 3002 3457 3201" },
+  { "type": "iban", "options": {}, "input": "at61190", "output": "AT61 190" }
 ]

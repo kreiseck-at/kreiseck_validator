@@ -55,6 +55,7 @@ FieldDescriptor _descriptorFor(String type, Map<String, Object?> o) =>
       'imei' => Imei.fieldDescriptor(allowSv: o['allowSv'] as bool? ?? false),
       'iccid' => Iccid.fieldDescriptor(),
       'vin' => Vin.fieldDescriptor(),
+      'iban' => Iban.fieldDescriptor(country: o['country'] as String?),
       _ => throw ArgumentError('unknown type $type'),
     };
 
@@ -64,6 +65,7 @@ String _partialFor(String type, String input, Map<String, Object?> o) =>
         Imei.formatPartial(input, allowSv: o['allowSv'] as bool? ?? false),
       'iccid' => Iccid.formatPartial(input),
       'vin' => Vin.formatPartial(input),
+      'iban' => Iban.formatPartial(input, country: o['country'] as String?),
       _ => throw ArgumentError('unknown type $type'),
     };
 

@@ -38,5 +38,35 @@
     "maxLength": 17,
     "example": "1HGCM82633A004352",
     "allowedChars": "0-9A-HJ-NPR-Z"
+  },
+  {
+    "type": "iban",
+    "options": {},
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": null,
+    "example": null,
+    "allowedChars": "0-9A-Z "
+  },
+  {
+    "type": "iban",
+    "options": { "country": "AT" },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": 24,
+    "example": "AT61 1904 3002 3457 3201",
+    "allowedChars": "0-9A-Z "
+  },
+  {
+    "type": "iban",
+    "options": { "country": "ZZ" },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": null,
+    "example": null,
+    "allowedChars": "0-9A-Z "
   }
 ]

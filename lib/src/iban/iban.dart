@@ -1,6 +1,9 @@
 import '../common/country.dart';
+import '../common/field_descriptor.dart';
 import '../common/issue_code.dart';
+import '../common/partial_format.dart';
 import '../common/validation_result.dart';
+import 'iban_country.dart';
 import 'iban_info.dart';
 import 'iban_metadata.dart';
 
@@ -134,5 +137,33 @@ class Iban {
       bic: bic,
       formatted: format(input),
     );
+  }
+
+  /// Describes an IBAN input field. With [country] the descriptor is exact
+  /// (length and example for that country); without it, or for a country
+  /// with no bundled metadata, it is generic.
+  static FieldDescriptor fieldDescriptor({String? country}) {
+    final c = country == null ? null : IbanCountry.of(country);
+    return FieldDescriptor(
+      keyboard: KeyboardType.text,
+      capitalization: Capitalization.characters,
+      maxLength: c == null ? null : c.length + (c.length - 1) ~/ 4,
+      example: c?.example,
+      allowedChars: '0-9A-Z ',
+    );
+  }
+
+  /// Formats partially typed [input] in groups of four, upper-cased, capped
+  /// at [country]'s IBAN length (34, the ISO 13616 maximum, without one).
+  /// Never throws.
+  static String formatPartial(String input, {String? country}) {
+    final c = country == null ? null : IbanCountry.of(country);
+    final s = prepare(
+      input,
+      fieldDescriptor(country: country),
+      separators: ' ',
+      maxSignificant: c?.length ?? 34,
+    );
+    return groupEvery(s, 4, ' ');
   }
 }
