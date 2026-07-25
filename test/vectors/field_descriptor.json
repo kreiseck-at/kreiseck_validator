@@ -198,5 +198,25 @@
     "maxLength": null,
     "example": "B-XY 1234",
     "allowedChars": "0-9A-Z -"
+  },
+  {
+    "type": "phone",
+    "options": {},
+    "keyboard": "phone",
+    "autofill": "telephoneNumber",
+    "capitalization": "none",
+    "maxLength": null,
+    "example": null,
+    "allowedChars": "0-9+ ()-"
+  },
+  {
+    "type": "phone",
+    "options": { "country": "AT" },
+    "keyboard": "phone",
+    "autofill": "telephoneNumber",
+    "capitalization": "none",
+    "maxLength": null,
+    "example": "+43 1 234567",
+    "allowedChars": "0-9+ ()-"
   }
 ]

@@ -1,6 +1,8 @@
 import { valid, invalid } from '../common/types';
 import type { ValidationResult } from '../common/types';
 import { FormatError } from '../common/errors';
+import type { FieldDescriptor } from '../common/field';
+import { prepare } from '../common/partial';
 import { countries, fromIso2, fromCallingCode } from './metadata';
 import type { Country, PhoneFormat, PhoneInfo, PhoneNumberType } from './types';
 import { classify } from './at-numbering';
@@ -222,4 +224,45 @@ function parse(input: string, opts: PhoneOptions = {}): PhoneInfo | null {
   };
 }
 
-export const Phone = { isValid, validate, normalize, format, tryFormat, type, parse };
+// Describes a phone-number input field. maxLength is null: E.164 caps the
+// digits at 15, but the number of separators varies per national format, so
+// no honest single bound exists.
+function fieldDescriptor(options: PhoneOptions = {}): FieldDescriptor {
+  const country = options.country;
+  return {
+    keyboard: 'phone',
+    autofill: 'telephoneNumber',
+    capitalization: 'none',
+    maxLength: null,
+    example:
+      country === undefined
+        ? null
+        : (tryFormat(`+${fromIso2(country)?.callingCode ?? ''}1234567`, { country }) ?? null),
+    allowedChars: '0-9+ ()-',
+  };
+}
+
+// Formats partially typed input: digits and + only, snapping into the
+// canonical form as soon as the number is valid. Reproducing a full
+// as-you-type formatter would mean guessing national grouping on partial
+// input, and a wrong guess mid-number is worse than none. Never throws.
+function formatPartial(input: string, options: PhoneOptions = {}): string {
+  let s = prepare(input, fieldDescriptor(options), { separators: ' ()-' });
+  const plus = s.startsWith('+');
+  s = s.replace(/\+/g, '');
+  if (s.length > 15) s = s.substring(0, 15);
+  if (plus) s = `+${s}`;
+  return tryFormat(s, { ...options, international: plus }) ?? s;
+}
+
+export const Phone = {
+  isValid,
+  validate,
+  normalize,
+  format,
+  tryFormat,
+  type,
+  parse,
+  fieldDescriptor,
+  formatPartial,
+};

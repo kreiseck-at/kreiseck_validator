@@ -11,6 +11,7 @@ import { MacAddress } from '../src/mac-address/index';
 import type { MacNotation } from '../src/mac-address/types';
 import { PostalCode } from '../src/postal-code/index';
 import { LicensePlate } from '../src/license-plate/index';
+import { Phone } from '../src/phone/index';
 
 type Options = Record<string, unknown>;
 type DescriptorVec = Options & { type: string; options?: Options };
@@ -43,6 +44,8 @@ function descriptorFor(type: string, o: Options): FieldDescriptor {
       return PostalCode.fieldDescriptor({ country: o.country as string | undefined });
     case 'license_plate':
       return LicensePlate.fieldDescriptor({ country: o.country as string | undefined });
+    case 'phone':
+      return Phone.fieldDescriptor({ country: o.country as string | undefined });
     default:
       throw new Error(`unknown type ${type}`);
   }
@@ -69,6 +72,8 @@ function partialFor(type: string, input: string, o: Options): string {
       return PostalCode.formatPartial(input, { country: o.country as string | undefined });
     case 'license_plate':
       return LicensePlate.formatPartial(input, { country: o.country as string | undefined });
+    case 'phone':
+      return Phone.formatPartial(input, { country: o.country as string | undefined });
     default:
       throw new Error(`unknown type ${type}`);
   }
