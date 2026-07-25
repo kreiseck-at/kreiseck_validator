@@ -78,6 +78,16 @@ because `Url.format` is a display transform that strips the scheme and `www.`,
 `Host.format` canonicalises and lower-cases, and `Email` has no `format` at all —
 applying any of those while the user is still typing would delete what they just typed.
 
+A few `FieldDescriptor` fields are honestly absent rather than filled with a plausible
+guess: `PostalCode.fieldDescriptor({ country }).example` is `null` for the 28 of 51
+countries with no verified real postal code on hand (`maxLength`, unlike `example`, is
+still mechanically derived for all 51). `Phone.fieldDescriptor(...).example` is `null`
+for every country, always — there is no bundled table of a single verified real phone
+number per country, only synthetic ones, and an invented example is worse than none.
+`LicensePlate.fieldDescriptor(...).maxLength` is `null` for every country by design —
+the implemented Austrian grammar has an unbounded serial, so any cap could reject a
+plate `validate` accepts.
+
 ## Quick start
 
 ### Email
