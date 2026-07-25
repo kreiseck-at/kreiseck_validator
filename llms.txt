@@ -22,24 +22,41 @@ import 'package:kreiseck_validator/kreiseck_validator.dart';
 ## API
 
 Five types, each a class with static methods. Common pattern:
-`isValid` / `validate` / `normalize` / `format` (+ `tryFormat`).
+`isValid` / `validate` / `normalize` / `format` (+ `tryFormat`, `fieldDescriptor`,
+`formatPartial`).
 
 - `Email.isValid(String) -> bool`
 - `Email.validate(String) -> ValidationResult`  (attaches an offline typo-domain
   Suggestion to Valid, e.g. `user@gmial.com` -> suggests `user@gmail.com`)
 - `Email.normalize(String) -> String`  (pure trim + lowercase; NEVER throws, does not validate)
+- `Email.fieldDescriptor() -> FieldDescriptor`, `Email.formatPartial(String) -> String`
+  (formatPartial is identity — Email has no `format` — never throws)
 - `Phone.isValid(String, {Country? country}) -> bool`
 - `Phone.validate(String, {Country? country}) -> ValidationResult`  (Valid.normalized is E.164)
 - `Phone.normalize(String, {Country? country}) -> String`  (E.164, e.g. `+436601234567`; throws FormatException if invalid)
 - `Phone.format(String, {Country? country, bool international = true}) -> String`  (e.g. `+43 660 1234567` or `0660 1234567`)
 - `Phone.tryFormat(...) -> String?`
+- `Phone.fieldDescriptor({Country? country}) -> FieldDescriptor`, `Phone.formatPartial(String, {Country? country}) -> String`
+  (as-you-type; snaps into `format`'s shape once the number is valid; never throws)
 - `Url.isValid(String) -> bool`
 - `Url.validate(String, {String defaultScheme = 'https'}) -> ValidationResult`
 - `Url.normalize(String, {String defaultScheme = 'https'}) -> String`  (adds scheme, lowercases host, keeps port/path/query, strips one trailing slash)
 - `Url.format(String) -> String`  (compact display: no scheme, no leading `www.`, no trailing slash)
 - `Url.tryFormat(String) -> String?`
+- `Url.fieldDescriptor() -> FieldDescriptor`, `Url.formatPartial(String) -> String`
+  (formatPartial is identity — `format` is a display transform — never throws)
 - `Iban.isValid/validate/normalize/format/tryFormat(String)`  (Mod-97 checksum; exact length for DE/AT/CH, checksum-only for other countries; format groups in 4s)
+- `Iban.fieldDescriptor({String? country})`, `Iban.formatPartial(String, {String? country})`
+  (groups in 4s as-you-type; matches `format` once valid; never throws)
 - `CreditCard.isValid/validate/normalize/format/tryFormat(String)` plus `CreditCard.network(String) -> CardNetwork?`  (Luhn checksum; detects Visa/Mastercard/Amex/Discover; formats Amex 4-6-5 else 4-4-4-4)
+- `CreditCard.fieldDescriptor()`, `CreditCard.formatPartial(String)`
+  (groups Amex 4-6-5 / else 4-4-4-4 as-you-type; matches `format` once valid; never throws)
+
+`fieldDescriptor`/`formatPartial` exist on every type in the package (not only the
+five above), always taking the same options as `validate`. `FieldDescriptor`
+(`keyboard`, `autofill`, `capitalization`, `maxLength`, `example`, `allowedChars`) is
+platform-neutral — no Flutter or DOM types — see README.md for the Flutter/HTML
+mapping tables.
 
 Result model:
 - `sealed class ValidationResult` = `Valid(String normalized, {List<Suggestion> suggestions})` | `Invalid(List<ValidationIssue> issues)`
