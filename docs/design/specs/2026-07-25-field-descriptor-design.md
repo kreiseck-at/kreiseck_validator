@@ -158,7 +158,7 @@ Generic (no country) unless stated:
 | `Host` | `url` | null | `none` | 259 | `0-9A-Za-z.:\[\]-` |
 | `Iban` | `text` | null | `characters` | null / per country | `0-9A-Z ` |
 | `CreditCard` | `digits` | `creditCardNumber` | `none` | 23 | `0-9 ` |
-| `LicensePlate` | `text` | null | `characters` | null / per country | `0-9A-Z -` |
+| `LicensePlate` | `text` | null | `characters` | null | `0-9A-Z -` |
 | `Imei` | `digits` | null | `none` | 15, or 16 with `allowSv` | `0-9` |
 | `Iccid` | `digits` | null | `none` | 20 | `0-9` |
 | `MacAddress` | `text` | null | per `upperCase` | per `notation` | per `notation` |
@@ -206,10 +206,11 @@ Country-dependent values:
   `text`; `capitalization` = `none` for digits-only, else `characters`;
   `maxLength` = canonical length including any separator; `allowedChars` and
   `example` from the metadata (see "Generated data").
-- **`LicensePlate.fieldDescriptor(country:)`** returns per-country
-  `maxLength`, `example` and `allowedChars` derived from that country's already
-  implemented grammar. These are hand-written constants next to the grammar,
-  guarded by the length invariant test below rather than by eyeballing.
+- **`LicensePlate.fieldDescriptor(country:)`** returns a per-country `example`;
+  `maxLength` stays **null for every country**. The implemented AT grammar is
+  `^([A-Z]{1,2})([A-Z0-9]+)$` — the serial is unbounded — so any cap could
+  reject a plate `validate` accepts. A field that silently swallows the last
+  character of a valid value is a worse failure than a field with no cap.
 
 ## Part 2 — `formatPartial`
 
@@ -221,12 +222,16 @@ Never throws. Accepts anything: empty, half-typed, garbage, already-formatted.
 
 Four steps, in this order:
 
-1. **Filter** — drop every character not in `allowedChars` (no-op when null).
-2. **Case** — apply `capitalization` (`characters` → upper-case; `none` →
+1. **Case** — apply `capitalization` (`characters` → upper-case; `none` →
    leave as typed).
+2. **Filter** — drop every character not in `allowedChars` (no-op when null).
 3. **Truncate** — cut to the type's maximum number of *significant* characters
    (no-op when unbounded).
 4. **Group** — insert the type's canonical separators.
+
+Casing deliberately runs **before** filtering: `Vin`'s `allowedChars` is
+`0-9A-HJ-NPR-Z`, so filtering a freshly typed lower-case `h` first would delete
+it instead of upper-casing it into a valid character.
 
 Truncation deliberately runs **before** grouping, on the separator-free form.
 Cutting the grouped text at `maxLength` instead would sometimes land on a
@@ -284,18 +289,35 @@ only inserted *between* significant characters that are already present.
 | `Iban` | groups of 4 |
 | `CreditCard` | `4-6-5` once the prefix identifies Amex, otherwise `4-4-4-4` |
 | `MacAddress` | separator per `notation`: `colon`/`hyphen` every 2 hex characters, `dot` every 4, `bare` none |
-| `PostalCode` | the country's `PostalPattern.format` rule, applied as soon as enough characters exist |
-| `Phone` | leading `+`: detect the calling code, then group nationally; no `+`: group nationally using `country` |
-| `LicensePlate` | the country's display grouping, best effort on partial input |
+| `PostalCode` | `N:C` rule: incremental, separator inserted once `N` characters exist. `U` rule (UK style): snap-on-valid |
+| `Phone` | snap-on-valid |
+| `LicensePlate` | snap-on-valid |
 | `Imei`, `Iccid`, `Vin` | none — filter, case and truncate only |
 | `Host` | none — filter and truncate only (no casing: `format` lower-cases, typing must not) |
 | `Email`, `Url` | identity: with `allowedChars` and `maxLength` both null, all four steps are no-ops |
 
-`Phone` is the most involved case: with a partial number the country may not yet
-be determined. Rule: while the calling code is still ambiguous, return the
-digits with `+` and no grouping; once a unique calling code is matched, apply
-that country's national grouping to the remainder. Never guess a country in
-order to group.
+### Incremental grouping vs. snap-on-valid
+
+Two grouping strategies, chosen per type by one rule: **is every separator
+position fixed counting from the left?**
+
+- **Yes → incremental.** IBAN (every 4), credit card (every 4, or `4-6-5` once
+  the prefix says Amex), MAC (per notation), postal `N:C` rules. The separator
+  can be inserted the moment enough characters exist, because no later
+  character can move it.
+- **No → snap-on-valid.** Phone, license plate, postal `U` rules. Here the
+  separator position depends on the *total* length, which is unknown mid-typing:
+  splitting `SW1A` as `S W1A` because the UK rule says "space before the last
+  three" would be actively wrong. These types therefore run `tryFormat` on the
+  prepared text and return its output when the value is already valid,
+  otherwise the prepared text unchanged. The field stays plain while typing and
+  snaps into its formatted shape the moment the value becomes valid.
+
+Snap-on-valid is the honest option for `Phone`: reproducing libphonenumber's
+as-you-type formatter would mean re-deriving national grouping rules for partial
+input in both languages, and a wrong guess mid-number is more disruptive than no
+grouping at all. It also satisfies every guarantee above by construction, since
+the formatted branch *is* `format`.
 
 `Email` and `Url` come out as identity functions, not by special-casing but
 because their descriptors carry no filter and no length bound, so every step is
@@ -346,9 +368,14 @@ Unit tests, per language:
 
 ## Generated data
 
-`PostalPattern` gains two fields, `example` (canonical, separator-applied) and
-`charset` (either digits-only or alphanumeric), and
-`tool/gen_postal_metadata.py` is extended to emit them for all 51 countries.
+`PostalPattern` gains two fields, `example` (canonical, separator-applied,
+**nullable**) and `charset` (either digits-only or alphanumeric), and
+`tool/gen_postal_metadata.py` is extended to emit them. `charset` is derived
+mechanically from each pattern and therefore covers all 51 countries;
+`example` is curated and stays `null` for countries where no verified real code
+is on hand. An invented example is worse than none, and the generator's
+`self_check()` is extended to assert that every example present matches its own
+pattern, so a wrong one fails the build rather than shipping.
 This is the only generated table touched; every other descriptor value is
 hand-written next to the validator it belongs to.
 
