@@ -2,6 +2,8 @@ import { valid, invalid } from '../common/types';
 import type { ValidationResult } from '../common/types';
 import { FormatError } from '../common/errors';
 import { luhnOk } from '../common/luhn';
+import type { FieldDescriptor } from '../common/field';
+import { prepare } from '../common/partial';
 import type { ImeiInfo } from './types';
 
 // Validation, normalization and formatting of IMEI (International Mobile
@@ -90,5 +92,26 @@ function parse(input: string, options: ImeiOptions = {}): ImeiInfo | null {
   };
 }
 
-export const Imei = { isValid, validate, normalize, format, tryFormat, parse };
+// Describes an IMEI input field. With allowSv the field accepts the 16-digit
+// IMEISV form.
+function fieldDescriptor(options: ImeiOptions = {}): FieldDescriptor {
+  const allowSv = options.allowSv ?? false;
+  return {
+    keyboard: 'digits',
+    autofill: null,
+    capitalization: 'none',
+    maxLength: allowSv ? 16 : 15,
+    example: '490154203237518',
+    allowedChars: '0-9',
+  };
+}
+
+// Formats partially typed input for display in a field: digits only, capped
+// at 15 digits (16 with allowSv). Never throws.
+function formatPartial(input: string, options: ImeiOptions = {}): string {
+  const allowSv = options.allowSv ?? false;
+  return prepare(input, fieldDescriptor(options), { maxSignificant: allowSv ? 16 : 15 });
+}
+
+export const Imei = { isValid, validate, normalize, format, tryFormat, parse, fieldDescriptor, formatPartial };
 export type { ImeiInfo };

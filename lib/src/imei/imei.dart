@@ -1,5 +1,7 @@
+import '../common/field_descriptor.dart';
 import '../common/issue_code.dart';
 import '../common/luhn.dart';
+import '../common/partial_format.dart';
 import '../common/validation_result.dart';
 import 'imei_info.dart';
 
@@ -86,4 +88,22 @@ class Imei {
       softwareVersion: isSv ? s.substring(14, 16) : null,
     );
   }
+
+  /// Describes an IMEI input field. With [allowSv] the field accepts the
+  /// 16-digit IMEISV form.
+  static FieldDescriptor fieldDescriptor({bool allowSv = false}) =>
+      FieldDescriptor(
+        keyboard: KeyboardType.digits,
+        maxLength: allowSv ? 16 : 15,
+        example: '490154203237518',
+        allowedChars: '0-9',
+      );
+
+  /// Formats partially typed [input] for display in a field: digits only,
+  /// capped at 15 digits (16 with [allowSv]). Never throws.
+  static String formatPartial(String input, {bool allowSv = false}) => prepare(
+        input,
+        fieldDescriptor(allowSv: allowSv),
+        maxSignificant: allowSv ? 16 : 15,
+      );
 }

@@ -1,0 +1,42 @@
+[
+  {
+    "type": "imei",
+    "options": {},
+    "keyboard": "digits",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 15,
+    "example": "490154203237518",
+    "allowedChars": "0-9"
+  },
+  {
+    "type": "imei",
+    "options": { "allowSv": true },
+    "keyboard": "digits",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 16,
+    "example": "490154203237518",
+    "allowedChars": "0-9"
+  },
+  {
+    "type": "iccid",
+    "options": {},
+    "keyboard": "digits",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 20,
+    "example": "8949012345678901234",
+    "allowedChars": "0-9"
+  },
+  {
+    "type": "vin",
+    "options": {},
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": 17,
+    "example": "1HGCM82633A004352",
+    "allowedChars": "0-9A-HJ-NPR-Z"
+  }
+]

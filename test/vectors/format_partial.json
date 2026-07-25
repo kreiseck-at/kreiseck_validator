@@ -1,0 +1,13 @@
+[
+  { "type": "imei", "options": {}, "input": "", "output": "" },
+  { "type": "imei", "options": {}, "input": "4901 542", "output": "4901542" },
+  { "type": "imei", "options": {}, "input": "49-01-54", "output": "490154" },
+  { "type": "imei", "options": {}, "input": "490154203237518999", "output": "490154203237518" },
+  { "type": "imei", "options": { "allowSv": true }, "input": "4901542032375189", "output": "4901542032375189" },
+  { "type": "iccid", "options": {}, "input": "8949 0123", "output": "89490123" },
+  { "type": "iccid", "options": {}, "input": "894901234567890123499", "output": "89490123456789012349" },
+  { "type": "vin", "options": {}, "input": "1hgcm8", "output": "1HGCM8" },
+  { "type": "vin", "options": {}, "input": "1hgc-m8", "output": "1HGCM8" },
+  { "type": "vin", "options": {}, "input": "1hgcm82633a004352xx", "output": "1HGCM82633A004352" },
+  { "type": "vin", "options": {}, "input": "iqo", "output": "" }
+]
