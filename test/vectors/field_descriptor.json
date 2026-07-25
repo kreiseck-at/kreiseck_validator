@@ -1,0 +1,272 @@
+[
+  {
+    "type": "imei",
+    "options": {},
+    "keyboard": "digits",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 15,
+    "example": "490154203237518",
+    "allowedChars": "0-9"
+  },
+  {
+    "type": "imei",
+    "options": { "allowSv": true },
+    "keyboard": "digits",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 16,
+    "example": "490154203237518",
+    "allowedChars": "0-9"
+  },
+  {
+    "type": "iccid",
+    "options": {},
+    "keyboard": "digits",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 20,
+    "example": "8949012345678901234",
+    "allowedChars": "0-9"
+  },
+  {
+    "type": "vin",
+    "options": {},
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": 17,
+    "example": "1HGCM82633A004352",
+    "allowedChars": "0-9A-HJ-NPR-Z"
+  },
+  {
+    "type": "iban",
+    "options": {},
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": null,
+    "example": null,
+    "allowedChars": "0-9A-Z "
+  },
+  {
+    "type": "iban",
+    "options": { "country": "AT" },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": 24,
+    "example": "AT61 1904 3002 3457 3201",
+    "allowedChars": "0-9A-Z "
+  },
+  {
+    "type": "iban",
+    "options": { "country": "ZZ" },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": null,
+    "example": null,
+    "allowedChars": "0-9A-Z "
+  },
+  {
+    "type": "credit_card",
+    "options": {},
+    "keyboard": "digits",
+    "autofill": "creditCardNumber",
+    "capitalization": "none",
+    "maxLength": 23,
+    "example": "4242 4242 4242 4242",
+    "allowedChars": "0-9 "
+  },
+  {
+    "type": "mac_address",
+    "options": {},
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 23,
+    "example": "aa:bb:cc:dd:ee:ff",
+    "allowedChars": "0-9A-Fa-f:"
+  },
+  {
+    "type": "mac_address",
+    "options": { "notation": "hyphen", "upperCase": true },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": 23,
+    "example": "AA-BB-CC-DD-EE-FF",
+    "allowedChars": "0-9A-Fa-f-"
+  },
+  {
+    "type": "mac_address",
+    "options": { "notation": "dot" },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 19,
+    "example": "aabb.ccdd.eeff",
+    "allowedChars": "0-9A-Fa-f."
+  },
+  {
+    "type": "mac_address",
+    "options": { "notation": "bare" },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 16,
+    "example": "aabbccddeeff",
+    "allowedChars": "0-9A-Fa-f"
+  },
+  {
+    "type": "postal_code",
+    "options": {},
+    "keyboard": "text",
+    "autofill": "postalCode",
+    "capitalization": "characters",
+    "maxLength": null,
+    "example": null,
+    "allowedChars": "0-9A-Z -"
+  },
+  {
+    "type": "postal_code",
+    "options": { "country": "DE" },
+    "keyboard": "digits",
+    "autofill": "postalCode",
+    "capitalization": "none",
+    "maxLength": 5,
+    "example": "10115",
+    "allowedChars": "0-9"
+  },
+  {
+    "type": "postal_code",
+    "options": { "country": "NL" },
+    "keyboard": "text",
+    "autofill": "postalCode",
+    "capitalization": "characters",
+    "maxLength": 7,
+    "example": "1234 AB",
+    "allowedChars": "0-9A-Z "
+  },
+  {
+    "type": "postal_code",
+    "options": { "country": "PL" },
+    "keyboard": "digits",
+    "autofill": "postalCode",
+    "capitalization": "none",
+    "maxLength": 6,
+    "example": "00-950",
+    "allowedChars": "0-9-"
+  },
+  {
+    "type": "postal_code",
+    "options": { "country": "GB" },
+    "keyboard": "text",
+    "autofill": "postalCode",
+    "capitalization": "characters",
+    "maxLength": 8,
+    "example": "SW1A 1AA",
+    "allowedChars": "0-9A-Z "
+  },
+  {
+    "type": "postal_code",
+    "options": { "country": "AL" },
+    "keyboard": "digits",
+    "autofill": "postalCode",
+    "capitalization": "none",
+    "maxLength": 4,
+    "example": null,
+    "allowedChars": "0-9"
+  },
+  {
+    "type": "postal_code",
+    "options": { "country": "MT" },
+    "keyboard": "text",
+    "autofill": "postalCode",
+    "capitalization": "characters",
+    "maxLength": 8,
+    "example": null,
+    "allowedChars": "0-9A-Z "
+  },
+  {
+    "type": "license_plate",
+    "options": {},
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": null,
+    "example": null,
+    "allowedChars": "0-9A-ZÄÖÜČŠŽ .-"
+  },
+  {
+    "type": "license_plate",
+    "options": { "country": "AT" },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": null,
+    "example": "W-12345A",
+    "allowedChars": "0-9A-ZÄÖÜČŠŽ .-"
+  },
+  {
+    "type": "license_plate",
+    "options": { "country": "DE" },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": null,
+    "example": "B-XY 1234",
+    "allowedChars": "0-9A-ZÄÖÜČŠŽ .-"
+  },
+  {
+    "type": "phone",
+    "options": {},
+    "keyboard": "phone",
+    "autofill": "telephoneNumber",
+    "capitalization": "none",
+    "maxLength": null,
+    "example": null,
+    "allowedChars": "0-9+ ()-"
+  },
+  {
+    "type": "phone",
+    "options": { "country": "AT" },
+    "keyboard": "phone",
+    "autofill": "telephoneNumber",
+    "capitalization": "none",
+    "maxLength": null,
+    "example": null,
+    "allowedChars": "0-9+ ()-"
+  },
+  {
+    "type": "email",
+    "options": {},
+    "keyboard": "email",
+    "autofill": "email",
+    "capitalization": "none",
+    "maxLength": null,
+    "example": "user@example.com",
+    "allowedChars": null
+  },
+  {
+    "type": "url",
+    "options": {},
+    "keyboard": "url",
+    "autofill": "url",
+    "capitalization": "none",
+    "maxLength": null,
+    "example": "https://example.com",
+    "allowedChars": null
+  },
+  {
+    "type": "host",
+    "options": {},
+    "keyboard": "url",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 259,
+    "example": "example.com",
+    "allowedChars": "0-9A-Za-z.:\\[\\]-"
+  }
+]

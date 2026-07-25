@@ -1,4 +1,6 @@
+import '../common/field_descriptor.dart';
 import '../common/issue_code.dart';
+import '../common/partial_format.dart';
 import '../common/validation_result.dart';
 import 'plate_info.dart';
 import 'plate_type.dart';
@@ -13,8 +15,7 @@ part 'plate_metadata.g.dart';
 class LicensePlate {
   LicensePlate._();
 
-  static final RegExp _allowedChars =
-      RegExp(r'^[A-ZÄÖÜČŠŽ0-9 \-.]+$');
+  static final RegExp _allowedChars = RegExp(r'^[A-ZÄÖÜČŠŽ0-9 \-.]+$');
 
   static const Set<String> _knownCountries = {'AT', 'DE', 'CH', 'HR', 'TR'};
 
@@ -84,8 +85,7 @@ class LicensePlate {
   // but is not a known province is rejected as `plateBadFormat` -- see
   // [_matchesTrStructure]. The digit and letter groups are disjoint
   // character classes, so the split is always unambiguous.
-  static final RegExp _trStructure =
-      RegExp(r'^(\d{2})([A-Z]{1,3})(\d{2,4})$');
+  static final RegExp _trStructure = RegExp(r'^(\d{2})([A-Z]{1,3})(\d{2,4})$');
 
   /// Resolves the DE code/serial split when [trimmedUpper] (the original,
   /// pre-compaction input) has an explicit separator right after the
@@ -115,8 +115,12 @@ class LicensePlate {
   /// of them is known.
   static ({String code, String serialLetters, String digits, String suffix})?
       _deSplitTableAware(String compact) {
-    ({String code, String serialLetters, String digits, String suffix})?
-        firstValid;
+    ({
+      String code,
+      String serialLetters,
+      String digits,
+      String suffix
+    })? firstValid;
     for (final len in const [3, 2, 1]) {
       if (len >= compact.length) continue;
       final codeCandidate = compact.substring(0, len);
@@ -138,10 +142,13 @@ class LicensePlate {
   /// Resolves the DE code/serial split for an already-validated plate.
   /// Separator-aware splitting takes priority; the table-aware fallback is
   /// only consulted when no explicit separator disambiguates the code.
-  static ({String code, String serialLetters, String digits, String suffix})
-      _splitDe(String trimmedUpper, String compact) =>
-          _deSplitSeparatorAware(trimmedUpper) ??
-          _deSplitTableAware(compact)!;
+  static ({
+    String code,
+    String serialLetters,
+    String digits,
+    String suffix
+  }) _splitDe(String trimmedUpper, String compact) =>
+      _deSplitSeparatorAware(trimmedUpper) ?? _deSplitTableAware(compact)!;
 
   static String _compact(String upperTrimmed) =>
       upperTrimmed.replaceAll(RegExp(r'[\s\-.]'), '');
@@ -199,14 +206,14 @@ class LicensePlate {
     }
     if (!_allowedChars.hasMatch(trimmedUpper)) {
       return const Invalid([
-        ValidationIssue(IssueCode.plateBadChars, 'Plate has invalid characters.')
+        ValidationIssue(
+            IssueCode.plateBadChars, 'Plate has invalid characters.')
       ]);
     }
     final resolved = _resolveCountry(country)!;
     if (!_knownCountries.contains(resolved)) {
-      return const Invalid([
-        ValidationIssue(IssueCode.plateUnknownCountry, 'Unknown country.')
-      ]);
+      return const Invalid(
+          [ValidationIssue(IssueCode.plateUnknownCountry, 'Unknown country.')]);
     }
     final compact = _compact(trimmedUpper);
     if (!_matchesStructure(resolved, compact)) {
@@ -389,5 +396,61 @@ class LicensePlate {
       default:
         return null;
     }
+  }
+
+  /// A representative plate per supported country, for
+  /// [FieldDescriptor.example].
+  static const Map<String, String> _examples = {
+    'AT': 'W-12345A',
+    'DE': 'B-XY 1234',
+    'CH': 'ZH 123456',
+    'HR': 'ZG 123-A',
+    'TR': '34 ABC 123',
+  };
+
+  /// Describes a license-plate input field.
+  ///
+  /// [FieldDescriptor.maxLength] is null for every country on purpose: the
+  /// implemented AT grammar accepts an unbounded serial, so any cap could
+  /// reject a plate [validate] accepts.
+  ///
+  /// [FieldDescriptor.allowedChars] includes `ÄÖÜ` and `ČŠŽ` alongside
+  /// `A-Z`: DE district codes may contain umlauts (see [_deStructure]) and
+  /// HR registration-area codes may contain `Č`/`Š`/`Ž` (see
+  /// [_hrStructure]), so a plain `A-Z` filter would reject characters a
+  /// valid plate needs. It also includes `.` alongside ` ` and `-`, since
+  /// [_allowedChars] and [_deSeparatorSplit] both treat `.` as a first-class
+  /// DE separator (e.g. `M.AB 1234`); a descriptor that silently dropped it
+  /// would feed [_deSplitSeparatorAware] the wrong string.
+  static FieldDescriptor fieldDescriptor({String? country}) => FieldDescriptor(
+        keyboard: KeyboardType.text,
+        capitalization: Capitalization.characters,
+        example: country == null ? null : _examples[country.toUpperCase()],
+        allowedChars: '0-9A-ZÄÖÜČŠŽ .-',
+      );
+
+  /// Formats partially typed [input]: upper-cased and stripped of separators
+  /// until the value is a valid plate, at which point it snaps into the
+  /// canonical display form. Separator positions depend on the whole value,
+  /// so there is nothing meaningful to insert earlier. Never throws.
+  ///
+  /// [tryFormat] is tried first against the merely-filtered value (any
+  /// separator the caller already typed still in place) rather than the
+  /// fully compacted one: for DE, the code/serial boundary is ambiguous from
+  /// the compact form alone (`MAB1234` could split as `MA`+`B` or `M`+`AB`,
+  /// see [_deSplitTableAware]) and only a separator's position -- when the
+  /// caller typed one, e.g. `M-AB 1234` or `M.AB 1234` -- resolves it
+  /// correctly (see [_deSplitSeparatorAware]). Discarding that separator
+  /// before checking validity would silently re-derive the wrong split.
+  /// Validity itself does not depend on which of the two is passed in, since
+  /// [validate] recompacts internally either way.
+  ///
+  /// The compacted fallback strips `.` alongside ` ` and `-` so a stray dot
+  /// never leaks into the not-yet-valid partial display.
+  static String formatPartial(String input, {String? country}) {
+    final d = fieldDescriptor(country: country);
+    final filtered = prepare(input, d);
+    final compact = prepare(input, d, separators: ' .-');
+    return tryFormat(filtered, country: country) ?? compact;
   }
 }

@@ -74,7 +74,99 @@ dependencies, no network calls, no telemetry.**
   (51 countries), canonical spacing (`1234AB` → `1234 AB`, `00950` → `00-950`, …) and
   **`parse`** into a `PostalInfo`
 - 🧱 **One consistent API** — `isValid` / `validate` / `normalize` / `format` (+ `tryFormat`) on every type
+- 🎹 **Input field descriptors & as-you-type formatting** — every type also exposes
+  `fieldDescriptor(...)` (keyboard, autofill, capitalization, max length, example,
+  allowed characters) and `formatPartial(...)` for live formatting while the user
+  types, both platform-neutral — no Flutter or DOM dependency
 - 🪶 **Zero dependencies** · **Apache-2.0** · **null-safe** · works on **all Dart & Flutter platforms**
+
+## 🎹 Input fields
+
+Every validator also exposes `fieldDescriptor(...)` and `formatPartial(...)`, taking
+the same named options as its `validate`. `fieldDescriptor` describes the text field a
+value needs — which keyboard to raise, whether an autofill hint applies, how to case
+typed text, how long the formatted value can get, an example value, and which
+characters are allowed — as a platform-neutral `FieldDescriptor`. The package has **no
+Flutter and no DOM dependency**: the mapping tables below are what *you* write in your
+own widget or DOM code.
+
+```dart
+final d = Iban.fieldDescriptor(country: 'AT');
+
+TextField(
+  keyboardType: switch (d.keyboard) {
+    KeyboardType.digits => TextInputType.number,
+    KeyboardType.phone => TextInputType.phone,
+    KeyboardType.email => TextInputType.emailAddress,
+    KeyboardType.url => TextInputType.url,
+    KeyboardType.text => TextInputType.text,
+  },
+  textCapitalization: switch (d.capitalization) {
+    Capitalization.none => TextCapitalization.none,
+    Capitalization.characters => TextCapitalization.characters,
+    Capitalization.words => TextCapitalization.words,
+    Capitalization.sentences => TextCapitalization.sentences,
+  },
+  maxLength: d.maxLength,
+  decoration: InputDecoration(hintText: d.example),
+  onChanged: (v) {
+    final text = Iban.formatPartial(v, country: 'AT');
+    // Caret to the end of the text -- honest for append-typing, and simple.
+    // A Flutter companion package will do full mid-string cursor mapping
+    // (see guarantee 3 below).
+    controller.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  },
+);
+```
+
+| `KeyboardType` | Flutter | HTML |
+| --- | --- | --- |
+| `text` | `TextInputType.text` | `inputmode="text"` |
+| `digits` | `TextInputType.number` | `inputmode="numeric"` |
+| `phone` | `TextInputType.phone` | `inputmode="tel"` |
+| `email` | `TextInputType.emailAddress` | `inputmode="email"` |
+| `url` | `TextInputType.url` | `inputmode="url"` |
+
+| `Capitalization` | Flutter | HTML |
+| --- | --- | --- |
+| `none` | `TextCapitalization.none` | `autocapitalize="off"` |
+| `characters` | `TextCapitalization.characters` | `autocapitalize="characters"` |
+| `words` | `TextCapitalization.words` | `autocapitalize="words"` |
+| `sentences` | `TextCapitalization.sentences` | `autocapitalize="sentences"` |
+
+| `AutofillHint` | Flutter | HTML |
+| --- | --- | --- |
+| `email` | `AutofillHints.email` | `autocomplete="email"` |
+| `telephoneNumber` | `AutofillHints.telephoneNumber` | `autocomplete="tel"` |
+| `postalCode` | `AutofillHints.postalCode` | `autocomplete="postal-code"` |
+| `creditCardNumber` | `AutofillHints.creditCardNumber` | `autocomplete="cc-number"` |
+| `url` | `AutofillHints.url` | `autocomplete="url"` |
+
+IBAN, VIN, IMEI, ICCID, MAC address and license plate have no standard autofill
+category on either platform, so their `autofill` is `null` — nothing is invented.
+
+`formatPartial` never throws: it accepts empty, half-typed or garbage input and always
+returns a string safe to put straight back into the field. For the nine **grouping**
+types — `Iban`, `CreditCard`, `MacAddress`, `PostalCode`, `Phone`, `LicensePlate`,
+`Imei`, `Iccid`, `Vin` — it produces exactly what `format` produces once the value is
+valid; it is the same grouping, just also defined on incomplete input. `Email`, `Url`
+and `Host` are the exception: `formatPartial` returns their text essentially untouched,
+because `Url.format` is a display transform that strips the scheme and `www.`,
+`Host.format` canonicalises and lower-cases, and `Email` has no `format` at all —
+applying any of those while the user is still typing would delete what they just typed.
+
+A few `FieldDescriptor` fields are honestly absent rather than filled with a plausible
+guess: `PostalCode.fieldDescriptor(country:).example` is `null` for the 28 of 51
+countries with no verified real postal code on hand (`maxLength`, unlike `example`, is
+still mechanically derived for all 51). `Phone.fieldDescriptor(...).example` is `null`
+for every country, always — there is no bundled table of a single verified real phone
+number per country, only synthetic ones, and an invented example is worse than none.
+`LicensePlate.fieldDescriptor(...).maxLength` is `null` for every country by design —
+the implemented Austrian grammar has an unbounded serial, so any cap could reject a
+plate `validate` accepts.
 
 ## 📦 Install
 

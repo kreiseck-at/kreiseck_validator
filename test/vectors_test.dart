@@ -44,6 +44,58 @@ List<Map<String, Object?>> _load(String file) =>
     (jsonDecode(File('test/vectors/$file').readAsStringSync()) as List)
         .cast<Map<String, Object?>>();
 
+String _descriptorField(FieldDescriptor d, String key) => switch (key) {
+      'keyboard' => d.keyboard.name,
+      'capitalization' => d.capitalization.name,
+      _ => throw ArgumentError(key),
+    };
+
+FieldDescriptor _descriptorFor(String type, Map<String, Object?> o) =>
+    switch (type) {
+      'imei' => Imei.fieldDescriptor(allowSv: o['allowSv'] as bool? ?? false),
+      'iccid' => Iccid.fieldDescriptor(),
+      'vin' => Vin.fieldDescriptor(),
+      'iban' => Iban.fieldDescriptor(country: o['country'] as String?),
+      'credit_card' => CreditCard.fieldDescriptor(),
+      'mac_address' => MacAddress.fieldDescriptor(
+          notation: _notation(o['notation'] as String?),
+          upperCase: o['upperCase'] as bool? ?? false,
+        ),
+      'postal_code' => PostalCode.fieldDescriptor(country: o['country'] as String?),
+      'license_plate' =>
+        LicensePlate.fieldDescriptor(country: o['country'] as String?),
+      'phone' => Phone.fieldDescriptor(country: _country(o['country'] as String?)),
+      'email' => Email.fieldDescriptor(),
+      'url' => Url.fieldDescriptor(),
+      'host' => Host.fieldDescriptor(),
+      _ => throw ArgumentError('unknown type $type'),
+    };
+
+String _partialFor(String type, String input, Map<String, Object?> o) =>
+    switch (type) {
+      'imei' =>
+        Imei.formatPartial(input, allowSv: o['allowSv'] as bool? ?? false),
+      'iccid' => Iccid.formatPartial(input),
+      'vin' => Vin.formatPartial(input),
+      'iban' => Iban.formatPartial(input, country: o['country'] as String?),
+      'credit_card' => CreditCard.formatPartial(input),
+      'mac_address' => MacAddress.formatPartial(
+          input,
+          notation: _notation(o['notation'] as String?),
+          upperCase: o['upperCase'] as bool? ?? false,
+        ),
+      'postal_code' =>
+        PostalCode.formatPartial(input, country: o['country'] as String?),
+      'license_plate' =>
+        LicensePlate.formatPartial(input, country: o['country'] as String?),
+      'phone' =>
+        Phone.formatPartial(input, country: _country(o['country'] as String?)),
+      'email' => Email.formatPartial(input),
+      'url' => Url.formatPartial(input),
+      'host' => Host.formatPartial(input),
+      _ => throw ArgumentError('unknown type $type'),
+    };
+
 void main() {
   group('credit_card', () {
     for (final c in _load('credit_card.json')) {
@@ -272,6 +324,39 @@ void main() {
           () => Phone.validate(input, country: country),
           () => Phone.format(input,
               country: country, international: international));
+    }
+  });
+
+  group('field_descriptor', () {
+    for (final c in _load('field_descriptor.json')) {
+      final type = c['type']! as String;
+      final options = (c['options'] as Map?)?.cast<String, Object?>() ?? {};
+      test('field_descriptor $type ${jsonEncode(options)}', () {
+        final d = _descriptorFor(type, options);
+        expect(_descriptorField(d, 'keyboard'), c['keyboard']);
+        expect(d.autofill?.name, c['autofill']);
+        expect(_descriptorField(d, 'capitalization'), c['capitalization']);
+        expect(d.maxLength, c['maxLength']);
+        expect(d.example, c['example']);
+        expect(d.allowedChars, c['allowedChars']);
+      });
+    }
+  });
+
+  group('format_partial', () {
+    for (final c in _load('format_partial.json')) {
+      final type = c['type']! as String;
+      final input = c['input']! as String;
+      final options = (c['options'] as Map?)?.cast<String, Object?>() ?? {};
+      test('format_partial $type: "$input"', () {
+        final once = _partialFor(type, input, options);
+        expect(once, c['output']);
+        // Idempotence, checked for every type on every vector: re-running
+        // the formatter on its own output must change nothing, or a field
+        // re-formatting on each keystroke would oscillate.
+        expect(_partialFor(type, once, options), once,
+            reason: '$type is not idempotent on "$once"');
+      });
     }
   });
 }

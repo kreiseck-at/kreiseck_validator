@@ -2,6 +2,8 @@ import { valid, invalid } from '../common/types';
 import type { ValidationResult } from '../common/types';
 import { FormatError } from '../common/errors';
 import { luhnOk } from '../common/luhn';
+import type { FieldDescriptor } from '../common/field';
+import { prepare, groupEvery, groupWidths } from '../common/partial';
 
 // Validation, normalization and formatting of payment-card numbers.
 //
@@ -111,4 +113,38 @@ function tryFormat(input: string): string | null {
   }
 }
 
-export const CreditCard = { isValid, validate, normalize, format, tryFormat, network };
+// Describes a payment-card input field. maxLength is 23: 19 digits (the
+// ISO/IEC 7812 maximum this module accepts) plus the four separators format
+// inserts.
+function fieldDescriptor(): FieldDescriptor {
+  return {
+    keyboard: 'digits',
+    autofill: 'creditCardNumber',
+    capitalization: 'none',
+    maxLength: 23,
+    example: '4242 4242 4242 4242',
+    allowedChars: '0-9 ',
+  };
+}
+
+// Formats partially typed input the way format would: 4-6-5 once the prefix
+// identifies Amex, otherwise groups of four. Never throws.
+function formatPartial(input: string): string {
+  let s = prepare(input, fieldDescriptor(), { separators: ' ', maxSignificant: 19 });
+  if (network(s) === 'amex') {
+    if (s.length > 15) s = s.substring(0, 15);
+    return groupWidths(s, [4, 6, 5], ' ');
+  }
+  return groupEvery(s, 4, ' ');
+}
+
+export const CreditCard = {
+  isValid,
+  validate,
+  normalize,
+  format,
+  tryFormat,
+  network,
+  fieldDescriptor,
+  formatPartial,
+};

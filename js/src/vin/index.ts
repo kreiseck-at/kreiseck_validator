@@ -1,6 +1,8 @@
 import { valid, invalid } from '../common/types';
 import type { ValidationResult } from '../common/types';
 import { FormatError } from '../common/errors';
+import type { FieldDescriptor } from '../common/field';
+import { prepare } from '../common/partial';
 import type { VinInfo } from './types';
 
 // Validation, normalization and formatting of Vehicle Identification
@@ -120,5 +122,25 @@ function parse(input: string): VinInfo | null {
   };
 }
 
-export const Vin = { isValid, validate, normalize, format, tryFormat, parse };
+// Describes a VIN input field. I, O and Q are excluded from allowedChars:
+// ISO 3779 forbids them, so filtering them at the keyboard removes the most
+// common VIN typo before validation runs.
+function fieldDescriptor(): FieldDescriptor {
+  return {
+    keyboard: 'text',
+    autofill: null,
+    capitalization: 'characters',
+    maxLength: 17,
+    example: '1HGCM82633A004352',
+    allowedChars: '0-9A-HJ-NPR-Z',
+  };
+}
+
+// Formats partially typed input: upper-cased, forbidden characters dropped,
+// capped at 17. Never throws.
+function formatPartial(input: string): string {
+  return prepare(input, fieldDescriptor(), { maxSignificant: 17 });
+}
+
+export const Vin = { isValid, validate, normalize, format, tryFormat, parse, fieldDescriptor, formatPartial };
 export type { VinInfo };

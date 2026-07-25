@@ -20,6 +20,74 @@ npm i @kreiseck/validator
 Works in Node, browser and edge runtimes — zero runtime dependencies, ships
 as ESM + CommonJS with full TypeScript types.
 
+## Input fields
+
+Every validator also exposes `fieldDescriptor(...)` and `formatPartial(...)`, taking
+the same options object as its `validate`. `fieldDescriptor` describes the input field
+a value needs — which keyboard to raise, whether an autofill hint applies, how to case
+typed text, how long the formatted value can get, an example value, and which
+characters are allowed — as a platform-neutral `FieldDescriptor`. The package has **no
+DOM and no framework dependency**: the mapping tables below are what *you* write in
+your own component.
+
+```ts
+const d = PostalCode.fieldDescriptor({ country: 'NL' });
+
+input.inputMode = d.keyboard === 'digits' ? 'numeric' : 'text';
+input.autocomplete = d.autofill === 'postalCode' ? 'postal-code' : 'off';
+input.maxLength = d.maxLength ?? 524288;
+input.placeholder = d.example ?? '';
+input.addEventListener('input', () => {
+  input.value = PostalCode.formatPartial(input.value, { country: 'NL' });
+});
+```
+
+| `KeyboardType` | Flutter | HTML |
+| --- | --- | --- |
+| `text` | `TextInputType.text` | `inputmode="text"` |
+| `digits` | `TextInputType.number` | `inputmode="numeric"` |
+| `phone` | `TextInputType.phone` | `inputmode="tel"` |
+| `email` | `TextInputType.emailAddress` | `inputmode="email"` |
+| `url` | `TextInputType.url` | `inputmode="url"` |
+
+| `Capitalization` | Flutter | HTML |
+| --- | --- | --- |
+| `none` | `TextCapitalization.none` | `autocapitalize="off"` |
+| `characters` | `TextCapitalization.characters` | `autocapitalize="characters"` |
+| `words` | `TextCapitalization.words` | `autocapitalize="words"` |
+| `sentences` | `TextCapitalization.sentences` | `autocapitalize="sentences"` |
+
+| `AutofillHint` | Flutter | HTML |
+| --- | --- | --- |
+| `email` | `AutofillHints.email` | `autocomplete="email"` |
+| `telephoneNumber` | `AutofillHints.telephoneNumber` | `autocomplete="tel"` |
+| `postalCode` | `AutofillHints.postalCode` | `autocomplete="postal-code"` |
+| `creditCardNumber` | `AutofillHints.creditCardNumber` | `autocomplete="cc-number"` |
+| `url` | `AutofillHints.url` | `autocomplete="url"` |
+
+IBAN, VIN, IMEI, ICCID, MAC address and license plate have no standard autofill
+category on either platform, so their `autofill` is `null` — nothing is invented.
+
+`formatPartial` never throws: it accepts empty, half-typed or garbage input and always
+returns a string safe to put straight back into the field. For the nine **grouping**
+types — `Iban`, `CreditCard`, `MacAddress`, `PostalCode`, `Phone`, `LicensePlate`,
+`Imei`, `Iccid`, `Vin` — it produces exactly what `format` produces once the value is
+valid; it is the same grouping, just also defined on incomplete input. `Email`, `Url`
+and `Host` are the exception: `formatPartial` returns their text essentially untouched,
+because `Url.format` is a display transform that strips the scheme and `www.`,
+`Host.format` canonicalises and lower-cases, and `Email` has no `format` at all —
+applying any of those while the user is still typing would delete what they just typed.
+
+A few `FieldDescriptor` fields are honestly absent rather than filled with a plausible
+guess: `PostalCode.fieldDescriptor({ country }).example` is `null` for the 28 of 51
+countries with no verified real postal code on hand (`maxLength`, unlike `example`, is
+still mechanically derived for all 51). `Phone.fieldDescriptor(...).example` is `null`
+for every country, always — there is no bundled table of a single verified real phone
+number per country, only synthetic ones, and an invented example is worse than none.
+`LicensePlate.fieldDescriptor(...).maxLength` is `null` for every country by design —
+the implemented Austrian grammar has an unbounded serial, so any cap could reject a
+plate `validate` accepts.
+
 ## Quick start
 
 ### Email

@@ -1,6 +1,8 @@
 import '../common/country.dart';
+import '../common/field_descriptor.dart';
 import '../common/issue_code.dart';
 import '../common/luhn.dart';
+import '../common/partial_format.dart';
 import '../common/validation_result.dart';
 import 'iccid_info.dart';
 
@@ -100,4 +102,17 @@ class Iccid {
       checkDigit: checkDigit,
     );
   }
+
+  /// Describes an ICCID input field.
+  static FieldDescriptor fieldDescriptor() => const FieldDescriptor(
+        keyboard: KeyboardType.digits,
+        maxLength: 20,
+        example: '8949012345678901234',
+        allowedChars: '0-9',
+      );
+
+  /// Formats partially typed [input] for display in a field: digits only,
+  /// capped at 20. Never throws.
+  static String formatPartial(String input) =>
+      prepare(input, fieldDescriptor(), maxSignificant: 20);
 }

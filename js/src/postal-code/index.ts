@@ -1,6 +1,8 @@
 import { valid, invalid } from '../common/types';
 import type { ValidationResult } from '../common/types';
 import { FormatError } from '../common/errors';
+import type { FieldDescriptor } from '../common/field';
+import { prepare } from '../common/partial';
 import { kPostalPatterns } from './metadata';
 import type { PostalPattern } from './metadata';
 import type { PostalInfo, PostalOptions } from './types';
@@ -103,5 +105,71 @@ function parse(input: string, options: PostalOptions): PostalInfo | null {
   return { country: options.country.toUpperCase(), code: r.normalized };
 }
 
-export const PostalCode = { isValid, validate, normalize, format, tryFormat, parse };
+// Options for fieldDescriptor and formatPartial. Unlike PostalOptions,
+// country is optional here: a generic descriptor is still useful without one.
+export interface PostalFieldOptions {
+  country?: string;
+}
+
+function separatorOf(meta: PostalPattern): string {
+  if (meta.format.length === 0) return '';
+  if (meta.format === 'U') return ' ';
+  return meta.format.split(':')[1];
+}
+
+// Describes a postal-code input field. Without a country — or for a country
+// with no curated pattern — the descriptor is generic and noticeably weaker
+// than the country-specific one: pass a country whenever you have one.
+function fieldDescriptor(options: PostalFieldOptions = {}): FieldDescriptor {
+  const meta = options.country === undefined ? undefined : kPostalPatterns[options.country.toUpperCase()];
+  if (meta === undefined) {
+    return {
+      keyboard: 'text',
+      autofill: 'postalCode',
+      capitalization: 'characters',
+      maxLength: null,
+      example: null,
+      allowedChars: '0-9A-Z -',
+    };
+  }
+  const digitsOnly = meta.charset === 'digits';
+  return {
+    keyboard: digitsOnly ? 'digits' : 'text',
+    autofill: 'postalCode',
+    capitalization: digitsOnly ? 'none' : 'characters',
+    maxLength: meta.length,
+    example: meta.example,
+    allowedChars: `${digitsOnly ? '0-9' : '0-9A-Z'}${separatorOf(meta)}`,
+  };
+}
+
+// Formats partially typed input for a country. Fixed-offset spacing rules are
+// applied as soon as enough characters exist; the UK-style rule, whose
+// separator is positioned from the end, is applied only once the value is
+// valid. Never throws.
+function formatPartial(input: string, options: PostalFieldOptions = {}): string {
+  const meta = options.country === undefined ? undefined : kPostalPatterns[options.country.toUpperCase()];
+  const d = fieldDescriptor(options);
+  const sep = meta === undefined ? ' -' : separatorOf(meta);
+  const maxSignificant = meta === undefined ? undefined : meta.length - separatorOf(meta).length;
+  const s = prepare(input, d, { separators: sep.length === 0 ? undefined : sep, maxSignificant });
+  if (meta === undefined) return s;
+  if (meta.format === 'U') return tryFormat(s, { country: options.country! }) ?? s;
+  if (meta.format.length === 0) return s;
+  const [nRaw, char] = meta.format.split(':');
+  const n = Number(nRaw);
+  if (s.length <= n) return s;
+  return `${s.substring(0, n)}${char}${s.substring(n)}`;
+}
+
+export const PostalCode = {
+  isValid,
+  validate,
+  normalize,
+  format,
+  tryFormat,
+  parse,
+  fieldDescriptor,
+  formatPartial,
+};
 export type { PostalInfo, PostalOptions };

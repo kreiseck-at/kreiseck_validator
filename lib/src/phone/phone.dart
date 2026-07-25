@@ -1,5 +1,7 @@
 import '../common/country.dart';
+import '../common/field_descriptor.dart';
 import '../common/issue_code.dart';
+import '../common/partial_format.dart';
 import '../common/validation_result.dart';
 import 'at_numbering.dart';
 import 'phone_format.dart';
@@ -191,5 +193,40 @@ class Phone {
       national: format(input, country: country, international: false),
       international: format(input, country: country, international: true),
     );
+  }
+
+  /// Describes a phone-number input field.
+  ///
+  /// [FieldDescriptor.maxLength] is null: E.164 caps the digits at 15, but
+  /// the number of separators varies per national format, so no honest
+  /// single bound exists.
+  ///
+  /// [FieldDescriptor.example] is always null: unlike every other type, there
+  /// is no bundled table of a single verified real phone number per country
+  /// (only synthetic ones derived from the calling code, which is exactly
+  /// the invented-example problem this package avoids elsewhere). Building
+  /// one from `callingCode + digits` produced a plausible-looking but
+  /// fabricated number for most countries (e.g. a malformed `+49 1234567`
+  /// for Germany) and `null` for the 221 of ~240 countries where that guess
+  /// did not even pass validation.
+  static FieldDescriptor fieldDescriptor({Country? country}) =>
+      const FieldDescriptor(
+        keyboard: KeyboardType.phone,
+        autofill: AutofillHint.telephoneNumber,
+        allowedChars: '0-9+ ()-',
+      );
+
+  /// Formats partially typed [input]: digits and `+` only, snapping into the
+  /// canonical form as soon as the number is valid. Reproducing a full
+  /// as-you-type formatter would mean guessing national grouping on partial
+  /// input, and a wrong guess mid-number is worse than none. Never throws.
+  static String formatPartial(String input, {Country? country}) {
+    var s = prepare(input, fieldDescriptor(country: country),
+        separators: ' ()-');
+    final plus = s.startsWith('+');
+    s = s.replaceAll('+', '');
+    if (s.length > 15) s = s.substring(0, 15);
+    if (plus) s = '+$s';
+    return tryFormat(s, country: country, international: plus) ?? s;
   }
 }

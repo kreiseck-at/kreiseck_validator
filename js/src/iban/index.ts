@@ -1,7 +1,10 @@
 import { valid, invalid } from '../common/types';
 import type { ValidationResult } from '../common/types';
 import { FormatError } from '../common/errors';
+import type { FieldDescriptor } from '../common/field';
+import { prepare, groupEvery } from '../common/partial';
 import { kIbanBban, kBanks } from './metadata';
+import { IbanCountry } from './country';
 
 // Validation, normalization and formatting of IBANs.
 //
@@ -148,7 +151,47 @@ function parse(input: string): IbanInfo | null {
   };
 }
 
-export const Iban = { isValid, validate, normalize, format, tryFormat, parse };
+// Options for fieldDescriptor and formatPartial.
+export interface IbanFieldOptions {
+  country?: string;
+}
+
+// Describes an IBAN input field. With country the descriptor is exact
+// (length and example for that country); without it, or for a country with
+// no bundled metadata, it is generic.
+function fieldDescriptor(options: IbanFieldOptions = {}): FieldDescriptor {
+  const c = options.country === undefined ? null : IbanCountry.of(options.country);
+  return {
+    keyboard: 'text',
+    autofill: null,
+    capitalization: 'characters',
+    maxLength: c === null ? null : c.length + Math.floor((c.length - 1) / 4),
+    example: c === null ? null : c.example,
+    allowedChars: '0-9A-Z ',
+  };
+}
+
+// Formats partially typed input in groups of four, upper-cased, capped at
+// the country's IBAN length (34 without one). Never throws.
+function formatPartial(input: string, options: IbanFieldOptions = {}): string {
+  const c = options.country === undefined ? null : IbanCountry.of(options.country);
+  const s = prepare(input, fieldDescriptor(options), {
+    separators: ' ',
+    maxSignificant: c === null ? 34 : c.length,
+  });
+  return groupEvery(s, 4, ' ');
+}
+
+export const Iban = {
+  isValid,
+  validate,
+  normalize,
+  format,
+  tryFormat,
+  parse,
+  fieldDescriptor,
+  formatPartial,
+};
 
 export { IbanCountry } from './country';
 export type { IbanCountry as IbanCountryInfo } from './country';

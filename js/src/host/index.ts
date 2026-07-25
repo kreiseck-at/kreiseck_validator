@@ -1,6 +1,7 @@
 import { valid, invalid } from '../common/types';
 import type { ValidationResult } from '../common/types';
 import { FormatError } from '../common/errors';
+import type { FieldDescriptor } from '../common/field';
 import type { HostInfo, HostType } from './types';
 
 // Validation, normalization and formatting of a bare host: a hostname
@@ -214,5 +215,37 @@ function parse(input: string): HostInfo | null {
   return { host: r.host, type: r.type, port: r.port, hasPort: r.port !== null };
 }
 
-export const Host = { isValid, validate, normalize, format, tryFormat, parse };
+// Describes a host input field. maxLength is 259: 253 (the RFC 1035 hostname
+// maximum) plus ':' plus five port digits.
+function fieldDescriptor(): FieldDescriptor {
+  return {
+    keyboard: 'url',
+    autofill: null,
+    capitalization: 'none',
+    maxLength: 259,
+    example: 'example.com',
+    allowedChars: '0-9A-Za-z.:\\[\\]-',
+  };
+}
+
+// Drops disallowed ASCII characters and caps the length. Case is left alone:
+// format lower-cases, but doing that while the user types would fight them.
+//
+// A non-ASCII character (e.g. 'münchen.de') is deliberately left in place
+// rather than filtered out: this module is ASCII-only (no IDNA/punycode
+// support), so such a value will never isValid. Silently dropping the
+// non-ASCII character would turn an obviously wrong input into a DIFFERENT,
+// plausible-looking valid hostname ('mnchen.de') -- worse than leaving the
+// clearly-wrong character visible until the user notices and fixes it.
+function formatPartial(input: string): string {
+  const allowed = new RegExp(`[${fieldDescriptor().allowedChars}]`);
+  let out = '';
+  for (let i = 0; i < input.length; i++) {
+    const ch = input[i];
+    if (input.charCodeAt(i) > 0x7f || allowed.test(ch)) out += ch;
+  }
+  return out.length > 259 ? out.substring(0, 259) : out;
+}
+
+export const Host = { isValid, validate, normalize, format, tryFormat, parse, fieldDescriptor, formatPartial };
 export type { HostInfo, HostType };

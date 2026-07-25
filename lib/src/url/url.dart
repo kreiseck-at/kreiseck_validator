@@ -1,4 +1,6 @@
+import '../common/field_descriptor.dart';
 import '../common/issue_code.dart';
+import '../common/partial_format.dart';
 import '../common/validation_result.dart';
 
 /// Validation, normalization and display formatting of web URLs / domains.
@@ -95,4 +97,17 @@ class Url {
       return null;
     }
   }
+
+  /// Describes a URL input field.
+  static FieldDescriptor fieldDescriptor() => const FieldDescriptor(
+        keyboard: KeyboardType.url,
+        autofill: AutofillHint.url,
+        example: 'https://example.com',
+      );
+
+  /// Returns [input] unchanged. Unlike [format] — which is a display form
+  /// that strips the scheme and `www.` — nothing may be removed while the
+  /// user is still typing. Never throws.
+  static String formatPartial(String input) =>
+      prepare(input, fieldDescriptor());
 }

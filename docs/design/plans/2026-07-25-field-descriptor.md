@@ -2409,43 +2409,41 @@ final List<_Type> _types = [
 ];
 
 void main() {
+  // Each group filters the type list rather than returning early inside the
+  // test body, so no test is generated that asserts nothing.
   group('example validity', () {
-    for (final t in _types) {
+    for (final t in _types.where(
+        (t) => t.formatValid != null && t.descriptor().example != null)) {
       test('${t.name} example is valid', () {
-        final example = t.descriptor().example;
-        if (example == null) return;
-        final formatted = t.formatValid?.call(example);
-        if (t.formatValid != null) {
-          expect(formatted, isNotNull,
-              reason: '${t.name} example "$example" does not validate');
-        }
+        final example = t.descriptor().example!;
+        expect(t.formatValid!(example), isNotNull,
+            reason: '${t.name} example "$example" does not validate');
       });
     }
   });
 
   group('example fits maxLength', () {
-    for (final t in _types) {
+    for (final t in _types.where((t) {
+      final d = t.descriptor();
+      return d.example != null && d.maxLength != null;
+    })) {
       test('${t.name}', () {
         final d = t.descriptor();
-        final example = d.example;
-        final max = d.maxLength;
-        if (example == null || max == null) return;
-        expect(example.length, lessThanOrEqualTo(max));
+        expect(d.example!.length, lessThanOrEqualTo(d.maxLength!));
       });
     }
   });
 
   group('filter soundness', () {
-    for (final t in _types) {
+    for (final t in _types.where((t) {
+      final d = t.descriptor();
+      return d.example != null && d.allowedChars != null;
+    })) {
       test('${t.name} allowedChars admits its own example', () {
         final d = t.descriptor();
-        final example = d.example;
-        final allowed = d.allowedChars;
-        if (example == null || allowed == null) return;
-        expect(example.replaceAll(RegExp('[$allowed]'), ''), '',
-            reason:
-                '${t.name} example "$example" contains characters its own '
-                'allowedChars rejects');
+        expect(d.example!.replaceAll(RegExp('[${d.allowedChars}]'), ''), '',
+            reason: '${t.name} example "${d.example}" contains characters '
+                'its own allowedChars rejects');
       });
     }
   });

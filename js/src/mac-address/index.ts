@@ -1,6 +1,8 @@
 import { valid, invalid } from '../common/types';
 import type { ValidationResult } from '../common/types';
 import { FormatError } from '../common/errors';
+import type { FieldDescriptor } from '../common/field';
+import { prepare, groupEvery } from '../common/partial';
 import type { MacFormatOptions, MacInfo, MacNotation } from './types';
 
 // Validation, normalization and formatting of MAC hardware addresses (IEEE
@@ -125,5 +127,57 @@ function parse(input: string): MacInfo | null {
   };
 }
 
-export const MacAddress = { isValid, validate, normalize, format, tryFormat, parse };
+// Describes a MAC-address input field for the given notation and case.
+// Every bound covers EUI-64 (16 hex characters). capitalization describes the
+// keyboard; formatPartial additionally normalises hex case to match format,
+// which is lower-case unless upperCase is set.
+function fieldDescriptor(options: MacFormatOptions = {}): FieldDescriptor {
+  const notation = options.notation ?? 'colon';
+  const upperCase = options.upperCase ?? false;
+  const bounds: Record<MacNotation, [number, string]> = {
+    colon: [23, '0-9A-Fa-f:'],
+    hyphen: [23, '0-9A-Fa-f-'],
+    dot: [19, '0-9A-Fa-f.'],
+    bare: [16, '0-9A-Fa-f'],
+  };
+  const [maxLength, allowedChars] = bounds[notation];
+  return {
+    keyboard: 'text',
+    autofill: null,
+    capitalization: upperCase ? 'characters' : 'none',
+    maxLength,
+    example: format('aabbccddeeff', { notation, upperCase }),
+    allowedChars,
+  };
+}
+
+// Formats partially typed input in the given notation: hex only, separators
+// re-inserted, capped at 16 hex characters. Never throws.
+function formatPartial(input: string, options: MacFormatOptions = {}): string {
+  const notation = options.notation ?? 'colon';
+  const upperCase = options.upperCase ?? false;
+  let s = prepare(input, fieldDescriptor(options), { separators: ':.-', maxSignificant: 16 });
+  s = upperCase ? s.toUpperCase() : s.toLowerCase();
+  switch (notation) {
+    case 'colon':
+      return groupEvery(s, 2, ':');
+    case 'hyphen':
+      return groupEvery(s, 2, '-');
+    case 'dot':
+      return groupEvery(s, 4, '.');
+    case 'bare':
+      return s;
+  }
+}
+
+export const MacAddress = {
+  isValid,
+  validate,
+  normalize,
+  format,
+  tryFormat,
+  parse,
+  fieldDescriptor,
+  formatPartial,
+};
 export type { MacInfo };

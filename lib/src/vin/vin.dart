@@ -1,4 +1,6 @@
+import '../common/field_descriptor.dart';
 import '../common/issue_code.dart';
+import '../common/partial_format.dart';
 import '../common/validation_result.dart';
 import 'vin_info.dart';
 
@@ -118,4 +120,21 @@ class Vin {
       plantCode: vin.substring(10, 11),
     );
   }
+
+  /// Describes a VIN input field. `I`, `O` and `Q` are excluded from
+  /// [FieldDescriptor.allowedChars]: ISO 3779 forbids them, so filtering
+  /// them at the keyboard removes the most common VIN typo before
+  /// validation runs.
+  static FieldDescriptor fieldDescriptor() => const FieldDescriptor(
+        keyboard: KeyboardType.text,
+        capitalization: Capitalization.characters,
+        maxLength: 17,
+        example: '1HGCM82633A004352',
+        allowedChars: '0-9A-HJ-NPR-Z',
+      );
+
+  /// Formats partially typed [input] for display in a field: upper-cased,
+  /// forbidden characters dropped, capped at 17. Never throws.
+  static String formatPartial(String input) =>
+      prepare(input, fieldDescriptor(), maxSignificant: 17);
 }

@@ -3,6 +3,8 @@ import type { ValidationResult } from '../common/types';
 import { FormatError } from '../common/errors';
 import { luhnOk } from '../common/luhn';
 import { fromCallingCode } from '../phone/metadata';
+import type { FieldDescriptor } from '../common/field';
+import { prepare } from '../common/partial';
 import type { IccidInfo } from './types';
 
 // Validation, normalization and formatting of ICCID (Integrated Circuit
@@ -98,5 +100,22 @@ function parse(input: string): IccidInfo | null {
   };
 }
 
-export const Iccid = { isValid, validate, normalize, format, tryFormat, parse };
+// Describes an ICCID input field.
+function fieldDescriptor(): FieldDescriptor {
+  return {
+    keyboard: 'digits',
+    autofill: null,
+    capitalization: 'none',
+    maxLength: 20,
+    example: '8949012345678901234',
+    allowedChars: '0-9',
+  };
+}
+
+// Formats partially typed input: digits only, capped at 20. Never throws.
+function formatPartial(input: string): string {
+  return prepare(input, fieldDescriptor(), { maxSignificant: 20 });
+}
+
+export const Iccid = { isValid, validate, normalize, format, tryFormat, parse, fieldDescriptor, formatPartial };
 export type { IccidInfo };

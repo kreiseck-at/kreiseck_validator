@@ -1,4 +1,5 @@
 export * from './common/types';
+export type { FieldDescriptor, KeyboardType, Capitalization, AutofillHint } from './common/field';
 export { FormatError } from './common/errors';
 export { Email } from './email/index';
 export { Phone } from './phone/index';

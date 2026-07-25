@@ -1,4 +1,6 @@
+import '../common/field_descriptor.dart';
 import '../common/issue_code.dart';
+import '../common/partial_format.dart';
 import '../common/validation_result.dart';
 import 'postal_info.dart';
 import 'postal_pattern.dart';
@@ -98,5 +100,65 @@ class PostalCode {
     final r = validate(input, country: country);
     if (r is! Valid) return null;
     return PostalInfo(country: country.toUpperCase(), code: r.normalized);
+  }
+
+  /// The separator this country's canonical form inserts, or `''` when it
+  /// has none.
+  static String _separatorOf(PostalPattern meta) {
+    if (meta.format.isEmpty) return '';
+    if (meta.format == 'U') return ' ';
+    return meta.format.split(':')[1];
+  }
+
+  /// Describes a postal-code input field. Without [country] — or for a
+  /// country with no curated pattern — the descriptor is generic and
+  /// noticeably weaker than the country-specific one: pass a country
+  /// whenever you have one.
+  static FieldDescriptor fieldDescriptor({String? country}) {
+    final meta = country == null ? null : kPostalPatterns[country.toUpperCase()];
+    if (meta == null) {
+      return const FieldDescriptor(
+        keyboard: KeyboardType.text,
+        autofill: AutofillHint.postalCode,
+        capitalization: Capitalization.characters,
+        allowedChars: '0-9A-Z -',
+      );
+    }
+    final digitsOnly = meta.charset == 'digits';
+    return FieldDescriptor(
+      keyboard: digitsOnly ? KeyboardType.digits : KeyboardType.text,
+      autofill: AutofillHint.postalCode,
+      capitalization:
+          digitsOnly ? Capitalization.none : Capitalization.characters,
+      maxLength: meta.length,
+      example: meta.example,
+      allowedChars:
+          '${digitsOnly ? '0-9' : '0-9A-Z'}${_separatorOf(meta)}',
+    );
+  }
+
+  /// Formats partially typed [input] for [country]. Fixed-offset spacing
+  /// rules are applied as soon as enough characters exist; the UK-style rule,
+  /// whose separator is positioned from the end, is applied only once the
+  /// value is valid. Never throws.
+  static String formatPartial(String input, {String? country}) {
+    final meta = country == null ? null : kPostalPatterns[country.toUpperCase()];
+    final d = fieldDescriptor(country: country);
+    final sep = meta == null ? ' -' : _separatorOf(meta);
+    final s = prepare(input, d,
+        separators: sep.isEmpty ? null : sep,
+        maxSignificant: meta?.length == null
+            ? null
+            : meta!.length! - _separatorOf(meta).length);
+    if (meta == null) return s;
+    if (meta.format == 'U') {
+      final snapped = tryFormat(s, country: country!);
+      return snapped ?? s;
+    }
+    if (meta.format.isEmpty) return s;
+    final parts = meta.format.split(':');
+    final n = int.parse(parts[0]);
+    if (s.length <= n) return s;
+    return '${s.substring(0, n)}${parts[1]}${s.substring(n)}';
   }
 }

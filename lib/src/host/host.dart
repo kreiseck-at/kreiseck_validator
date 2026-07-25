@@ -1,3 +1,4 @@
+import '../common/field_descriptor.dart';
 import '../common/issue_code.dart';
 import '../common/validation_result.dart';
 import 'host_info.dart';
@@ -227,5 +228,36 @@ class Host {
     };
     return HostInfo(
         host: host, type: hostType, port: port, hasPort: port != null);
+  }
+
+  /// Describes a host input field. [FieldDescriptor.maxLength] is 259: 253
+  /// (the RFC 1035 hostname maximum) plus `:` plus five port digits.
+  static FieldDescriptor fieldDescriptor() => const FieldDescriptor(
+        keyboard: KeyboardType.url,
+        maxLength: 259,
+        example: 'example.com',
+        allowedChars: r'0-9A-Za-z.:\[\]-',
+      );
+
+  /// Drops disallowed ASCII characters and caps the length. Case is left
+  /// alone: [format] lower-cases, but doing that while the user types would
+  /// fight them. Never throws.
+  ///
+  /// A non-ASCII character (e.g. `münchen.de`) is deliberately left in place
+  /// rather than filtered out: this module is ASCII-only (no IDNA/punycode
+  /// support), so such a value will never [isValid]. Silently dropping the
+  /// non-ASCII character would turn an obviously wrong input into a
+  /// DIFFERENT, plausible-looking valid hostname (`mnchen.de`) -- worse than
+  /// leaving the clearly-wrong character visible until the user notices and
+  /// fixes it.
+  static String formatPartial(String input) {
+    final allowed = RegExp('[${fieldDescriptor().allowedChars}]');
+    final b = StringBuffer();
+    for (var i = 0; i < input.length; i++) {
+      final ch = input[i];
+      if (input.codeUnitAt(i) > 0x7f || allowed.hasMatch(ch)) b.write(ch);
+    }
+    final s = b.toString();
+    return s.length > 259 ? s.substring(0, 259) : s;
   }
 }

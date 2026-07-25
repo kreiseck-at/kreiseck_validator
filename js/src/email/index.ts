@@ -1,5 +1,7 @@
 import { valid, invalid } from '../common/types';
 import type { ValidationResult, Suggestion } from '../common/types';
+import type { FieldDescriptor } from '../common/field';
+import { prepare } from '../common/partial';
 
 // Validation, normalization and typo-hinting for email addresses.
 //
@@ -103,4 +105,22 @@ function isValid(input: string): boolean {
   return validate(input).ok;
 }
 
-export const Email = { isValid, validate, normalize };
+// Describes an email input field.
+function fieldDescriptor(): FieldDescriptor {
+  return {
+    keyboard: 'email',
+    autofill: 'email',
+    capitalization: 'none',
+    maxLength: null,
+    example: 'user@example.com',
+    allowedChars: null,
+  };
+}
+
+// Returns input unchanged; the method exists so every type carries the same
+// operations. Never throws.
+function formatPartial(input: string): string {
+  return prepare(input, fieldDescriptor());
+}
+
+export const Email = { isValid, validate, normalize, fieldDescriptor, formatPartial };

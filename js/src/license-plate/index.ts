@@ -1,6 +1,8 @@
 import { valid, invalid } from '../common/types';
 import type { ValidationResult } from '../common/types';
 import { FormatError } from '../common/errors';
+import type { FieldDescriptor } from '../common/field';
+import { prepare } from '../common/partial';
 import { kPlateRegions } from './metadata';
 import type { PlateInfo, PlateOptions, PlateType } from './types';
 
@@ -403,4 +405,68 @@ function parse(input: string, options: PlateOptions = {}): PlateInfo | null {
   }
 }
 
-export const LicensePlate = { isValid, validate, normalize, format, tryFormat, parse };
+// A representative plate per supported country, for FieldDescriptor.example.
+const EXAMPLES: Record<string, string> = {
+  AT: 'W-12345A',
+  DE: 'B-XY 1234',
+  CH: 'ZH 123456',
+  HR: 'ZG 123-A',
+  TR: '34 ABC 123',
+};
+
+// Describes a license-plate input field. maxLength is null for every country
+// on purpose: the implemented AT grammar accepts an unbounded serial, so any
+// cap could reject a plate validate accepts.
+//
+// allowedChars includes ÄÖÜ and ČŠŽ alongside A-Z: DE district codes may
+// contain umlauts (see DE_STRUCTURE_RE) and HR registration-area codes may
+// contain Č/Š/Ž (see HR_STRUCTURE_RE), so a plain A-Z filter would reject
+// characters a valid plate needs. It also includes `.` alongside ` ` and
+// `-`, since ALLOWED_CHARS_RE and DE_SEPARATOR_SPLIT_RE both treat `.` as a
+// first-class DE separator (e.g. `M.AB 1234`); a descriptor that silently
+// dropped it would feed deSplitSeparatorAware the wrong string.
+function fieldDescriptor(options: PlateOptions = {}): FieldDescriptor {
+  return {
+    keyboard: 'text',
+    autofill: null,
+    capitalization: 'characters',
+    maxLength: null,
+    example: options.country === undefined ? null : (EXAMPLES[options.country.toUpperCase()] ?? null),
+    allowedChars: '0-9A-ZÄÖÜČŠŽ .-',
+  };
+}
+
+// Formats partially typed input: upper-cased and stripped of separators until
+// the value is a valid plate, at which point it snaps into the canonical
+// display form. Never throws.
+//
+// tryFormat is tried first against the merely-filtered value (any separator
+// the caller already typed still in place) rather than the fully compacted
+// one: for DE, the code/serial boundary is ambiguous from the compact form
+// alone (`MAB1234` could split as `MA`+`B` or `M`+`AB`, see deSplitTableAware)
+// and only a separator's position -- when the caller typed one, e.g.
+// `M-AB 1234` or `M.AB 1234` -- resolves it correctly (see
+// deSplitSeparatorAware). Discarding that separator before checking validity
+// would silently re-derive the wrong split. Validity itself does not depend
+// on which of the two is passed in, since validate recompacts internally
+// either way.
+//
+// The compacted fallback strips `.` alongside ` ` and `-` so a stray dot
+// never leaks into the not-yet-valid partial display.
+function formatPartial(input: string, options: PlateOptions = {}): string {
+  const d = fieldDescriptor(options);
+  const filtered = prepare(input, d);
+  const compacted = prepare(input, d, { separators: ' .-' });
+  return tryFormat(filtered, options) ?? compacted;
+}
+
+export const LicensePlate = {
+  isValid,
+  validate,
+  normalize,
+  format,
+  tryFormat,
+  parse,
+  fieldDescriptor,
+  formatPartial,
+};

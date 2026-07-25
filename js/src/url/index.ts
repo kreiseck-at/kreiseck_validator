@@ -1,6 +1,8 @@
 import { valid, invalid } from '../common/types';
 import type { ValidationResult } from '../common/types';
 import { FormatError } from '../common/errors';
+import type { FieldDescriptor } from '../common/field';
+import { prepare } from '../common/partial';
 
 // Validation, normalization and display formatting of web URLs / domains.
 //
@@ -95,4 +97,23 @@ function tryFormat(input: string): string | null {
   }
 }
 
-export const Url = { isValid, validate, normalize, format, tryFormat };
+// Describes a URL input field.
+function fieldDescriptor(): FieldDescriptor {
+  return {
+    keyboard: 'url',
+    autofill: 'url',
+    capitalization: 'none',
+    maxLength: null,
+    example: 'https://example.com',
+    allowedChars: null,
+  };
+}
+
+// Returns input unchanged. Unlike format — which is a display form that
+// strips the scheme and `www.` — nothing may be removed while the user is
+// still typing. Never throws.
+function formatPartial(input: string): string {
+  return prepare(input, fieldDescriptor());
+}
+
+export const Url = { isValid, validate, normalize, format, tryFormat, fieldDescriptor, formatPartial };
