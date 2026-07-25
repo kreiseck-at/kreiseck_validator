@@ -1,10 +1,12 @@
 # kreiseck_validator
 
 > Zero-dependency Dart package to validate, normalize and pretty-format common
-> user input: email, phone, URL/domain, IBAN and credit-card numbers. DACH-aware
-> (DE/AT/CH). Apache-2.0. By Kreiseck Software Solutions (https://kreiseck.com).
+> user input: email, phone, URL, host, IBAN, credit-card, license plate, IMEI,
+> ICCID, MAC address, VIN and postal code. Global phone support, DACH-aware
+> elsewhere. Apache-2.0. By Kreiseck Software Solutions (https://kreiseck.com).
 
-Package name: `kreiseck_validator` (Dart, pub.dev). No runtime dependencies, no
+Package name: `kreiseck_validator` (Dart, pub.dev). A TypeScript port ships as
+`@kreiseck/validator` (npm) from the same repository. No runtime dependencies, no
 network calls, no telemetry. Every algorithm (Luhn, ISO 13616 IBAN Mod-97, E.164
 phone parsing, Damerau/OSA typo distance) is hand-written in pure Dart. Works on
 all Dart and Flutter platforms. SDK: >=3.0.0 <4.0.0.
@@ -21,67 +23,97 @@ import 'package:kreiseck_validator/kreiseck_validator.dart';
 
 ## API
 
-Five types, each a class with static methods. Common pattern:
-`isValid` / `validate` / `normalize` / `format` (+ `tryFormat`, `fieldDescriptor`,
-`formatPartial`).
+Twelve types, each a class with static methods. The common core is
+`isValid` / `validate` / `normalize` / `format` (+ `tryFormat`), and every type has
+`fieldDescriptor` / `formatPartial`. Nine also have `parse`, returning a structured
+info object or null. `Email` is the one gap: it has no `format`/`tryFormat`/`parse`,
+because a valid address has no canonical display form beyond `normalize`. Options
+are named parameters, identical across all methods of a type.
 
-- `Email.isValid(String) -> bool`
-- `Email.validate(String) -> ValidationResult`  (attaches an offline typo-domain
-  Suggestion to Valid, e.g. `user@gmial.com` -> suggests `user@gmail.com`)
-- `Email.normalize(String) -> String`  (pure trim + lowercase; NEVER throws, does not validate)
-- `Email.fieldDescriptor() -> FieldDescriptor`, `Email.formatPartial(String) -> String`
-  (formatPartial is identity — Email has no `format` — never throws)
-- `Phone.isValid(String, {Country? country}) -> bool`
-- `Phone.validate(String, {Country? country}) -> ValidationResult`  (Valid.normalized is E.164)
-- `Phone.normalize(String, {Country? country}) -> String`  (E.164, e.g. `+436601234567`; throws FormatException if invalid)
-- `Phone.format(String, {Country? country, bool international = true}) -> String`  (e.g. `+43 660 1234567` or `0660 1234567`)
-- `Phone.tryFormat(...) -> String?`
-- `Phone.fieldDescriptor({Country? country}) -> FieldDescriptor`, `Phone.formatPartial(String, {Country? country}) -> String`
-  (as-you-type; snaps into `format`'s shape once the number is valid; never throws)
-- `Url.isValid(String) -> bool`
-- `Url.validate(String, {String defaultScheme = 'https'}) -> ValidationResult`
-- `Url.normalize(String, {String defaultScheme = 'https'}) -> String`  (adds scheme, lowercases host, keeps port/path/query, strips one trailing slash)
-- `Url.format(String) -> String`  (compact display: no scheme, no leading `www.`, no trailing slash)
-- `Url.tryFormat(String) -> String?`
-- `Url.fieldDescriptor() -> FieldDescriptor`, `Url.formatPartial(String) -> String`
-  (formatPartial is identity — `format` is a display transform — never throws)
-- `Iban.isValid/validate/normalize/format/tryFormat(String)`  (Mod-97 checksum; exact length for DE/AT/CH, checksum-only for other countries; format groups in 4s)
-- `Iban.fieldDescriptor({String? country})`, `Iban.formatPartial(String, {String? country})`
-  (groups in 4s as-you-type; matches `format` once valid; never throws)
-- `CreditCard.isValid/validate/normalize/format/tryFormat(String)` plus `CreditCard.network(String) -> CardNetwork?`  (Luhn checksum; detects Visa/Mastercard/Amex/Discover; formats Amex 4-6-5 else 4-4-4-4)
-- `CreditCard.fieldDescriptor()`, `CreditCard.formatPartial(String)`
-  (groups Amex 4-6-5 / else 4-4-4-4 as-you-type; matches `format` once valid; never throws)
+- `Email` — pragmatic syntax check, `normalize` = trim + lowercase (never throws,
+  does not validate), and `validate` attaches an offline typo-domain `Suggestion`
+  (`user@gmial.com` -> suggests `user@gmail.com`). No `format`, no `parse`.
+- `Phone({Country? country})` — E.164 for **every country** (libphonenumber-derived
+  metadata), tolerant of `+43 (0)…`; `format(..., {bool international = true})`;
+  `parse -> PhoneInfo`; `type -> PhoneNumberType` (classification data exists for
+  AT only, everything else returns `unknown`).
+- `Url({String defaultScheme = 'https'})` — scheme/host/TLD plausibility;
+  `normalize` adds the scheme and lowercases the host; `format` is a compact
+  display form (no scheme, no `www.`, no trailing slash).
+- `Host` — bare hostname (RFC 1123), IPv4 or IPv6, optional port; `parse -> HostInfo`.
+  More lenient than `Url`: no scheme required, accepts `localhost` and IP literals.
+  ASCII only — no IDNA/punycode.
+- `Iban({String? country})` — Mod-97 checksum plus per-country length from bundled
+  metadata; `format` groups in 4s; `parse -> IbanInfo` (bank/branch/account codes,
+  plus bank name + BIC for AT/DE/CH); `IbanCountry.of(iso2)` exposes per-country
+  length, field layout and a valid example.
+- `CreditCard` — Luhn plus network-aware length; `network(String) -> CardNetwork?`
+  (Visa/Mastercard/Amex/Discover); `format` groups Amex 4-6-5, otherwise 4-4-4-4.
+- `LicensePlate({String? country})` — grammar + region tables for AT, DE, CH, HR, TR;
+  `parse -> PlateInfo` (district code, official region name, serial) with
+  best-effort `PlateType` classification (diplomatic, authority, historic, …).
+- `Imei({bool allowSv = false})` — 15-digit Luhn; `allowSv` also accepts a 16-digit
+  IMEISV (no Luhn); `parse -> ImeiInfo`.
+- `Iccid` — ITU-T E.118: MII plus Luhn on 20-digit cards (19-digit cards carry no
+  check digit); `parse -> IccidInfo` resolves the issuing country from the
+  embedded calling code.
+- `MacAddress({MacNotation notation = MacNotation.colon, bool upperCase = false})` —
+  EUI-48/64 in colon, hyphen, Cisco-dot and bare notation; `parse -> MacInfo`.
+- `Vin` — ISO 3779 structure (17 chars, `I`/`O`/`Q` forbidden); `parse -> VinInfo`
+  with the check-digit result and decoded model year.
+- `PostalCode({required String country})` — curated patterns for 51 countries
+  (Europe + Turkey) and canonical spacing (`1234AB` -> `1234 AB`); `parse -> PostalInfo`.
+  The country is required: a bare postal code is ambiguous across countries.
 
-`fieldDescriptor`/`formatPartial` exist on every type in the package (not only the
-five above), always taking the same options as `validate`. `FieldDescriptor`
-(`keyboard`, `autofill`, `capitalization`, `maxLength`, `example`, `allowedChars`) is
-platform-neutral — no Flutter or DOM types — see README.md for the Flutter/HTML
-mapping tables.
+### Input fields
+
+`fieldDescriptor` and `formatPartial` exist on every type, taking the same options
+as `validate`:
+
+- `fieldDescriptor(...) -> FieldDescriptor` with `keyboard` (`KeyboardType`),
+  `autofill` (`AutofillHint?`), `capitalization` (`Capitalization`), `maxLength`
+  (`int?`, the length of the FORMATTED text), `example` (`String?`) and
+  `allowedChars` (`String?`, a regex character-class body). Platform-neutral — no
+  Flutter or DOM types; README.md carries the Flutter/HTML mapping tables.
+- `formatPartial(...) -> String` — as-you-type formatting. Never throws. For the
+  nine grouping types it produces exactly what `format` produces once the value is
+  valid. `Email` and `Url` return the input unchanged and `Host` only filters and
+  truncates, because their `format` is a display transform (or absent) and applying
+  it mid-typing would delete what the user is typing.
+- `example` is null wherever no verified real value exists — for most postal
+  countries and for every phone country. Nothing is invented.
+- `LicensePlate.maxLength` is null for every country: the AT grammar accepts an
+  unbounded serial, so any cap could reject a plate `validate` accepts.
 
 Result model:
 - `sealed class ValidationResult` = `Valid(String normalized, {List<Suggestion> suggestions})` | `Invalid(List<ValidationIssue> issues)`
 - `ValidationIssue(IssueCode code, String message)` — `IssueCode` is a stable, switchable, translatable enum; message is an English default.
 - `Suggestion(String value, String reason)` — e.g. reason `'typo-domain'`.
-- `enum Country { de, at, ch }`.
+- `class Country` — ISO 3166-1 alpha-2 `iso2`, `callingCode`, display name and
+  phone metadata for 245 regions; `Country.fromIso2` / `Country.fromCallingCode`.
 - `isValid(x)` == `validate(x) is Valid`.
 
 ## Key behaviors / gotchas
 
 - Phone national input (no leading `+`) REQUIRES `country:`; otherwise `Invalid(IssueCode.phoneAmbiguousCountry)`.
-- Phone accepts only DACH calling codes (+49/+43/+41); any other -> `Invalid(IssueCode.phoneUnknownCountry)`.
-- `Phone.format` grouping is a simple 3-digit prefix split, NOT geographic area codes.
+- An unresolvable calling code yields `Invalid(IssueCode.phoneUnknownCountry)`.
 - `format`/`normalize` throw `FormatException` on invalid input — EXCEPT `Email.normalize`, which never throws.
+- `fieldDescriptor` and `formatPartial` never throw, not even for an unknown
+  country: they degrade to a generic descriptor. The error belongs to `validate`,
+  which reports `postalUnknownCountry` / `plateUnknownCountry` for the same input.
 - No DNS/MX/network lookups anywhere; the email typo hint is a purely local edit-distance heuristic.
 
 ## Cross-language consistency
 
 Expected results are stored as language-agnostic JSON test vectors in `test/vectors/`
-(one file per type). `test/vectors_test.dart` checks Dart against them. A planned npm
-port will load the same JSON files, so implementations cannot drift.
+(one file per type, plus `field_descriptor.json` and `format_partial.json`).
+`test/vectors_test.dart` checks Dart against them and the npm port's conformance
+specs load the same files, so the two implementations cannot drift.
 
 ## Links
 
 - pub.dev: https://pub.dev/packages/kreiseck_validator
+- npm: https://www.npmjs.com/package/@kreiseck/validator
 - API docs: https://pub.dev/documentation/kreiseck_validator/latest/
 - Source: https://github.com/kreiseck-at/kreiseck_validator
 - Algorithms explained: doc/algorithms.md
