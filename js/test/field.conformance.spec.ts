@@ -7,6 +7,8 @@ import { Iccid } from '../src/iccid/index';
 import { Vin } from '../src/vin/index';
 import { Iban } from '../src/iban/index';
 import { CreditCard } from '../src/credit-card/index';
+import { MacAddress } from '../src/mac-address/index';
+import type { MacNotation } from '../src/mac-address/types';
 
 type Options = Record<string, unknown>;
 type DescriptorVec = Options & { type: string; options?: Options };
@@ -30,6 +32,11 @@ function descriptorFor(type: string, o: Options): FieldDescriptor {
       return Iban.fieldDescriptor({ country: o.country as string | undefined });
     case 'credit_card':
       return CreditCard.fieldDescriptor();
+    case 'mac_address':
+      return MacAddress.fieldDescriptor({
+        notation: (o.notation as MacNotation) ?? 'colon',
+        upperCase: (o.upperCase as boolean) ?? false,
+      });
     default:
       throw new Error(`unknown type ${type}`);
   }
@@ -47,6 +54,11 @@ function partialFor(type: string, input: string, o: Options): string {
       return Iban.formatPartial(input, { country: o.country as string | undefined });
     case 'credit_card':
       return CreditCard.formatPartial(input);
+    case 'mac_address':
+      return MacAddress.formatPartial(input, {
+        notation: (o.notation as MacNotation) ?? 'colon',
+        upperCase: (o.upperCase as boolean) ?? false,
+      });
     default:
       throw new Error(`unknown type ${type}`);
   }

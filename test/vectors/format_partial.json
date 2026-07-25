@@ -25,5 +25,14 @@
   { "type": "credit_card", "options": {}, "input": "378282246310005", "output": "3782 822463 10005" },
   { "type": "credit_card", "options": {}, "input": "3782 8224 6310 005", "output": "3782 822463 10005" },
   { "type": "credit_card", "options": {}, "input": "37828224631000599", "output": "3782 822463 10005" },
-  { "type": "credit_card", "options": {}, "input": "4242-4242", "output": "4242 4242" }
+  { "type": "credit_card", "options": {}, "input": "4242-4242", "output": "4242 4242" },
+  { "type": "mac_address", "options": {}, "input": "aabbcc", "output": "aa:bb:cc" },
+  { "type": "mac_address", "options": {}, "input": "AABBC", "output": "aa:bb:c" },
+  { "type": "mac_address", "options": {}, "input": "aa:bb:cc:dd:ee:ff", "output": "aa:bb:cc:dd:ee:ff" },
+  { "type": "mac_address", "options": {}, "input": "zzaabb", "output": "aa:bb" },
+  { "type": "mac_address", "options": { "upperCase": true }, "input": "aabbcc", "output": "AA:BB:CC" },
+  { "type": "mac_address", "options": { "notation": "hyphen" }, "input": "aabbcc", "output": "aa-bb-cc" },
+  { "type": "mac_address", "options": { "notation": "dot" }, "input": "aabbcc", "output": "aabb.cc" },
+  { "type": "mac_address", "options": { "notation": "bare" }, "input": "aabbcc", "output": "aabbcc" },
+  { "type": "mac_address", "options": {}, "input": "aabbccddeeffaabbccdd", "output": "aa:bb:cc:dd:ee:ff:aa:bb" }
 ]

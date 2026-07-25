@@ -78,5 +78,45 @@
     "maxLength": 23,
     "example": "4242 4242 4242 4242",
     "allowedChars": "0-9 "
+  },
+  {
+    "type": "mac_address",
+    "options": {},
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 23,
+    "example": "aa:bb:cc:dd:ee:ff",
+    "allowedChars": "0-9A-Fa-f:"
+  },
+  {
+    "type": "mac_address",
+    "options": { "notation": "hyphen", "upperCase": true },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": 23,
+    "example": "AA-BB-CC-DD-EE-FF",
+    "allowedChars": "0-9A-Fa-f-"
+  },
+  {
+    "type": "mac_address",
+    "options": { "notation": "dot" },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 19,
+    "example": "aabb.ccdd.eeff",
+    "allowedChars": "0-9A-Fa-f."
+  },
+  {
+    "type": "mac_address",
+    "options": { "notation": "bare" },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 16,
+    "example": "aabbccddeeff",
+    "allowedChars": "0-9A-Fa-f"
   }
 ]

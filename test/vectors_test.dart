@@ -57,6 +57,10 @@ FieldDescriptor _descriptorFor(String type, Map<String, Object?> o) =>
       'vin' => Vin.fieldDescriptor(),
       'iban' => Iban.fieldDescriptor(country: o['country'] as String?),
       'credit_card' => CreditCard.fieldDescriptor(),
+      'mac_address' => MacAddress.fieldDescriptor(
+          notation: _notation(o['notation'] as String?),
+          upperCase: o['upperCase'] as bool? ?? false,
+        ),
       _ => throw ArgumentError('unknown type $type'),
     };
 
@@ -68,6 +72,11 @@ String _partialFor(String type, String input, Map<String, Object?> o) =>
       'vin' => Vin.formatPartial(input),
       'iban' => Iban.formatPartial(input, country: o['country'] as String?),
       'credit_card' => CreditCard.formatPartial(input),
+      'mac_address' => MacAddress.formatPartial(
+          input,
+          notation: _notation(o['notation'] as String?),
+          upperCase: o['upperCase'] as bool? ?? false,
+        ),
       _ => throw ArgumentError('unknown type $type'),
     };
 

@@ -1,4 +1,6 @@
+import '../common/field_descriptor.dart';
 import '../common/issue_code.dart';
+import '../common/partial_format.dart';
 import '../common/validation_result.dart';
 import 'mac_info.dart';
 
@@ -144,5 +146,49 @@ class MacAddress {
       isLocal: isLocal,
       type: octets.length == 8 ? MacAddressType.eui64 : MacAddressType.eui48,
     );
+  }
+
+  /// Describes a MAC-address input field for the given [notation] and case.
+  ///
+  /// Every bound covers EUI-64 (16 hex characters), the longer of the two
+  /// families this module accepts. [FieldDescriptor.capitalization] describes
+  /// the keyboard; [formatPartial] additionally normalises hex case to match
+  /// [format], which is lower-case unless [upperCase] is set.
+  static FieldDescriptor fieldDescriptor({
+    MacNotation notation = MacNotation.colon,
+    bool upperCase = false,
+  }) {
+    final (int max, String chars) = switch (notation) {
+      MacNotation.colon => (23, '0-9A-Fa-f:'),
+      MacNotation.hyphen => (23, '0-9A-Fa-f-'),
+      MacNotation.dot => (19, '0-9A-Fa-f.'),
+      MacNotation.bare => (16, '0-9A-Fa-f'),
+    };
+    return FieldDescriptor(
+      keyboard: KeyboardType.text,
+      capitalization:
+          upperCase ? Capitalization.characters : Capitalization.none,
+      maxLength: max,
+      example: format('aabbccddeeff', notation: notation, upperCase: upperCase),
+      allowedChars: chars,
+    );
+  }
+
+  /// Formats partially typed [input] in [notation]: hex characters only,
+  /// separators re-inserted, capped at 16 hex characters. Never throws.
+  static String formatPartial(
+    String input, {
+    MacNotation notation = MacNotation.colon,
+    bool upperCase = false,
+  }) {
+    final d = fieldDescriptor(notation: notation, upperCase: upperCase);
+    var s = prepare(input, d, separators: ':.-', maxSignificant: 16);
+    s = upperCase ? s.toUpperCase() : s.toLowerCase();
+    return switch (notation) {
+      MacNotation.colon => groupEvery(s, 2, ':'),
+      MacNotation.hyphen => groupEvery(s, 2, '-'),
+      MacNotation.dot => groupEvery(s, 4, '.'),
+      MacNotation.bare => s,
+    };
   }
 }
