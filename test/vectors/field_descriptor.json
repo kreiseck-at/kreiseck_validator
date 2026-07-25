@@ -177,7 +177,7 @@
     "capitalization": "characters",
     "maxLength": null,
     "example": null,
-    "allowedChars": "0-9A-Z -"
+    "allowedChars": "0-9A-ZÄÖÜČŠŽ -"
   },
   {
     "type": "license_plate",
@@ -187,7 +187,7 @@
     "capitalization": "characters",
     "maxLength": null,
     "example": "W-12345A",
-    "allowedChars": "0-9A-Z -"
+    "allowedChars": "0-9A-ZÄÖÜČŠŽ -"
   },
   {
     "type": "license_plate",
@@ -197,7 +197,7 @@
     "capitalization": "characters",
     "maxLength": null,
     "example": "B-XY 1234",
-    "allowedChars": "0-9A-Z -"
+    "allowedChars": "0-9A-ZÄÖÜČŠŽ -"
   },
   {
     "type": "phone",

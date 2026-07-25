@@ -408,20 +408,38 @@ class LicensePlate {
   /// [FieldDescriptor.maxLength] is null for every country on purpose: the
   /// implemented AT grammar accepts an unbounded serial, so any cap could
   /// reject a plate [validate] accepts.
+  ///
+  /// [FieldDescriptor.allowedChars] includes `ÄÖÜ` and `ČŠŽ` alongside
+  /// `A-Z`: DE district codes may contain umlauts (see [_deStructure]) and
+  /// HR registration-area codes may contain `Č`/`Š`/`Ž` (see
+  /// [_hrStructure]), so a plain `A-Z` filter would reject characters a
+  /// valid plate needs.
   static FieldDescriptor fieldDescriptor({String? country}) => FieldDescriptor(
         keyboard: KeyboardType.text,
         capitalization: Capitalization.characters,
         example: country == null ? null : _examples[country.toUpperCase()],
-        allowedChars: '0-9A-Z -',
+        allowedChars: '0-9A-ZÄÖÜČŠŽ -',
       );
 
   /// Formats partially typed [input]: upper-cased and stripped of separators
   /// until the value is a valid plate, at which point it snaps into the
   /// canonical display form. Separator positions depend on the whole value,
   /// so there is nothing meaningful to insert earlier. Never throws.
+  ///
+  /// [tryFormat] is tried first against the merely-filtered value (any
+  /// separator the caller already typed still in place) rather than the
+  /// fully compacted one: for DE, the code/serial boundary is ambiguous from
+  /// the compact form alone (`MAB1234` could split as `MA`+`B` or `M`+`AB`,
+  /// see [_deSplitTableAware]) and only a separator's position -- when the
+  /// caller typed one, e.g. `M-AB 1234` -- resolves it correctly (see
+  /// [_deSplitSeparatorAware]). Discarding that separator before checking
+  /// validity would silently re-derive the wrong split. Validity itself does
+  /// not depend on which of the two is passed in, since [validate]
+  /// recompacts internally either way.
   static String formatPartial(String input, {String? country}) {
-    final s = prepare(input, fieldDescriptor(country: country),
-        separators: ' -');
-    return tryFormat(s, country: country) ?? s;
+    final d = fieldDescriptor(country: country);
+    final filtered = prepare(input, d);
+    final compact = prepare(input, d, separators: ' -');
+    return tryFormat(filtered, country: country) ?? compact;
   }
 }
