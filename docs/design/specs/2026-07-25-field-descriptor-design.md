@@ -224,8 +224,15 @@ Four steps, in this order:
 1. **Filter** — drop every character not in `allowedChars` (no-op when null).
 2. **Case** — apply `capitalization` (`characters` → upper-case; `none` →
    leave as typed).
-3. **Group** — insert the type's canonical separators.
-4. **Truncate** — cut to `maxLength` (no-op when null).
+3. **Truncate** — cut to the type's maximum number of *significant* characters
+   (no-op when unbounded).
+4. **Group** — insert the type's canonical separators.
+
+Truncation deliberately runs **before** grouping, on the separator-free form.
+Cutting the grouped text at `maxLength` instead would sometimes land on a
+separator and leave one dangling at the end. Both orders cap the result at
+`maxLength`, since `maxLength` is by definition the significant maximum plus
+the separators grouping inserts.
 
 ### Guarantees
 
@@ -246,9 +253,9 @@ Three properties, each covered by a test:
    the guarantee is instead: `formatPartial` never removes a character that a
    valid value may contain.
 
-   For `Phone`, agreement is asserted against `PhoneFormat.international` when
-   the input starts with `+`, and against `PhoneFormat.national` with the given
-   `country` otherwise.
+   For `Phone`, agreement is asserted against `format(v, international: true)`
+   when the input starts with `+`, and against
+   `format(v, country: …, international: false)` otherwise.
 2. **Idempotence** — `formatPartial(formatPartial(x)) == formatPartial(x)` for
    every `x`. Re-running the formatter on its own output must be a no-op, or a
    text field re-formatting on each keystroke would oscillate.
@@ -326,7 +333,7 @@ Unit tests, per language:
   input in the existing vectors, assert re-application changes nothing.
 - **Character fidelity**: for every input in the partial vectors, assert that
   stripping the type's separators from the output equals the input with steps
-  1, 2 and 4 applied and no grouping — i.e. grouping adds separators and
+  1, 2 and 3 applied and grouping skipped — i.e. grouping adds separators and
   nothing else.
 - **Length invariant**: for every valid value in the vector corpus, assert
   `format(v).length <= fieldDescriptor(...).maxLength` where `maxLength` is
