@@ -62,6 +62,8 @@ FieldDescriptor _descriptorFor(String type, Map<String, Object?> o) =>
           upperCase: o['upperCase'] as bool? ?? false,
         ),
       'postal_code' => PostalCode.fieldDescriptor(country: o['country'] as String?),
+      'license_plate' =>
+        LicensePlate.fieldDescriptor(country: o['country'] as String?),
       _ => throw ArgumentError('unknown type $type'),
     };
 
@@ -80,6 +82,8 @@ String _partialFor(String type, String input, Map<String, Object?> o) =>
         ),
       'postal_code' =>
         PostalCode.formatPartial(input, country: o['country'] as String?),
+      'license_plate' =>
+        LicensePlate.formatPartial(input, country: o['country'] as String?),
       _ => throw ArgumentError('unknown type $type'),
     };
 

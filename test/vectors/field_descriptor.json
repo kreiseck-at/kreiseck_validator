@@ -168,5 +168,35 @@
     "maxLength": 8,
     "example": "SW1A 1AA",
     "allowedChars": "0-9A-Z "
+  },
+  {
+    "type": "license_plate",
+    "options": {},
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": null,
+    "example": null,
+    "allowedChars": "0-9A-Z -"
+  },
+  {
+    "type": "license_plate",
+    "options": { "country": "AT" },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": null,
+    "example": "W-12345A",
+    "allowedChars": "0-9A-Z -"
+  },
+  {
+    "type": "license_plate",
+    "options": { "country": "DE" },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": null,
+    "example": "B-XY 1234",
+    "allowedChars": "0-9A-Z -"
   }
 ]

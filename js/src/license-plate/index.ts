@@ -1,6 +1,8 @@
 import { valid, invalid } from '../common/types';
 import type { ValidationResult } from '../common/types';
 import { FormatError } from '../common/errors';
+import type { FieldDescriptor } from '../common/field';
+import { prepare } from '../common/partial';
 import { kPlateRegions } from './metadata';
 import type { PlateInfo, PlateOptions, PlateType } from './types';
 
@@ -403,4 +405,44 @@ function parse(input: string, options: PlateOptions = {}): PlateInfo | null {
   }
 }
 
-export const LicensePlate = { isValid, validate, normalize, format, tryFormat, parse };
+// A representative plate per supported country, for FieldDescriptor.example.
+const EXAMPLES: Record<string, string> = {
+  AT: 'W-12345A',
+  DE: 'B-XY 1234',
+  CH: 'ZH 123456',
+  HR: 'ZG 123-A',
+  TR: '34 ABC 123',
+};
+
+// Describes a license-plate input field. maxLength is null for every country
+// on purpose: the implemented AT grammar accepts an unbounded serial, so any
+// cap could reject a plate validate accepts.
+function fieldDescriptor(options: PlateOptions = {}): FieldDescriptor {
+  return {
+    keyboard: 'text',
+    autofill: null,
+    capitalization: 'characters',
+    maxLength: null,
+    example: options.country === undefined ? null : (EXAMPLES[options.country.toUpperCase()] ?? null),
+    allowedChars: '0-9A-Z -',
+  };
+}
+
+// Formats partially typed input: upper-cased and stripped of separators until
+// the value is a valid plate, at which point it snaps into the canonical
+// display form. Never throws.
+function formatPartial(input: string, options: PlateOptions = {}): string {
+  const s = prepare(input, fieldDescriptor(options), { separators: ' -' });
+  return tryFormat(s, options) ?? s;
+}
+
+export const LicensePlate = {
+  isValid,
+  validate,
+  normalize,
+  format,
+  tryFormat,
+  parse,
+  fieldDescriptor,
+  formatPartial,
+};

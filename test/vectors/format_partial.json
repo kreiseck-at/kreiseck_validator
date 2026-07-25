@@ -43,5 +43,9 @@
   { "type": "postal_code", "options": { "country": "NL" }, "input": "1234ab", "output": "1234 AB" },
   { "type": "postal_code", "options": { "country": "NL" }, "input": "123", "output": "123" },
   { "type": "postal_code", "options": { "country": "GB" }, "input": "sw1a", "output": "SW1A" },
-  { "type": "postal_code", "options": { "country": "GB" }, "input": "sw1a1aa", "output": "SW1A 1AA" }
+  { "type": "postal_code", "options": { "country": "GB" }, "input": "sw1a1aa", "output": "SW1A 1AA" },
+  { "type": "license_plate", "options": { "country": "AT" }, "input": "w", "output": "W" },
+  { "type": "license_plate", "options": { "country": "AT" }, "input": "w12345a", "output": "W-12345A" },
+  { "type": "license_plate", "options": { "country": "AT" }, "input": "w-12345a", "output": "W-12345A" },
+  { "type": "license_plate", "options": { "country": "AT" }, "input": "w 12345a!", "output": "W-12345A" }
 ]

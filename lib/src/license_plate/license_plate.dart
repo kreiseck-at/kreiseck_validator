@@ -1,4 +1,6 @@
+import '../common/field_descriptor.dart';
 import '../common/issue_code.dart';
+import '../common/partial_format.dart';
 import '../common/validation_result.dart';
 import 'plate_info.dart';
 import 'plate_type.dart';
@@ -389,5 +391,37 @@ class LicensePlate {
       default:
         return null;
     }
+  }
+
+  /// A representative plate per supported country, for
+  /// [FieldDescriptor.example].
+  static const Map<String, String> _examples = {
+    'AT': 'W-12345A',
+    'DE': 'B-XY 1234',
+    'CH': 'ZH 123456',
+    'HR': 'ZG 123-A',
+    'TR': '34 ABC 123',
+  };
+
+  /// Describes a license-plate input field.
+  ///
+  /// [FieldDescriptor.maxLength] is null for every country on purpose: the
+  /// implemented AT grammar accepts an unbounded serial, so any cap could
+  /// reject a plate [validate] accepts.
+  static FieldDescriptor fieldDescriptor({String? country}) => FieldDescriptor(
+        keyboard: KeyboardType.text,
+        capitalization: Capitalization.characters,
+        example: country == null ? null : _examples[country.toUpperCase()],
+        allowedChars: '0-9A-Z -',
+      );
+
+  /// Formats partially typed [input]: upper-cased and stripped of separators
+  /// until the value is a valid plate, at which point it snaps into the
+  /// canonical display form. Separator positions depend on the whole value,
+  /// so there is nothing meaningful to insert earlier. Never throws.
+  static String formatPartial(String input, {String? country}) {
+    final s = prepare(input, fieldDescriptor(country: country),
+        separators: ' -');
+    return tryFormat(s, country: country) ?? s;
   }
 }
