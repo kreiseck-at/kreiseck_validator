@@ -68,5 +68,15 @@
     "maxLength": null,
     "example": null,
     "allowedChars": "0-9A-Z "
+  },
+  {
+    "type": "credit_card",
+    "options": {},
+    "keyboard": "digits",
+    "autofill": "creditCardNumber",
+    "capitalization": "none",
+    "maxLength": 23,
+    "example": "4242 4242 4242 4242",
+    "allowedChars": "0-9 "
   }
 ]

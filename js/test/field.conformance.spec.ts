@@ -6,6 +6,7 @@ import { Imei } from '../src/imei/index';
 import { Iccid } from '../src/iccid/index';
 import { Vin } from '../src/vin/index';
 import { Iban } from '../src/iban/index';
+import { CreditCard } from '../src/credit-card/index';
 
 type Options = Record<string, unknown>;
 type DescriptorVec = Options & { type: string; options?: Options };
@@ -27,6 +28,8 @@ function descriptorFor(type: string, o: Options): FieldDescriptor {
       return Vin.fieldDescriptor();
     case 'iban':
       return Iban.fieldDescriptor({ country: o.country as string | undefined });
+    case 'credit_card':
+      return CreditCard.fieldDescriptor();
     default:
       throw new Error(`unknown type ${type}`);
   }
@@ -42,6 +45,8 @@ function partialFor(type: string, input: string, o: Options): string {
       return Vin.formatPartial(input);
     case 'iban':
       return Iban.formatPartial(input, { country: o.country as string | undefined });
+    case 'credit_card':
+      return CreditCard.formatPartial(input);
     default:
       throw new Error(`unknown type ${type}`);
   }

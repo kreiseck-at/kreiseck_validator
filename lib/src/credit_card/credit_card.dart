@@ -1,5 +1,7 @@
+import '../common/field_descriptor.dart';
 import '../common/issue_code.dart';
 import '../common/luhn.dart';
+import '../common/partial_format.dart';
 import '../common/validation_result.dart';
 
 /// Recognized card networks.
@@ -128,5 +130,28 @@ class CreditCard {
     } on FormatException {
       return null;
     }
+  }
+
+  /// Describes a payment-card input field. [FieldDescriptor.maxLength] is 23:
+  /// 19 digits (the ISO/IEC 7812 maximum this module accepts) plus the four
+  /// separators [format] inserts.
+  static FieldDescriptor fieldDescriptor() => const FieldDescriptor(
+        keyboard: KeyboardType.digits,
+        autofill: AutofillHint.creditCardNumber,
+        maxLength: 23,
+        example: '4242 4242 4242 4242',
+        allowedChars: '0-9 ',
+      );
+
+  /// Formats partially typed [input] the way [format] would: `4-6-5` once the
+  /// prefix identifies Amex, otherwise groups of four. Never throws.
+  static String formatPartial(String input) {
+    var s = prepare(input, fieldDescriptor(),
+        separators: ' ', maxSignificant: 19);
+    if (network(s) == CardNetwork.amex) {
+      if (s.length > 15) s = s.substring(0, 15);
+      return groupWidths(s, const [4, 6, 5], ' ');
+    }
+    return groupEvery(s, 4, ' ');
   }
 }

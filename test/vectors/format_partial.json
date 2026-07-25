@@ -16,5 +16,14 @@
   { "type": "iban", "options": { "country": "AT" }, "input": "AT61 1904", "output": "AT61 1904" },
   { "type": "iban", "options": { "country": "AT" }, "input": "at61190a", "output": "AT61 190A" },
   { "type": "iban", "options": { "country": "AT" }, "input": "AT611904300234573201999", "output": "AT61 1904 3002 3457 3201" },
-  { "type": "iban", "options": {}, "input": "at61190", "output": "AT61 190" }
+  { "type": "iban", "options": {}, "input": "at61190", "output": "AT61 190" },
+  { "type": "credit_card", "options": {}, "input": "4242", "output": "4242" },
+  { "type": "credit_card", "options": {}, "input": "42424", "output": "4242 4" },
+  { "type": "credit_card", "options": {}, "input": "4242424242424242", "output": "4242 4242 4242 4242" },
+  { "type": "credit_card", "options": {}, "input": "3782", "output": "3782" },
+  { "type": "credit_card", "options": {}, "input": "378282", "output": "3782 82" },
+  { "type": "credit_card", "options": {}, "input": "378282246310005", "output": "3782 822463 10005" },
+  { "type": "credit_card", "options": {}, "input": "3782 8224 6310 005", "output": "3782 822463 10005" },
+  { "type": "credit_card", "options": {}, "input": "37828224631000599", "output": "3782 822463 10005" },
+  { "type": "credit_card", "options": {}, "input": "4242-4242", "output": "4242 4242" }
 ]
