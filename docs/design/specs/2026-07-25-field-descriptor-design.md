@@ -158,7 +158,7 @@ Generic (no country) unless stated:
 | `Host` | `url` | null | `none` | 259 | `0-9A-Za-z.:\[\]-` |
 | `Iban` | `text` | null | `characters` | null / per country | `0-9A-Z ` |
 | `CreditCard` | `digits` | `creditCardNumber` | `none` | 23 | `0-9 ` |
-| `LicensePlate` | `text` | null | `characters` | null | `0-9A-Z -` |
+| `LicensePlate` | `text` | null | `characters` | null | `0-9A-ZÄÖÜČŠŽ .-` |
 | `Imei` | `digits` | null | `none` | 15, or 16 with `allowSv` | `0-9` |
 | `Iccid` | `digits` | null | `none` | 20 | `0-9` |
 | `MacAddress` | `text` | null | per `upperCase` | per `notation` | per `notation` |
@@ -206,6 +206,12 @@ Country-dependent values:
   `text`; `capitalization` = `none` for digits-only, else `characters`;
   `maxLength` = canonical length including any separator; `allowedChars` and
   `example` from the metadata (see "Generated data").
+- **`LicensePlate.allowedChars`** covers more than plain `A-Z`: German district
+  codes contain `ÄÖÜ` and Croatian ones `ČŠŽ`, and the module accepts `.`, `-`
+  and space as separators — the German code/serial split is separator-aware, so
+  dropping a typed separator changes which split wins (`M.AB 1234` would
+  reformat to `MA-B 1234`, turning München into Mannheim). Every character the
+  module's own validation accepts must survive the field filter.
 - **`LicensePlate.fieldDescriptor(country:)`** returns a per-country `example`;
   `maxLength` stays **null for every country**. The implemented AT grammar is
   `^([A-Z]{1,2})([A-Z0-9]+)$` — the serial is unbounded — so any cap could
