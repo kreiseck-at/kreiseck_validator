@@ -1,6 +1,8 @@
 import { valid, invalid } from '../common/types';
 import type { ValidationResult } from '../common/types';
 import { FormatError } from '../common/errors';
+import type { FieldDescriptor } from '../common/field';
+import { prepare } from '../common/partial';
 import type { HostInfo, HostType } from './types';
 
 // Validation, normalization and formatting of a bare host: a hostname
@@ -214,5 +216,25 @@ function parse(input: string): HostInfo | null {
   return { host: r.host, type: r.type, port: r.port, hasPort: r.port !== null };
 }
 
-export const Host = { isValid, validate, normalize, format, tryFormat, parse };
+// Describes a host input field. maxLength is 259: 253 (the RFC 1035 hostname
+// maximum) plus ':' plus five port digits.
+function fieldDescriptor(): FieldDescriptor {
+  return {
+    keyboard: 'url',
+    autofill: null,
+    capitalization: 'none',
+    maxLength: 259,
+    example: 'example.com',
+    allowedChars: '0-9A-Za-z.:\\[\\]-',
+  };
+}
+
+// Drops characters a host cannot contain and caps the length. Case is left
+// alone: format lower-cases, but doing that while the user types would fight
+// them. Never throws.
+function formatPartial(input: string): string {
+  return prepare(input, fieldDescriptor(), { maxSignificant: 259 });
+}
+
+export const Host = { isValid, validate, normalize, format, tryFormat, parse, fieldDescriptor, formatPartial };
 export type { HostInfo, HostType };

@@ -52,5 +52,11 @@
   { "type": "phone", "options": { "country": "AT" }, "input": "+43 664", "output": "+43664" },
   { "type": "phone", "options": { "country": "AT" }, "input": "abc+43", "output": "+43" },
   { "type": "phone", "options": {}, "input": "", "output": "" },
-  { "type": "phone", "options": {}, "input": "+436601234567", "output": "+43 660 1234567" }
+  { "type": "phone", "options": {}, "input": "+436601234567", "output": "+43 660 1234567" },
+  { "type": "email", "options": {}, "input": "Foo@Bar", "output": "Foo@Bar" },
+  { "type": "email", "options": {}, "input": "  x  ", "output": "  x  " },
+  { "type": "url", "options": {}, "input": "https://www.Example.com/", "output": "https://www.Example.com/" },
+  { "type": "host", "options": {}, "input": "Example.com", "output": "Example.com" },
+  { "type": "host", "options": {}, "input": "example.com:8080", "output": "example.com:8080" },
+  { "type": "host", "options": {}, "input": "exa mple.com", "output": "example.com" }
 ]

@@ -1,4 +1,6 @@
+import '../common/field_descriptor.dart';
 import '../common/issue_code.dart';
+import '../common/partial_format.dart';
 import '../common/validation_result.dart';
 
 /// Validation, normalization and typo-hinting for email addresses.
@@ -109,4 +111,17 @@ class Email {
 
   /// True when [validate] returns [Valid].
   static bool isValid(String input) => validate(input) is Valid;
+
+  /// Describes an email input field.
+  static FieldDescriptor fieldDescriptor() => const FieldDescriptor(
+        keyboard: KeyboardType.email,
+        autofill: AutofillHint.email,
+        example: 'user@example.com',
+      );
+
+  /// Returns [input] unchanged. An email address has no grouping and no
+  /// character set narrow enough to filter safely while typing; the method
+  /// exists so every type carries the same operations. Never throws.
+  static String formatPartial(String input) =>
+      prepare(input, fieldDescriptor());
 }

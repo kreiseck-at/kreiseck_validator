@@ -1,4 +1,6 @@
+import '../common/field_descriptor.dart';
 import '../common/issue_code.dart';
+import '../common/partial_format.dart';
 import '../common/validation_result.dart';
 import 'host_info.dart';
 
@@ -228,4 +230,19 @@ class Host {
     return HostInfo(
         host: host, type: hostType, port: port, hasPort: port != null);
   }
+
+  /// Describes a host input field. [FieldDescriptor.maxLength] is 259: 253
+  /// (the RFC 1035 hostname maximum) plus `:` plus five port digits.
+  static FieldDescriptor fieldDescriptor() => const FieldDescriptor(
+        keyboard: KeyboardType.url,
+        maxLength: 259,
+        example: 'example.com',
+        allowedChars: r'0-9A-Za-z.:\[\]-',
+      );
+
+  /// Drops characters a host cannot contain and caps the length. Case is
+  /// left alone: [format] lower-cases, but doing that while the user types
+  /// would fight them. Never throws.
+  static String formatPartial(String input) =>
+      prepare(input, fieldDescriptor(), maxSignificant: 259);
 }

@@ -218,5 +218,35 @@
     "maxLength": null,
     "example": "+43 1 234567",
     "allowedChars": "0-9+ ()-"
+  },
+  {
+    "type": "email",
+    "options": {},
+    "keyboard": "email",
+    "autofill": "email",
+    "capitalization": "none",
+    "maxLength": null,
+    "example": "user@example.com",
+    "allowedChars": null
+  },
+  {
+    "type": "url",
+    "options": {},
+    "keyboard": "url",
+    "autofill": "url",
+    "capitalization": "none",
+    "maxLength": null,
+    "example": "https://example.com",
+    "allowedChars": null
+  },
+  {
+    "type": "host",
+    "options": {},
+    "keyboard": "url",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 259,
+    "example": "example.com",
+    "allowedChars": "0-9A-Za-z.:\\[\\]-"
   }
 ]
