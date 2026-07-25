@@ -11,9 +11,9 @@
 ///    `SW1A 1AA`).
 class PostalPattern {
   /// Creates a postal pattern from its [pattern], [format] rule, optional
-  /// [example] and [charset].
+  /// [example], [charset] and [length].
   const PostalPattern(this.pattern, this.format,
-      [this.example, this.charset = 'digits']);
+      [this.example, this.charset = 'digits', this.length]);
 
   /// Anchored regex (as a string) the canonical (separator-applied) form
   /// must match.
@@ -29,4 +29,12 @@ class PostalPattern {
   /// `'digits'` when the code can only contain digits and separators,
   /// `'alnum'` when letters are possible.
   final String charset;
+
+  /// The canonical formatted length (separators included), mechanically
+  /// derived from [pattern] by `tool/gen_postal_metadata.py` -- never
+  /// curated, so it is set for every country regardless of whether
+  /// [example] is. For a variable-length pattern (the UK-style `U` [format]
+  /// rule, or a bounded range like `\d{2,4}`) this is the MAXIMUM matchable
+  /// length. Null only for a [PostalPattern] built by hand without one.
+  final int? length;
 }

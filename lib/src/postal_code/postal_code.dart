@@ -130,7 +130,7 @@ class PostalCode {
       autofill: AutofillHint.postalCode,
       capitalization:
           digitsOnly ? Capitalization.none : Capitalization.characters,
-      maxLength: meta.example?.length,
+      maxLength: meta.length,
       example: meta.example,
       allowedChars:
           '${digitsOnly ? '0-9' : '0-9A-Z'}${_separatorOf(meta)}',
@@ -147,9 +147,9 @@ class PostalCode {
     final sep = meta == null ? ' -' : _separatorOf(meta);
     final s = prepare(input, d,
         separators: sep.isEmpty ? null : sep,
-        maxSignificant: meta?.example == null
+        maxSignificant: meta?.length == null
             ? null
-            : meta!.example!.length - _separatorOf(meta).length);
+            : meta!.length! - _separatorOf(meta).length);
     if (meta == null) return s;
     if (meta.format == 'U') {
       final snapped = tryFormat(s, country: country!);

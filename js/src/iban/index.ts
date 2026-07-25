@@ -152,14 +152,14 @@ function parse(input: string): IbanInfo | null {
 }
 
 // Options for fieldDescriptor and formatPartial.
-export interface IbanOptions {
+export interface IbanFieldOptions {
   country?: string;
 }
 
 // Describes an IBAN input field. With country the descriptor is exact
 // (length and example for that country); without it, or for a country with
 // no bundled metadata, it is generic.
-function fieldDescriptor(options: IbanOptions = {}): FieldDescriptor {
+function fieldDescriptor(options: IbanFieldOptions = {}): FieldDescriptor {
   const c = options.country === undefined ? null : IbanCountry.of(options.country);
   return {
     keyboard: 'text',
@@ -173,7 +173,7 @@ function fieldDescriptor(options: IbanOptions = {}): FieldDescriptor {
 
 // Formats partially typed input in groups of four, upper-cased, capped at
 // the country's IBAN length (34 without one). Never throws.
-function formatPartial(input: string, options: IbanOptions = {}): string {
+function formatPartial(input: string, options: IbanFieldOptions = {}): string {
   const c = options.country === undefined ? null : IbanCountry.of(options.country);
   const s = prepare(input, fieldDescriptor(options), {
     separators: ' ',

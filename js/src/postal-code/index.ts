@@ -137,7 +137,7 @@ function fieldDescriptor(options: PostalFieldOptions = {}): FieldDescriptor {
     keyboard: digitsOnly ? 'digits' : 'text',
     autofill: 'postalCode',
     capitalization: digitsOnly ? 'none' : 'characters',
-    maxLength: meta.example === null ? null : meta.example.length,
+    maxLength: meta.length,
     example: meta.example,
     allowedChars: `${digitsOnly ? '0-9' : '0-9A-Z'}${separatorOf(meta)}`,
   };
@@ -151,8 +151,7 @@ function formatPartial(input: string, options: PostalFieldOptions = {}): string 
   const meta = options.country === undefined ? undefined : kPostalPatterns[options.country.toUpperCase()];
   const d = fieldDescriptor(options);
   const sep = meta === undefined ? ' -' : separatorOf(meta);
-  const maxSignificant =
-    meta === undefined || meta.example === null ? undefined : meta.example.length - separatorOf(meta).length;
+  const maxSignificant = meta === undefined ? undefined : meta.length - separatorOf(meta).length;
   const s = prepare(input, d, { separators: sep.length === 0 ? undefined : sep, maxSignificant });
   if (meta === undefined) return s;
   if (meta.format === 'U') return tryFormat(s, { country: options.country! }) ?? s;

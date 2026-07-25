@@ -19,6 +19,12 @@ export interface PostalPattern {
   // 'digits' when the code can only contain digits and separators, 'alnum'
   // when letters are possible.
   charset: string;
+  // The canonical formatted length (separators included), mechanically
+  // derived from `pattern` by tool/gen_postal_metadata.py -- never curated,
+  // so it is set for every country regardless of whether `example` is. For a
+  // variable-length pattern (the UK-style 'U' format rule, or a bounded
+  // range like \d{2,4}) this is the MAXIMUM matchable length.
+  length: number;
 }
 
 // country -> postal pattern.

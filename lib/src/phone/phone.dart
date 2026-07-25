@@ -200,12 +200,19 @@ class Phone {
   /// [FieldDescriptor.maxLength] is null: E.164 caps the digits at 15, but
   /// the number of separators varies per national format, so no honest
   /// single bound exists.
-  static FieldDescriptor fieldDescriptor({Country? country}) => FieldDescriptor(
+  ///
+  /// [FieldDescriptor.example] is always null: unlike every other type, there
+  /// is no bundled table of a single verified real phone number per country
+  /// (only synthetic ones derived from the calling code, which is exactly
+  /// the invented-example problem this package avoids elsewhere). Building
+  /// one from `callingCode + digits` produced a plausible-looking but
+  /// fabricated number for most countries (e.g. a malformed `+49 1234567`
+  /// for Germany) and `null` for the 221 of ~240 countries where that guess
+  /// did not even pass validation.
+  static FieldDescriptor fieldDescriptor({Country? country}) =>
+      const FieldDescriptor(
         keyboard: KeyboardType.phone,
         autofill: AutofillHint.telephoneNumber,
-        example: country == null
-            ? null
-            : tryFormat('+${country.callingCode}1234567', country: country),
         allowedChars: '0-9+ ()-',
       );
 

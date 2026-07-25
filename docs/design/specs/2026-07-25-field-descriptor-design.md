@@ -181,6 +181,15 @@ Notes on individual values:
   keyboard is the closest fit (dot and slash reachable, no auto-capitalisation).
 - **`Phone` `maxLength` = null**: E.164 caps the digits at 15, but the number of
   separators varies per national format, so no honest single bound exists.
+- **`Phone` `example` = null, always, even with a `country`.** Unlike every
+  other country-dependent type, there is no bundled table of a single
+  verified real phone number per country. An earlier version synthesized one
+  from the calling code (`+{callingCode}1234567`), which produced a
+  plausible-looking but fabricated `+43 1 234567` for Austria, a malformed
+  `+49 1234567` for Germany, and `null` for 221 of ~240 countries where the
+  guess did not even pass validation. That contradicts the same
+  never-invent principle applied to postal examples below, so the
+  synthetic construction was removed; `example` is unconditionally `null`.
 - **`MacAddress` is fully option-dependent.** The module supports EUI-48 (12 hex)
   *and* EUI-64 (16 hex), and `format` defaults to **lower-case**, so a blanket
   `characters` capitalisation would contradict it. Per option:
@@ -204,8 +213,12 @@ Country-dependent values:
 - **`PostalCode.fieldDescriptor(country:)`** reads `kPostalPatterns[country]`:
   `keyboard` = `digits` when the country's character set is digits-only, else
   `text`; `capitalization` = `none` for digits-only, else `characters`;
-  `maxLength` = canonical length including any separator; `allowedChars` and
-  `example` from the metadata (see "Generated data").
+  `maxLength` = `PostalPattern.length`, the canonical formatted length
+  (separator included) *mechanically derived from the country's pattern* —
+  not from the curated `example`, which is `null` for 28 of the 51
+  countries. For a variable-length pattern (the UK-style `U` rule, e.g. GB)
+  this is the **maximum** matchable length. `allowedChars` and `example` are
+  otherwise unchanged (see "Generated data").
 - **`LicensePlate.allowedChars`** covers more than plain `A-Z`: German district
   codes contain `ÄÖÜ` and Croatian ones `ČŠŽ`, and the module accepts `.`, `-`
   and space as separators — the German code/serial split is separator-aware, so
@@ -302,6 +315,16 @@ only inserted *between* significant characters that are already present.
 | `Host` | none — filter and truncate only (no casing: `format` lower-cases, typing must not) |
 | `Email`, `Url` | identity: with `allowedChars` and `maxLength` both null, all four steps are no-ops |
 
+`Host`'s filter step has one deliberate exception: a non-ASCII character
+(e.g. `münchen.de`) is left in place rather than dropped, even though it is
+outside `allowedChars`. The module is ASCII-only (no IDNA/punycode support),
+so such a value never validates either way — but silently stripping the
+non-ASCII character turns an obviously wrong input into a *different*,
+plausible-looking valid hostname (`mnchen.de`), which is more surprising than
+leaving the clearly-wrong character visible until the user notices it. Every
+other type's filter step drops every character outside `allowedChars`
+unconditionally.
+
 ### Incremental grouping vs. snap-on-valid
 
 Two grouping strategies, chosen per type by one rule: **is every separator
@@ -374,14 +397,32 @@ Unit tests, per language:
 
 ## Generated data
 
-`PostalPattern` gains two fields, `example` (canonical, separator-applied,
-**nullable**) and `charset` (either digits-only or alphanumeric), and
-`tool/gen_postal_metadata.py` is extended to emit them. `charset` is derived
-mechanically from each pattern and therefore covers all 51 countries;
-`example` is curated and stays `null` for countries where no verified real code
-is on hand. An invented example is worse than none, and the generator's
-`self_check()` is extended to assert that every example present matches its own
-pattern, so a wrong one fails the build rather than shipping.
+`PostalPattern` gains three fields, `example` (canonical, separator-applied,
+**nullable**), `charset` (either digits-only or alphanumeric) and `length`
+(the canonical formatted length, separators included), and
+`tool/gen_postal_metadata.py` is extended to emit them. `charset` and `length`
+are derived mechanically from each pattern and therefore cover all 51
+countries; `example` is curated and stays `null` for countries where no
+verified real code is on hand. An invented example is worse than none, and the
+generator's `self_check()` is extended to assert that every example present
+matches its own pattern *and* that its length equals the mechanically derived
+`length`, so a wrong one fails the build rather than shipping.
+
+`length` exists specifically so `maxLength` and the truncation cap in
+`formatPartial` no longer depend on `example` being present: before this
+field, both were derived from `example.length`, so the 28 of 51 countries
+without a curated example (e.g. Albania, `^\d{4}$`) got no cap at all, while
+a country with an identical pattern but a curated example (Austria) did.
+`length` is computed by a small regex-length calculator in the generator that
+walks the anchored pattern (literals, `\d`, character classes, groups,
+alternation, `{n}`/`{n,m}`/`?` quantifiers) and returns the length of the
+*longest* string it can match — for a fixed-length pattern that is the only
+length; for a variable-length one (the UK-style `U` rule, e.g. GB, or `MT`'s
+`\d{2,4}`) it is the maximum. Because the pattern is already the
+canonical/separator-applied form (its literal `-`/space is part of the
+regex), this single computation gives the full formatted length directly —
+no separate separator arithmetic is needed.
+
 This is the only generated table touched; every other descriptor value is
 hand-written next to the validator it belongs to.
 

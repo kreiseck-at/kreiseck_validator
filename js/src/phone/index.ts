@@ -227,17 +227,22 @@ function parse(input: string, opts: PhoneOptions = {}): PhoneInfo | null {
 // Describes a phone-number input field. maxLength is null: E.164 caps the
 // digits at 15, but the number of separators varies per national format, so
 // no honest single bound exists.
-function fieldDescriptor(options: PhoneOptions = {}): FieldDescriptor {
-  const country = options.country;
+//
+// example is always null: unlike every other type, there is no bundled table
+// of a single verified real phone number per country (only synthetic ones
+// derived from the calling code, which is exactly the invented-example
+// problem this package avoids elsewhere). Building one from
+// `callingCode + digits` produced a plausible-looking but fabricated number
+// for most countries (e.g. a malformed `+49 1234567` for Germany) and `null`
+// for the 221 of ~240 countries where that guess did not even pass
+// validation.
+function fieldDescriptor(_options: PhoneOptions = {}): FieldDescriptor {
   return {
     keyboard: 'phone',
     autofill: 'telephoneNumber',
     capitalization: 'none',
     maxLength: null,
-    example:
-      country === undefined
-        ? null
-        : (tryFormat(`+${fromIso2(country)?.callingCode ?? ''}1234567`, { country }) ?? null),
+    example: null,
     allowedChars: '0-9+ ()-',
   };
 }
@@ -246,7 +251,13 @@ function fieldDescriptor(options: PhoneOptions = {}): FieldDescriptor {
 // canonical form as soon as the number is valid. Reproducing a full
 // as-you-type formatter would mean guessing national grouping on partial
 // input, and a wrong guess mid-number is worse than none. Never throws.
-function formatPartial(input: string, options: PhoneOptions = {}): string {
+//
+// international is intentionally not accepted here (unlike format/tryFormat):
+// formatPartial always derives it from a leading '+', so honoring a
+// caller-supplied value would silently contradict the snapped-to output. The
+// `international?: never` forbids passing one, matching the Dart signature,
+// which takes only country.
+function formatPartial(input: string, options: PhoneOptions & { international?: never } = {}): string {
   let s = prepare(input, fieldDescriptor(options), { separators: ' ()-' });
   const plus = s.startsWith('+');
   s = s.replace(/\+/g, '');

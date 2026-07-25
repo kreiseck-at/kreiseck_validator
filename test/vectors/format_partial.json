@@ -44,6 +44,8 @@
   { "type": "postal_code", "options": { "country": "NL" }, "input": "123", "output": "123" },
   { "type": "postal_code", "options": { "country": "GB" }, "input": "sw1a", "output": "SW1A" },
   { "type": "postal_code", "options": { "country": "GB" }, "input": "sw1a1aa", "output": "SW1A 1AA" },
+  { "type": "postal_code", "options": { "country": "AL" }, "input": "123", "output": "123" },
+  { "type": "postal_code", "options": { "country": "AL" }, "input": "12345", "output": "1234" },
   { "type": "license_plate", "options": { "country": "AT" }, "input": "w", "output": "W" },
   { "type": "license_plate", "options": { "country": "AT" }, "input": "w12345a", "output": "W-12345A" },
   { "type": "license_plate", "options": { "country": "AT" }, "input": "w-12345a", "output": "W-12345A" },
@@ -59,5 +61,6 @@
   { "type": "url", "options": {}, "input": "https://www.Example.com/", "output": "https://www.Example.com/" },
   { "type": "host", "options": {}, "input": "Example.com", "output": "Example.com" },
   { "type": "host", "options": {}, "input": "example.com:8080", "output": "example.com:8080" },
-  { "type": "host", "options": {}, "input": "exa mple.com", "output": "example.com" }
+  { "type": "host", "options": {}, "input": "exa mple.com", "output": "example.com" },
+  { "type": "host", "options": {}, "input": "münchen.de", "output": "münchen.de" }
 ]

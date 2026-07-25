@@ -22,6 +22,16 @@ carries:
       - `'U'`  -- UK postcode style: insert a single space before the last
                   3 characters, regardless of total length (e.g. GB, GG,
                   GI, IM, JE: `SW1A1AA` -> `SW1A 1AA`).
+  - `example` (optional): a real postal code in canonical form, curated by
+    hand. Left out (`null`) when no verified real code is on hand -- an
+    invented example is worse than none.
+
+`charset` and `length` are never curated: both are derived mechanically from
+`pattern` by `charset_of` / `max_length` below, so every one of the 51
+countries gets them, including the 28 with no curated `example`. `length` is
+the canonical formatted length (separators included); for a variable-length
+pattern (the `U` rule, or `MT`'s `\\d{2,4}`) it is the MAXIMUM matchable
+length.
 
 Stdlib only -- run with the system `python3`:
 
@@ -106,6 +116,129 @@ patterns: dict[str, dict[str, str]] = {
 _FORMAT_RE = re.compile(r"^\d+:.$")
 
 
+def _split_top(s: str, delim: str) -> list[str]:
+    """Splits `s` on `delim` at paren-depth 0, ignoring delimiters inside a
+    `[...]` character class or a backslash escape."""
+    parts: list[str] = []
+    depth = 0
+    cur = ""
+    in_class = False
+    i = 0
+    while i < len(s):
+        c = s[i]
+        if c == "\\":
+            cur += s[i : i + 2]
+            i += 2
+            continue
+        if c == "[" and not in_class:
+            in_class = True
+            cur += c
+            i += 1
+            continue
+        if c == "]" and in_class:
+            in_class = False
+            cur += c
+            i += 1
+            continue
+        if not in_class and c == "(":
+            depth += 1
+            cur += c
+            i += 1
+            continue
+        if not in_class and c == ")":
+            depth -= 1
+            cur += c
+            i += 1
+            continue
+        if not in_class and depth == 0 and c == delim:
+            parts.append(cur)
+            cur = ""
+            i += 1
+            continue
+        cur += c
+        i += 1
+    parts.append(cur)
+    return parts
+
+
+def _parse_alt(s: str) -> int:
+    """Max matched length of `s`, the top-level alternation of a group body
+    (or of a whole anchored pattern with `^`/`$` already stripped)."""
+    return max(_parse_seq(a) for a in _split_top(s, "|"))
+
+
+def _parse_seq(s: str) -> int:
+    """Max matched length of `s`, a sequence with no top-level `|`."""
+    total = 0
+    i = 0
+    n = len(s)
+    while i < n:
+        c = s[i]
+        if c == "\\":
+            atom_len = 1
+            i += 2
+        elif c == "[":
+            j = i + 1
+            while s[j] != "]":
+                if s[j] == "\\":
+                    j += 1
+                j += 1
+            atom_len = 1
+            i = j + 1
+        elif c == "(":
+            depth = 1
+            j = i + 1
+            while depth > 0:
+                if s[j] == "\\":
+                    j += 2
+                    continue
+                if s[j] == "(":
+                    depth += 1
+                elif s[j] == ")":
+                    depth -= 1
+                j += 1
+            inner = s[i + 1 : j - 1]
+            if inner.startswith("?:"):
+                inner = inner[2:]
+            atom_len = _parse_alt(inner)
+            i = j
+        else:
+            atom_len = 1
+            i += 1
+        if i < n and s[i] == "?":
+            i += 1  # 0 or 1 occurrence: max length is the atom itself.
+        elif i < n and s[i] == "{":
+            j = s.index("}", i)
+            spec = s[i + 1 : j]
+            if "," in spec:
+                hi = spec.split(",")[1].strip()
+                if hi == "":
+                    raise ValueError(f"unbounded quantifier not supported: {s!r}")
+                mult = int(hi)
+            else:
+                mult = int(spec)
+            atom_len *= mult
+            i = j + 1
+        total += atom_len
+    return total
+
+
+def max_length(pattern: str) -> int:
+    """The length of the longest string `pattern` (an anchored `^...$` regex,
+    restricted to the small subset used by `patterns` -- literals, `\\d`,
+    character classes, non-capturing groups, alternation, and `{n}`/`{n,m}`/
+    `?` quantifiers) can match.
+
+    Because every pattern here is the CANONICAL (separator-applied) form, a
+    literal separator in the pattern (e.g. the space in CZ's
+    `^\\d{3} \\d{2}$`) is already counted -- there is no need to add it back
+    separately.
+    """
+    if not (pattern.startswith("^") and pattern.endswith("$")):
+        raise ValueError(f"pattern not anchored: {pattern!r}")
+    return _parse_alt(pattern[1:-1])
+
+
 def self_check() -> None:
     if len(patterns) < 40:
         raise ValueError(f"expected >= 40 countries, got {len(patterns)}")
@@ -119,9 +252,16 @@ def self_check() -> None:
         fmt = meta["format"]
         if fmt not in ("", "U") and not _FORMAT_RE.match(fmt):
             raise ValueError(f"{cc}: bad format rule {fmt!r}")
+        derived_length = max_length(meta["pattern"])
         example = meta.get("example")
-        if example is not None and not re.match(meta["pattern"], example):
-            raise ValueError(f"{cc}: example {example!r} does not match its pattern")
+        if example is not None:
+            if not re.match(meta["pattern"], example):
+                raise ValueError(f"{cc}: example {example!r} does not match its pattern")
+            if len(example) != derived_length:
+                raise ValueError(
+                    f"{cc}: example {example!r} has length {len(example)}, "
+                    f"but the pattern's derived length is {derived_length}"
+                )
 
 
 def dart_str(s: str) -> str:
@@ -151,7 +291,8 @@ def main() -> None:
         buf.append(
             f"  '{cc}': PostalPattern({dart_str(meta['pattern'])}, "
             f"{dart_str(meta['format'])}, {example_lit}, "
-            f"{dart_str(charset_of(meta['pattern']))}),\n"
+            f"{dart_str(charset_of(meta['pattern']))}, "
+            f"{max_length(meta['pattern'])}),\n"
         )
     buf.append("};\n")
 
@@ -162,6 +303,7 @@ def main() -> None:
     for cc, meta in patterns.items():
         meta.setdefault("example", None)
         meta["charset"] = charset_of(meta["pattern"])
+        meta["length"] = max_length(meta["pattern"])
 
     os.makedirs(os.path.dirname(JSON_OUT), exist_ok=True)
     with open(JSON_OUT, "w", encoding="utf-8") as f:

@@ -170,6 +170,26 @@
     "allowedChars": "0-9A-Z "
   },
   {
+    "type": "postal_code",
+    "options": { "country": "AL" },
+    "keyboard": "digits",
+    "autofill": "postalCode",
+    "capitalization": "none",
+    "maxLength": 4,
+    "example": null,
+    "allowedChars": "0-9"
+  },
+  {
+    "type": "postal_code",
+    "options": { "country": "MT" },
+    "keyboard": "text",
+    "autofill": "postalCode",
+    "capitalization": "characters",
+    "maxLength": 8,
+    "example": null,
+    "allowedChars": "0-9A-Z "
+  },
+  {
     "type": "license_plate",
     "options": {},
     "keyboard": "text",
@@ -216,7 +236,7 @@
     "autofill": "telephoneNumber",
     "capitalization": "none",
     "maxLength": null,
-    "example": "+43 1 234567",
+    "example": null,
     "allowedChars": "0-9+ ()-"
   },
   {
