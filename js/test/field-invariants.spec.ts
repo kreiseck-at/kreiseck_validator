@@ -13,6 +13,7 @@ import { LicensePlate } from '../src/license-plate/index';
 import { Email } from '../src/email/index';
 import { Url } from '../src/url/index';
 import { Host } from '../src/host/index';
+import type { MacNotation } from '../src/mac-address/types';
 
 function load<T>(name: string): T[] {
   return JSON.parse(
@@ -21,42 +22,32 @@ function load<T>(name: string): T[] {
 }
 
 // Every (type, options) pair covered by the descriptor vectors, paired with
-// its descriptor and its partial formatter.
+// its descriptor.
 interface Type {
   name: string;
   descriptor: () => FieldDescriptor;
-  partial: (input: string) => string;
   // Formats an already-valid value, or null when the type has no `format`
   // that a partial formatter is expected to agree with.
   formatValid: ((input: string) => string | null) | null;
 }
 
 const types: Type[] = [
-  { name: 'imei', descriptor: () => Imei.fieldDescriptor(), partial: Imei.formatPartial, formatValid: Imei.tryFormat },
-  {
-    name: 'iccid',
-    descriptor: () => Iccid.fieldDescriptor(),
-    partial: Iccid.formatPartial,
-    formatValid: Iccid.tryFormat,
-  },
-  { name: 'vin', descriptor: () => Vin.fieldDescriptor(), partial: Vin.formatPartial, formatValid: Vin.tryFormat },
-  {
-    name: 'credit_card',
-    descriptor: () => CreditCard.fieldDescriptor(),
-    partial: CreditCard.formatPartial,
-    formatValid: CreditCard.tryFormat,
-  },
-  { name: 'iban', descriptor: () => Iban.fieldDescriptor(), partial: Iban.formatPartial, formatValid: Iban.tryFormat },
-  {
-    name: 'mac_address',
-    descriptor: () => MacAddress.fieldDescriptor(),
-    partial: MacAddress.formatPartial,
-    formatValid: MacAddress.tryFormat,
-  },
-  { name: 'email', descriptor: () => Email.fieldDescriptor(), partial: Email.formatPartial, formatValid: null },
-  { name: 'url', descriptor: () => Url.fieldDescriptor(), partial: Url.formatPartial, formatValid: null },
-  { name: 'host', descriptor: () => Host.fieldDescriptor(), partial: Host.formatPartial, formatValid: null },
+  { name: 'imei', descriptor: () => Imei.fieldDescriptor(), formatValid: Imei.tryFormat },
+  { name: 'iccid', descriptor: () => Iccid.fieldDescriptor(), formatValid: Iccid.tryFormat },
+  { name: 'vin', descriptor: () => Vin.fieldDescriptor(), formatValid: Vin.tryFormat },
+  { name: 'credit_card', descriptor: () => CreditCard.fieldDescriptor(), formatValid: CreditCard.tryFormat },
+  { name: 'iban', descriptor: () => Iban.fieldDescriptor(), formatValid: Iban.tryFormat },
+  { name: 'mac_address', descriptor: () => MacAddress.fieldDescriptor(), formatValid: MacAddress.tryFormat },
+  { name: 'email', descriptor: () => Email.fieldDescriptor(), formatValid: null },
+  { name: 'url', descriptor: () => Url.fieldDescriptor(), formatValid: null },
+  { name: 'host', descriptor: () => Host.fieldDescriptor(), formatValid: null },
 ];
+
+// Converts a vector's `notation` string to MacNotation; defaults to 'colon',
+// matching MacAddress.formatPartial's own default.
+function notationOf(s: string | undefined): MacNotation {
+  return (s as MacNotation) ?? 'colon';
+}
 
 // Each group filters the type list rather than returning early inside the
 // test body, so no test is generated that asserts nothing.
@@ -135,6 +126,34 @@ describe('agreement with format', () => {
     });
   }
 
+  interface IccidVec {
+    input: string;
+    isValid?: boolean;
+    format?: string;
+  }
+  for (const c of load<IccidVec>('iccid.json')) {
+    if (c.isValid !== true || !('format' in c)) continue;
+    it(`iccid: ${c.input}`, () => {
+      expect(Iccid.formatPartial(c.input)).toBe(c.format);
+    });
+  }
+
+  interface MacVec {
+    input: string;
+    isValid?: boolean;
+    format?: string;
+    notation?: string;
+    upperCase?: boolean;
+  }
+  for (const c of load<MacVec>('mac.json')) {
+    if (c.isValid !== true || !('format' in c)) continue;
+    it(`mac_address: ${c.input}`, () => {
+      expect(
+        MacAddress.formatPartial(c.input, { notation: notationOf(c.notation), upperCase: c.upperCase ?? false }),
+      ).toBe(c.format);
+    });
+  }
+
   interface VinVec {
     input: string;
     isValid?: boolean;
@@ -174,7 +193,7 @@ describe('agreement with format', () => {
   }
 });
 
-// iccid.json and mac.json are covered by the `types` loops above; phone.json
-// is deliberately absent from the agreement group because its vectors carry
-// an `international` flag that formatPartial derives from the leading `+`
-// instead -- its agreement is pinned by the snapping vector added in Task 9.
+// phone.json is deliberately absent from the agreement group above because
+// its vectors carry an `international` flag that formatPartial derives from
+// the leading `+` instead -- its agreement is pinned by the snapping vector
+// added in Task 9.

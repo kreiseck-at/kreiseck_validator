@@ -9,13 +9,12 @@ List<Map<String, Object?>> _load(String file) =>
         .cast<Map<String, Object?>>();
 
 /// Every (type, options) pair covered by the descriptor vectors, paired with
-/// its descriptor and its partial formatter.
+/// its descriptor.
 class _Type {
-  const _Type(this.name, this.descriptor, this.partial, this.formatValid);
+  const _Type(this.name, this.descriptor, this.formatValid);
 
   final String name;
   final FieldDescriptor Function() descriptor;
-  final String Function(String) partial;
 
   /// Formats an already-valid value, or null when the type has no `format`
   /// that a partial formatter is expected to agree with.
@@ -23,18 +22,25 @@ class _Type {
 }
 
 final List<_Type> _types = [
-  _Type('imei', Imei.fieldDescriptor, Imei.formatPartial, Imei.tryFormat),
-  _Type('iccid', Iccid.fieldDescriptor, Iccid.formatPartial, Iccid.tryFormat),
-  _Type('vin', Vin.fieldDescriptor, Vin.formatPartial, Vin.tryFormat),
-  _Type('credit_card', CreditCard.fieldDescriptor, CreditCard.formatPartial,
-      CreditCard.tryFormat),
-  _Type('iban', Iban.fieldDescriptor, Iban.formatPartial, Iban.tryFormat),
-  _Type('mac_address', MacAddress.fieldDescriptor, MacAddress.formatPartial,
-      MacAddress.tryFormat),
-  _Type('email', Email.fieldDescriptor, Email.formatPartial, null),
-  _Type('url', Url.fieldDescriptor, Url.formatPartial, null),
-  _Type('host', Host.fieldDescriptor, Host.formatPartial, null),
+  _Type('imei', Imei.fieldDescriptor, Imei.tryFormat),
+  _Type('iccid', Iccid.fieldDescriptor, Iccid.tryFormat),
+  _Type('vin', Vin.fieldDescriptor, Vin.tryFormat),
+  _Type('credit_card', CreditCard.fieldDescriptor, CreditCard.tryFormat),
+  _Type('iban', Iban.fieldDescriptor, Iban.tryFormat),
+  _Type('mac_address', MacAddress.fieldDescriptor, MacAddress.tryFormat),
+  _Type('email', Email.fieldDescriptor, null),
+  _Type('url', Url.fieldDescriptor, null),
+  _Type('host', Host.fieldDescriptor, null),
 ];
+
+/// Converts a vector's `notation` string to [MacNotation]; defaults to
+/// [MacNotation.colon], matching [MacAddress.formatPartial]'s own default.
+MacNotation _notation(String? s) => switch (s) {
+      'hyphen' => MacNotation.hyphen,
+      'dot' => MacNotation.dot,
+      'bare' => MacNotation.bare,
+      _ => MacNotation.colon,
+    };
 
 void main() {
   // Each group filters the type list rather than returning early inside the
@@ -100,6 +106,26 @@ void main() {
         expect(Imei.formatPartial(input, allowSv: allowSv), c['format']);
       });
     }
+    for (final c in _load('iccid.json')) {
+      if (c['isValid'] != true || !c.containsKey('format')) continue;
+      final input = c['input']! as String;
+      test('iccid: $input', () {
+        expect(Iccid.formatPartial(input), c['format']);
+      });
+    }
+    for (final c in _load('mac.json')) {
+      if (c['isValid'] != true || !c.containsKey('format')) continue;
+      final input = c['input']! as String;
+      final notation = _notation(c['notation'] as String?);
+      final upperCase = c['upperCase'] as bool? ?? false;
+      test('mac_address: $input', () {
+        expect(
+          MacAddress.formatPartial(input,
+              notation: notation, upperCase: upperCase),
+          c['format'],
+        );
+      });
+    }
     for (final c in _load('vin.json')) {
       if (c['isValid'] != true || !c.containsKey('format')) continue;
       final input = c['input']! as String;
@@ -120,7 +146,8 @@ void main() {
       final input = c['input']! as String;
       final country = c['country'] as String?;
       test('license_plate: $input', () {
-        expect(LicensePlate.formatPartial(input, country: country), c['format']);
+        expect(
+            LicensePlate.formatPartial(input, country: country), c['format']);
       });
     }
   });

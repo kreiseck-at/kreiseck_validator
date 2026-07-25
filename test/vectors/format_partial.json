@@ -48,6 +48,7 @@
   { "type": "license_plate", "options": { "country": "AT" }, "input": "w12345a", "output": "W-12345A" },
   { "type": "license_plate", "options": { "country": "AT" }, "input": "w-12345a", "output": "W-12345A" },
   { "type": "license_plate", "options": { "country": "AT" }, "input": "w 12345a!", "output": "W-12345A" },
+  { "type": "license_plate", "options": { "country": "DE" }, "input": "M.AB 1234", "output": "M-AB 1234" },
   { "type": "phone", "options": { "country": "AT" }, "input": "+43", "output": "+43" },
   { "type": "phone", "options": { "country": "AT" }, "input": "+43 664", "output": "+43664" },
   { "type": "phone", "options": { "country": "AT" }, "input": "abc+43", "output": "+43" },

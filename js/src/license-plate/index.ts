@@ -421,7 +421,10 @@ const EXAMPLES: Record<string, string> = {
 // allowedChars includes ÄÖÜ and ČŠŽ alongside A-Z: DE district codes may
 // contain umlauts (see DE_STRUCTURE_RE) and HR registration-area codes may
 // contain Č/Š/Ž (see HR_STRUCTURE_RE), so a plain A-Z filter would reject
-// characters a valid plate needs.
+// characters a valid plate needs. It also includes `.` alongside ` ` and
+// `-`, since ALLOWED_CHARS_RE and DE_SEPARATOR_SPLIT_RE both treat `.` as a
+// first-class DE separator (e.g. `M.AB 1234`); a descriptor that silently
+// dropped it would feed deSplitSeparatorAware the wrong string.
 function fieldDescriptor(options: PlateOptions = {}): FieldDescriptor {
   return {
     keyboard: 'text',
@@ -429,7 +432,7 @@ function fieldDescriptor(options: PlateOptions = {}): FieldDescriptor {
     capitalization: 'characters',
     maxLength: null,
     example: options.country === undefined ? null : (EXAMPLES[options.country.toUpperCase()] ?? null),
-    allowedChars: '0-9A-ZÄÖÜČŠŽ -',
+    allowedChars: '0-9A-ZÄÖÜČŠŽ .-',
   };
 }
 
@@ -442,14 +445,18 @@ function fieldDescriptor(options: PlateOptions = {}): FieldDescriptor {
 // one: for DE, the code/serial boundary is ambiguous from the compact form
 // alone (`MAB1234` could split as `MA`+`B` or `M`+`AB`, see deSplitTableAware)
 // and only a separator's position -- when the caller typed one, e.g.
-// `M-AB 1234` -- resolves it correctly (see deSplitSeparatorAware).
-// Discarding that separator before checking validity would silently
-// re-derive the wrong split. Validity itself does not depend on which of the
-// two is passed in, since validate recompacts internally either way.
+// `M-AB 1234` or `M.AB 1234` -- resolves it correctly (see
+// deSplitSeparatorAware). Discarding that separator before checking validity
+// would silently re-derive the wrong split. Validity itself does not depend
+// on which of the two is passed in, since validate recompacts internally
+// either way.
+//
+// The compacted fallback strips `.` alongside ` ` and `-` so a stray dot
+// never leaks into the not-yet-valid partial display.
 function formatPartial(input: string, options: PlateOptions = {}): string {
   const d = fieldDescriptor(options);
   const filtered = prepare(input, d);
-  const compacted = prepare(input, d, { separators: ' -' });
+  const compacted = prepare(input, d, { separators: ' .-' });
   return tryFormat(filtered, options) ?? compacted;
 }
 
