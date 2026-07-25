@@ -36,6 +36,10 @@ describe('groupWidths', () => {
   it('appends characters beyond the last width', () => {
     expect(groupWidths('3782822463100051', [4, 6, 5], ' ')).toBe('3782 822463 100051');
   });
+
+  it('handles empty input', () => {
+    expect(groupWidths('', [4, 6, 5], ' ')).toBe('');
+  });
 });
 
 describe('prepare', () => {

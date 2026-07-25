@@ -31,6 +31,10 @@ void main() {
       expect(groupWidths('3782822463100051', const [4, 6, 5], ' '),
           '3782 822463 100051');
     });
+
+    test('handles empty input', () {
+      expect(groupWidths('', const [4, 6, 5], ' '), '');
+    });
   });
 
   group('prepare', () {
