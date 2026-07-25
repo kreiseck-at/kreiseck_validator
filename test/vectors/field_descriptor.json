@@ -118,5 +118,55 @@
     "maxLength": 16,
     "example": "aabbccddeeff",
     "allowedChars": "0-9A-Fa-f"
+  },
+  {
+    "type": "postal_code",
+    "options": {},
+    "keyboard": "text",
+    "autofill": "postalCode",
+    "capitalization": "characters",
+    "maxLength": null,
+    "example": null,
+    "allowedChars": "0-9A-Z -"
+  },
+  {
+    "type": "postal_code",
+    "options": { "country": "DE" },
+    "keyboard": "digits",
+    "autofill": "postalCode",
+    "capitalization": "none",
+    "maxLength": 5,
+    "example": "10115",
+    "allowedChars": "0-9"
+  },
+  {
+    "type": "postal_code",
+    "options": { "country": "NL" },
+    "keyboard": "text",
+    "autofill": "postalCode",
+    "capitalization": "characters",
+    "maxLength": 7,
+    "example": "1234 AB",
+    "allowedChars": "0-9A-Z "
+  },
+  {
+    "type": "postal_code",
+    "options": { "country": "PL" },
+    "keyboard": "digits",
+    "autofill": "postalCode",
+    "capitalization": "none",
+    "maxLength": 6,
+    "example": "00-950",
+    "allowedChars": "0-9-"
+  },
+  {
+    "type": "postal_code",
+    "options": { "country": "GB" },
+    "keyboard": "text",
+    "autofill": "postalCode",
+    "capitalization": "characters",
+    "maxLength": 8,
+    "example": "SW1A 1AA",
+    "allowedChars": "0-9A-Z "
   }
 ]

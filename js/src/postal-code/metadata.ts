@@ -13,6 +13,12 @@ import data from '../data/postal-metadata.json';
 export interface PostalPattern {
   pattern: string;
   format: string;
+  // A real postal code of this country in canonical form, or null when no
+  // verified example is on hand. Never invented.
+  example: string | null;
+  // 'digits' when the code can only contain digits and separators, 'alnum'
+  // when letters are possible.
+  charset: string;
 }
 
 // country -> postal pattern.

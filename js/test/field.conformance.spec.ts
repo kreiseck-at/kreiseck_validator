@@ -9,6 +9,7 @@ import { Iban } from '../src/iban/index';
 import { CreditCard } from '../src/credit-card/index';
 import { MacAddress } from '../src/mac-address/index';
 import type { MacNotation } from '../src/mac-address/types';
+import { PostalCode } from '../src/postal-code/index';
 
 type Options = Record<string, unknown>;
 type DescriptorVec = Options & { type: string; options?: Options };
@@ -37,6 +38,8 @@ function descriptorFor(type: string, o: Options): FieldDescriptor {
         notation: (o.notation as MacNotation) ?? 'colon',
         upperCase: (o.upperCase as boolean) ?? false,
       });
+    case 'postal_code':
+      return PostalCode.fieldDescriptor({ country: o.country as string | undefined });
     default:
       throw new Error(`unknown type ${type}`);
   }
@@ -59,6 +62,8 @@ function partialFor(type: string, input: string, o: Options): string {
         notation: (o.notation as MacNotation) ?? 'colon',
         upperCase: (o.upperCase as boolean) ?? false,
       });
+    case 'postal_code':
+      return PostalCode.formatPartial(input, { country: o.country as string | undefined });
     default:
       throw new Error(`unknown type ${type}`);
   }

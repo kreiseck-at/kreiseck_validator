@@ -10,8 +10,10 @@
 ///    characters, regardless of total length (e.g. GB: `SW1A1AA` ->
 ///    `SW1A 1AA`).
 class PostalPattern {
-  /// Creates a postal pattern from its [pattern] and [format] rule.
-  const PostalPattern(this.pattern, this.format);
+  /// Creates a postal pattern from its [pattern], [format] rule, optional
+  /// [example] and [charset].
+  const PostalPattern(this.pattern, this.format,
+      [this.example, this.charset = 'digits']);
 
   /// Anchored regex (as a string) the canonical (separator-applied) form
   /// must match.
@@ -19,4 +21,12 @@ class PostalPattern {
 
   /// The canonical spacing rule; see the class doc for the mini-language.
   final String format;
+
+  /// A real postal code of this country in canonical form, or null when no
+  /// verified example is on hand. Never invented.
+  final String? example;
+
+  /// `'digits'` when the code can only contain digits and separators,
+  /// `'alnum'` when letters are possible.
+  final String charset;
 }

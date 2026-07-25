@@ -34,5 +34,14 @@
   { "type": "mac_address", "options": { "notation": "hyphen" }, "input": "aabbcc", "output": "aa-bb-cc" },
   { "type": "mac_address", "options": { "notation": "dot" }, "input": "aabbcc", "output": "aabb.cc" },
   { "type": "mac_address", "options": { "notation": "bare" }, "input": "aabbcc", "output": "aabbcc" },
-  { "type": "mac_address", "options": {}, "input": "aabbccddeeffaabbccdd", "output": "aa:bb:cc:dd:ee:ff:aa:bb" }
+  { "type": "mac_address", "options": {}, "input": "aabbccddeeffaabbccdd", "output": "aa:bb:cc:dd:ee:ff:aa:bb" },
+  { "type": "postal_code", "options": { "country": "DE" }, "input": "101", "output": "101" },
+  { "type": "postal_code", "options": { "country": "DE" }, "input": "10115", "output": "10115" },
+  { "type": "postal_code", "options": { "country": "DE" }, "input": "10115999", "output": "10115" },
+  { "type": "postal_code", "options": { "country": "PL" }, "input": "009", "output": "00-9" },
+  { "type": "postal_code", "options": { "country": "PL" }, "input": "00950", "output": "00-950" },
+  { "type": "postal_code", "options": { "country": "NL" }, "input": "1234ab", "output": "1234 AB" },
+  { "type": "postal_code", "options": { "country": "NL" }, "input": "123", "output": "123" },
+  { "type": "postal_code", "options": { "country": "GB" }, "input": "sw1a", "output": "SW1A" },
+  { "type": "postal_code", "options": { "country": "GB" }, "input": "sw1a1aa", "output": "SW1A 1AA" }
 ]
