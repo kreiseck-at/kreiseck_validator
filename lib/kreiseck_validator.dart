@@ -39,5 +39,7 @@ export 'src/social_security/social_security_info.dart';
 export 'src/tax_number/tax_number.dart';
 export 'src/tax_number/tax_number_info.dart';
 export 'src/url/url.dart';
+export 'src/vat_id/vat_id.dart';
+export 'src/vat_id/vat_info.dart';
 export 'src/vin/vin.dart';
 export 'src/vin/vin_info.dart';

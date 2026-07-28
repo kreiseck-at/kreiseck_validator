@@ -196,6 +196,25 @@ void main() {
     }
   });
 
+  group('vat_id', () {
+    for (final c in _load('vat_id.json')) {
+      final input = c['input']! as String;
+      final country = c['country'] as String?;
+      _check('vat_id', c, () => VatId.validate(input, country: country),
+          () => VatId.format(input, country: country));
+      if (c.containsKey('parse')) {
+        test('vat_id parse: $input', () {
+          final info = VatId.parse(input, country: country)!;
+          final p = c['parse']! as Map<String, Object?>;
+          expect(info.country, p['country']);
+          expect(info.prefix, p['prefix']);
+          expect(info.number, p['number']);
+          expect(info.subtype.name, p['subtype']);
+        });
+      }
+    }
+  });
+
   group('credit_card', () {
     for (final c in _load('credit_card.json')) {
       final input = c['input']! as String;

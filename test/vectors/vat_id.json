@@ -1,0 +1,17 @@
+[
+  {"input": "ATU16210507", "isValid": true, "normalized": "ATU16210507", "format": "ATU16210507",
+   "parse": {"country": "AT", "prefix": "ATU", "number": "16210507", "subtype": "standard"}},
+  {"input": "atu 162 105 07", "isValid": true, "normalized": "ATU16210507"},
+  {"input": "ATU14189108", "isValid": true, "normalized": "ATU14189108"},
+  {"input": "ATU14589505", "isValid": true, "normalized": "ATU14589505"},
+  {"input": "ATU13585627", "isValid": true, "normalized": "ATU13585627"},
+  {"input": "16210507", "country": "AT", "isValid": true, "normalized": "ATU16210507"},
+  {"input": "U16210507", "country": "AT", "isValid": false, "code": "vatBadFormat"},
+  {"input": "ATU16210508", "isValid": false, "code": "vatBadChecksum"},
+  {"input": "ATU1621050", "isValid": false, "code": "vatBadFormat"},
+  {"input": "", "isValid": false, "code": "vatEmpty"},
+  {"input": "   ", "isValid": false, "code": "vatEmpty"},
+  {"input": "16210507", "isValid": false, "code": "vatAmbiguousCountry"},
+  {"input": "ZZ16210507", "isValid": false, "code": "vatUnknownCountry"},
+  {"input": "16210507", "country": "ZZ", "isValid": false, "code": "vatUnknownCountry"}
+]

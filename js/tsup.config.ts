@@ -14,6 +14,7 @@ export default defineConfig({
     'src/gtin/index.ts',
     'src/social-security/index.ts',
     'src/tax-number/index.ts',
+    'src/vat-id/index.ts',
     'src/imei/index.ts',
     'src/iccid/index.ts',
     'src/mac-address/index.ts',

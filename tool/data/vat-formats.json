@@ -1,0 +1,183 @@
+{
+  "_source": "Structures per docs/business-identifiers-design.md, table 'VatId'. Keys are ISO 3166-1 alpha-2 except XI (Northern Ireland), which is a VAT prefix rather than a country. 'prefix' is the string written before the body; 'body' is an anchored regex for everything after it; 'maxLen' is the body's longest permitted length; 'example' is a published number or null.",
+  "AT": {
+    "prefix": "ATU",
+    "body": "^[0-9]{8}$",
+    "maxLen": 8,
+    "example": "ATU16210507"
+  },
+  "BE": {
+    "prefix": "BE",
+    "body": "^[01][0-9]{9}$",
+    "maxLen": 10,
+    "example": null
+  },
+  "BG": {
+    "prefix": "BG",
+    "body": "^[0-9]{9,10}$",
+    "maxLen": 10,
+    "example": null
+  },
+  "CY": {
+    "prefix": "CY",
+    "body": "^[0-9]{8}[A-Z]$",
+    "maxLen": 9,
+    "example": null
+  },
+  "CZ": {
+    "prefix": "CZ",
+    "body": "^[0-9]{8,10}$",
+    "maxLen": 10,
+    "example": null
+  },
+  "DE": {
+    "prefix": "DE",
+    "body": "^[0-9]{9}$",
+    "maxLen": 9,
+    "example": null
+  },
+  "DK": {
+    "prefix": "DK",
+    "body": "^[0-9]{8}$",
+    "maxLen": 8,
+    "example": null
+  },
+  "EE": {
+    "prefix": "EE",
+    "body": "^[0-9]{9}$",
+    "maxLen": 9,
+    "example": null
+  },
+  "ES": {
+    "prefix": "ES",
+    "body": "^[A-Z0-9][0-9]{7}[A-Z0-9]$",
+    "maxLen": 9,
+    "example": null
+  },
+  "FI": {
+    "prefix": "FI",
+    "body": "^[0-9]{8}$",
+    "maxLen": 8,
+    "example": null
+  },
+  "FR": {
+    "prefix": "FR",
+    "body": "^[0-9A-HJ-NP-Z]{2}[0-9]{9}$",
+    "maxLen": 11,
+    "example": null
+  },
+  "GB": {
+    "prefix": "GB",
+    "body": "^([0-9]{9}|[0-9]{12}|GD[0-9]{3}|HA[0-9]{3})$",
+    "maxLen": 12,
+    "example": null
+  },
+  "GR": {
+    "prefix": "EL",
+    "body": "^[0-9]{9}$",
+    "maxLen": 9,
+    "example": null
+  },
+  "HR": {
+    "prefix": "HR",
+    "body": "^[0-9]{11}$",
+    "maxLen": 11,
+    "example": null
+  },
+  "HU": {
+    "prefix": "HU",
+    "body": "^[0-9]{8}$",
+    "maxLen": 8,
+    "example": null
+  },
+  "IE": {
+    "prefix": "IE",
+    "body": "^([0-9]{7}[A-W]|[0-9][A-Z*+][0-9]{5}[A-W]|[0-9]{7}[A-W][A-IW])$",
+    "maxLen": 9,
+    "example": null
+  },
+  "IT": {
+    "prefix": "IT",
+    "body": "^[0-9]{11}$",
+    "maxLen": 11,
+    "example": null
+  },
+  "LT": {
+    "prefix": "LT",
+    "body": "^([0-9]{9}|[0-9]{12})$",
+    "maxLen": 12,
+    "example": null
+  },
+  "LU": {
+    "prefix": "LU",
+    "body": "^[0-9]{8}$",
+    "maxLen": 8,
+    "example": null
+  },
+  "LV": {
+    "prefix": "LV",
+    "body": "^[0-9]{11}$",
+    "maxLen": 11,
+    "example": null
+  },
+  "MT": {
+    "prefix": "MT",
+    "body": "^[0-9]{8}$",
+    "maxLen": 8,
+    "example": null
+  },
+  "NL": {
+    "prefix": "NL",
+    "body": "^[0-9]{9}B[0-9]{2}$",
+    "maxLen": 12,
+    "example": null
+  },
+  "PL": {
+    "prefix": "PL",
+    "body": "^[0-9]{10}$",
+    "maxLen": 10,
+    "example": null
+  },
+  "PT": {
+    "prefix": "PT",
+    "body": "^[0-9]{9}$",
+    "maxLen": 9,
+    "example": null
+  },
+  "RO": {
+    "prefix": "RO",
+    "body": "^[0-9]{2,10}$",
+    "maxLen": 10,
+    "example": null
+  },
+  "SE": {
+    "prefix": "SE",
+    "body": "^[0-9]{12}$",
+    "maxLen": 12,
+    "example": null
+  },
+  "SI": {
+    "prefix": "SI",
+    "body": "^[0-9]{8}$",
+    "maxLen": 8,
+    "example": null
+  },
+  "SK": {
+    "prefix": "SK",
+    "body": "^[0-9]{10}$",
+    "maxLen": 10,
+    "example": null
+  },
+  "CH": {
+    "prefix": "CHE",
+    "body": "^[0-9]{9}$",
+    "maxLen": 9,
+    "example": null
+  },
+  "XI": {
+    "prefix": "XI",
+    "body": "^([0-9]{9}|[0-9]{12}|GD[0-9]{3}|HA[0-9]{3})$",
+    "maxLen": 12,
+    "example": null
+  }
+}
