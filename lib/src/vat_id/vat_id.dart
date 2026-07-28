@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import '../common/field_descriptor.dart';
 import '../common/issue_code.dart';
 import '../common/partial_format.dart';
 import '../common/validation_result.dart';
 import 'vat_checks.dart';
 import 'vat_info.dart';
+import 'vies.dart';
 
 part 'vat_metadata.g.dart';
 
@@ -184,6 +187,70 @@ class VatId {
       }
     }
     return null;
+  }
+
+  /// Builds the VIES request for [value], or null when [value] is not a valid
+  /// VAT ID or its country is outside VIES.
+  ///
+  /// Switzerland is the one supported country VIES does not cover — it is not
+  /// an EU member state — so a Swiss number always yields null.
+  ///
+  /// The package performs no request. Send [ViesRequest] yourself and hand the
+  /// response body to [parseViesResponse].
+  static ViesRequest? viesRequest(String value, {String? country}) {
+    final r = validate(value, country: country);
+    if (r is! Valid) return null;
+    final normalized = r.normalized;
+    final ms = normalized.substring(0, 2);
+    if (ms == 'CH') return null;
+    final number = normalized.substring(2);
+    return ViesRequest(
+      url: '$_viesBase/$ms/vat/$number',
+      method: 'GET',
+      headers: const {'Accept': 'application/json'},
+    );
+  }
+
+  static const String _viesBase =
+      'https://ec.europa.eu/taxation_customs/vies/rest-api/ms';
+
+  /// Parses a VIES response [body] into a [VatRegistration], or null when the
+  /// service gave no conclusive answer.
+  ///
+  /// **Null does not mean "not registered."** VIES forwards the question to
+  /// the member state, and that state is regularly busy or down; the service
+  /// then answers with `isValid: false` and a `userError` such as
+  /// `MS_MAX_CONCURRENT_REQ` or `MS_UNAVAILABLE`. Treating that as a rejection
+  /// would refuse perfectly good customers whenever a tax office is having a
+  /// bad afternoon, so only `VALID` and `INVALID` produce a result here and
+  /// everything else — including malformed JSON — produces null. Callers
+  /// should read null as "ask again later" and fall back to the offline
+  /// structural check, which is what [validate] already gave them.
+  static VatRegistration? parseViesResponse(String body) {
+    final Object? decoded;
+    try {
+      decoded = jsonDecode(body);
+    } on FormatException {
+      return null;
+    }
+    if (decoded is! Map<String, Object?>) return null;
+    final userError = decoded['userError'];
+    if (userError != 'VALID' && userError != 'INVALID') return null;
+    return VatRegistration(
+      valid: userError == 'VALID',
+      name: _disclosed(decoded['name']),
+      address: _disclosed(decoded['address']),
+      requestDate: decoded['requestDate'] as String?,
+    );
+  }
+
+  /// VIES writes `---` for a value the member state withholds, and an empty
+  /// string when there is nothing to say. Neither is a name.
+  static String? _disclosed(Object? value) {
+    if (value is! String) return null;
+    final trimmed = value.trim();
+    if (trimmed.isEmpty || trimmed == '---') return null;
+    return trimmed;
   }
 
   /// Describes a VAT-ID input field.

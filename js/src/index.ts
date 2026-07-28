@@ -16,7 +16,7 @@ export { SocialSecurityNumber } from './social-security/index';
 export type { SocialSecurityInfo, SsnBirthDate } from './social-security/types';
 export { TaxNumber } from './tax-number/index';
 export { VatId } from './vat-id/index';
-export type { VatInfo, VatSubtype } from './vat-id/types';
+export type { VatInfo, VatSubtype, ViesRequest, VatRegistration } from './vat-id/types';
 export type { TaxNumberInfo } from './tax-number/types';
 export type { GtinInfo } from './gtin/types';
 export type { BicInfo, BicKind } from './bic/types';

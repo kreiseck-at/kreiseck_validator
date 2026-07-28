@@ -6,7 +6,7 @@ import { prepare } from '../common/partial';
 import { checkVat, vatSubtypeOf } from './checks';
 import { kVatFormats } from './metadata';
 import type { VatFormat } from './metadata';
-import type { VatInfo, VatSubtype } from './types';
+import type { VatInfo, VatSubtype, ViesRequest, VatRegistration } from './types';
 
 // Validation, normalization, formatting and parsing of European VAT
 // identification numbers.
@@ -156,6 +156,67 @@ function parse(input: string, o: VatOptions = {}): VatInfo | null {
   return null;
 }
 
+const VIES_BASE = 'https://ec.europa.eu/taxation_customs/vies/rest-api/ms';
+
+// Builds the VIES request for value, or null when value is not a valid VAT ID
+// or its country is outside VIES.
+//
+// Switzerland is the one supported country VIES does not cover -- it is not an
+// EU member state -- so a Swiss number always yields null.
+//
+// The package performs no request. Send the ViesRequest yourself and hand the
+// response body to parseViesResponse.
+function viesRequest(value: string, o: VatOptions = {}): ViesRequest | null {
+  const r = validate(value, o);
+  if (!r.ok) return null;
+  const ms = r.normalized.substring(0, 2);
+  if (ms === 'CH') return null;
+  return {
+    url: `${VIES_BASE}/${ms}/vat/${r.normalized.substring(2)}`,
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+  };
+}
+
+// VIES writes '---' for a value the member state withholds, and an empty
+// string when there is nothing to say. Neither is a name.
+function disclosed(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  return trimmed.length === 0 || trimmed === '---' ? null : trimmed;
+}
+
+// Parses a VIES response body into a VatRegistration, or null when the service
+// gave no conclusive answer.
+//
+// NULL DOES NOT MEAN "NOT REGISTERED". VIES forwards the question to the
+// member state, and that state is regularly busy or down; the service then
+// answers with isValid: false and a userError such as MS_MAX_CONCURRENT_REQ or
+// MS_UNAVAILABLE. Treating that as a rejection would refuse perfectly good
+// customers whenever a tax office is having a bad afternoon, so only VALID and
+// INVALID produce a result here and everything else -- including malformed
+// JSON -- produces null. Callers should read null as "ask again later" and
+// fall back to the offline structural check, which validate already gave them.
+function parseViesResponse(body: string): VatRegistration | null {
+  let decoded: unknown;
+  try {
+    decoded = JSON.parse(body);
+  } catch {
+    return null;
+  }
+  if (typeof decoded !== 'object' || decoded === null || Array.isArray(decoded)) {
+    return null;
+  }
+  const o = decoded as Record<string, unknown>;
+  if (o.userError !== 'VALID' && o.userError !== 'INVALID') return null;
+  return {
+    valid: o.userError === 'VALID',
+    name: disclosed(o.name),
+    address: disclosed(o.address),
+    requestDate: typeof o.requestDate === 'string' ? o.requestDate : null,
+  };
+}
+
 // Describes a VAT-ID input field.
 //
 // The field is assumed to hold the whole VAT ID including its prefix, so the
@@ -184,6 +245,7 @@ function formatPartial(input: string, o: VatOptions = {}): string {
 }
 
 export const VatId = {
-  isValid, validate, normalize, format, tryFormat, parse, fieldDescriptor, formatPartial,
+  isValid, validate, normalize, format, tryFormat, parse, viesRequest,
+  parseViesResponse, fieldDescriptor, formatPartial,
 };
-export type { VatInfo, VatSubtype };
+export type { VatInfo, VatSubtype, ViesRequest, VatRegistration };
