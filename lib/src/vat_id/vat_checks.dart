@@ -96,6 +96,9 @@ const Map<String, bool Function(String)> _checks = {
   'SE': _checkSe,
   'SI': _checkSi,
   'SK': _checkSk,
+  'NO': _checkNo,
+  'RS': _checkRs,
+  'TR': _checkTr,
   'XI': _checkGb,
 };
 
@@ -247,6 +250,35 @@ bool _checkSi(String body) {
 /// SK: the whole ten-digit number is a multiple of 11.
 bool _checkSk(String body) => _modOf(body, 11) == 0;
 
+
+/// NO: `MVA`-Suffix hinter dem Organisasjonsnummer; Gewichte
+/// 3, 2, 7, 6, 5, 4, 3, 2, 1 ueber alle neun Ziffern, Summe ein Vielfaches
+/// von 11.
+bool _checkNo(String body) =>
+    weighted(body.substring(0, 9), const [3, 2, 7, 6, 5, 4, 3, 2, 1]) % 11 == 0;
+
+/// RS: neun Ziffern, ISO 7064 MOD 11,10.
+bool _checkRs(String body) => mod1110Ok(body);
+
+/// TR: zehn Ziffern. Jede der ersten neun wird um ihre Position von rechts
+/// erhoeht, verdoppelt sich positionsabhaengig und wird modulo 9 gefaltet;
+/// die Pruefziffer ergaenzt die Summe auf ein Vielfaches von 10.
+bool _checkTr(String body) {
+  var sum = 0;
+  for (var i = 1; i <= 9; i++) {
+    final n = _d(body, 9 - i);
+    final c1 = (n + i) % 10;
+    if (c1 == 0) continue;
+    var pow = 1;
+    for (var k = 0; k < i; k++) {
+      pow *= 2;
+    }
+    final c2 = (c1 * pow) % 9;
+    sum += c2 == 0 ? 9 : c2;
+  }
+  return (10 - sum % 10) % 10 == _d(body, 9);
+}
+
 // ---------------------------------------------------------------------------
 // Branching countries
 // ---------------------------------------------------------------------------
@@ -373,8 +405,18 @@ bool _checkFr(String body) {
 /// are government departments and health authorities, distinguished by their
 /// numeric range rather than a checksum.
 bool _checkGb(String body) {
-  if (body.startsWith('GD')) return int.parse(body.substring(2)) < 500;
-  if (body.startsWith('HA')) return int.parse(body.substring(2)) >= 500;
+  if (body.startsWith('GD') || body.startsWith('HA')) {
+    // Zwei Schreibweisen: kurz (`GD001`, drei Ziffern) und lang
+    // (`GD8888` + drei Ziffern + zwei Pruefziffern). Die Kennzahl selbst
+    // entscheidet, ob es eine Regierungsstelle (< 500) oder eine
+    // Gesundheitsbehoerde (>= 500) ist; in der Langform sind die letzten
+    // beiden Stellen ihr Rest modulo 97.
+    final long = body.length == 11;
+    final n = int.parse(body.substring(long ? 6 : 2, long ? 9 : 5));
+    if (body.startsWith('GD') ? n >= 500 : n < 500) return false;
+    if (long && n % 97 != int.parse(body.substring(9, 11))) return false;
+    return true;
+  }
   final nine = body.substring(0, 9);
   final sum = weighted(nine, const [8, 7, 6, 5, 4, 3, 2, 10, 1]) % 97;
   if (int.parse(nine.substring(0, 3)) >= 100) {

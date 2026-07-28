@@ -1,6 +1,6 @@
 {
   "name": "@kreiseck/validator",
-  "version": "0.11.1",
+  "version": "0.11.2",
   "description": "Validate, normalize and format email, phone, URL, host, IBAN, BIC, VAT-ID, GTIN, credit-card, license-plate, IMEI, ICCID, MAC, VIN, postal-code and Austrian social-security, company-register and tax numbers. Zero runtime dependencies, DACH-aware. By Kreiseck.",
   "keywords": [
     "kreiseck",

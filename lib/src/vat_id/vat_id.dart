@@ -33,8 +33,9 @@ class VatFormat {
 /// Validation, normalization, formatting and parsing of European VAT
 /// identification numbers.
 ///
-/// Covers the 27 EU member states plus Switzerland, the United Kingdom and
-/// Northern Ireland. **Every one of them is checked arithmetically**, not just
+/// Covers the 27 EU member states plus Switzerland, the United Kingdom,
+/// Northern Ireland, Norway, Serbia and Türkiye. **Every one of them is
+/// checked arithmetically**, not just
 /// structurally: a documented check-digit algorithm exists for all of them, so
 /// [IssueCode.vatBadChecksum] is always meaningful and a transposed digit is
 /// always caught.
@@ -88,6 +89,17 @@ class VatId {
   static String _padBody(String key, String body) =>
       key == 'BE' && body.length == 9 ? '0$body' : body;
 
+  static final RegExp _chSuffix = RegExp(r'(HR)?(MWST|TVA|IVA)$');
+
+  /// Swiss numbers are commonly written with a register/tax marker —
+  /// `CHE-116.281.710 MWST`, sometimes `HR/MWST` — where the suffix says the
+  /// holder is VAT-registered. It is not part of the number, and someone
+  /// copying a UID out of an imprint will bring it along, so it is dropped
+  /// rather than rejected. `TVA` and `IVA` are the same marker in the other
+  /// two national languages.
+  static String _stripSuffix(String key, String body) =>
+      key == 'CH' ? body.replaceFirst(_chSuffix, '') : body;
+
   /// Validates [input], returning [Valid] with the prefixed, separator-free
   /// canonical form.
   static ValidationResult validate(String input, {String? country}) {
@@ -129,7 +141,7 @@ class VatId {
     }
 
     final format = kVatFormats[key]!;
-    body = _padBody(key, body);
+    body = _padBody(key, _stripSuffix(key, body));
     if (!_bodyRe(format).hasMatch(body)) {
       return const Invalid([
         ValidationIssue(IssueCode.vatBadFormat, 'VAT ID has invalid format.')
@@ -284,7 +296,11 @@ class VatId {
       maxLength:
           format == null ? null : format.prefix.length + format.maxLen,
       example: format?.example,
-      allowedChars: '0-9A-Z',
+      // Irlands historische Form traegt an zweiter Stelle ein `+` oder `*`.
+      // Ohne die beiden im Zeichenvorrat wuerde `formatPartial` sie beim
+      // Tippen wieder loeschen, und die Nummer waere in ein Feld, das diesem
+      // Descriptor folgt, ueberhaupt nicht einzugeben.
+      allowedChars: key == 'IE' ? r'0-9A-Z+*' : '0-9A-Z',
     );
   }
 

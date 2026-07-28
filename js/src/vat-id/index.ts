@@ -11,8 +11,9 @@ import type { VatInfo, VatSubtype, ViesRequest, VatRegistration } from './types'
 // Validation, normalization, formatting and parsing of European VAT
 // identification numbers.
 //
-// Covers the 27 EU member states plus Switzerland, the United Kingdom and
-// Northern Ireland. EVERY one of them is checked arithmetically, not just
+// Covers the 27 EU member states plus Switzerland, the United Kingdom,
+// Northern Ireland, Norway, Serbia and Türkiye. EVERY one of them is checked
+// arithmetically, not just
 // structurally: a documented check-digit algorithm exists for all of them, so
 // 'vatBadChecksum' is always meaningful and a transposed digit is always
 // caught.
@@ -68,6 +69,18 @@ function padBody(key: string, body: string): string {
   return key === 'BE' && body.length === 9 ? `0${body}` : body;
 }
 
+const CH_SUFFIX_RE = /(HR)?(MWST|TVA|IVA)$/;
+
+// Swiss numbers are commonly written with a register/tax marker --
+// 'CHE-116.281.710 MWST', sometimes 'HR/MWST' -- where the suffix says the
+// holder is VAT-registered. It is not part of the number, and someone copying
+// a UID out of an imprint will bring it along, so it is dropped rather than
+// rejected. 'TVA' and 'IVA' are the same marker in the other two national
+// languages.
+function stripSuffix(key: string, body: string): string {
+  return key === 'CH' ? body.replace(CH_SUFFIX_RE, '') : body;
+}
+
 // Validates input, returning the prefixed, separator-free canonical form.
 function validate(input: string, o: VatOptions = {}): ValidationResult {
   const compact = input.toUpperCase().replace(SEPARATORS_RE, '');
@@ -98,7 +111,7 @@ function validate(input: string, o: VatOptions = {}): ValidationResult {
   }
 
   const format = kVatFormats[key];
-  body = padBody(key, body);
+  body = padBody(key, stripSuffix(key, body));
   if (!bodyRe(format).test(body)) {
     return invalid('vatBadFormat', 'VAT ID has invalid format.');
   }
@@ -248,7 +261,11 @@ function fieldDescriptor(o: VatOptions = {}): FieldDescriptor {
     capitalization: 'characters',
     maxLength: f === null ? null : f.prefix.length + f.maxLen,
     example: f === null ? null : f.example,
-    allowedChars: '0-9A-Z',
+    // Ireland's historical form carries a '+' or '*' in second position.
+    // Without both in the character set, formatPartial would delete them
+    // again while typing, and the number could not be entered at all into a
+    // field that follows this descriptor.
+    allowedChars: key === 'IE' ? '0-9A-Z+*' : '0-9A-Z',
   };
 }
 

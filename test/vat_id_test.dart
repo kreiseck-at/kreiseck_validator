@@ -10,8 +10,8 @@ import 'package:test/test.dart';
 const Set<String> kWithoutExample = {'XI'};
 
 void main() {
-  test('covers 30 VAT prefixes', () {
-    expect(kVatFormats.length, 30);
+  test('covers 33 VAT prefixes', () {
+    expect(kVatFormats.length, 33);
   });
 
   test('Greece is keyed GR and prefixed EL', () {

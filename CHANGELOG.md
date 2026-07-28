@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.11.2
+
+**Fix — Irish VAT IDs could not be typed.** The historical Irish form carries a
+`+` or `*` in second position, which `validate` accepts but the field
+descriptor's `allowedChars` did not list — so `formatPartial` deleted the
+character again on every keystroke and the number was impossible to enter into
+a field built from the descriptor.
+
+**Swiss numbers with their usual suffix are accepted.**
+`CHE-116.281.710 MWST` is how a Swiss UID is normally written (the marker says
+the holder is VAT-registered) and is exactly what gets copied out of an
+imprint; the suffix is now dropped instead of rejected. `HR/MWST`, `TVA` and
+`IVA` likewise.
+
+**Three more countries, each with its real check digit:** Norway (`NO`,
+Organisasjonsnummer + `MVA`), Serbia (`RS`, ISO 7064 MOD 11,10) and Türkiye
+(`TR`, Vergi Kimlik Numarası). 33 prefixes in total.
+
+**UK government and health-authority numbers in their long form**
+(`GD8888nnn` plus two check digits) are recognised; previously only the short
+`GD001`/`HA599` spelling was.
+
+Still rejected, and deliberately so for now: Liechtenstein, Iceland and the
+EU one-stop-shop numbers (`EU…`/`IM…`). None of them carries a check digit, so
+accepting them would mean introducing a structure-only tier — a design
+decision rather than a patch, since this package promises that a valid result
+means the arithmetic was verified.
+
+
 ## 0.11.1
 
 - `VatId.prefixFor(country)` — the VAT prefix a country writes in front of its

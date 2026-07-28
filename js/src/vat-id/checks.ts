@@ -197,6 +197,31 @@ function checkSi(body: string): boolean {
 // SK: the whole ten-digit number is a multiple of 11.
 function checkSk(body: string): boolean { return modOf(body, 11) === 0; }
 
+
+// NO: 'MVA' suffix behind the Organisasjonsnummer; weights
+// 3, 2, 7, 6, 5, 4, 3, 2, 1 over all nine digits, sum a multiple of 11.
+function checkNo(body: string): boolean {
+  return weighted(body.substring(0, 9), [3, 2, 7, 6, 5, 4, 3, 2, 1]) % 11 === 0;
+}
+
+// RS: nine digits, ISO 7064 MOD 11,10.
+function checkRs(body: string): boolean { return mod1110Ok(body); }
+
+// TR: ten digits. Each of the first nine is raised by its position from the
+// right, doubled position-dependently and folded modulo 9; the check digit
+// completes the sum to a multiple of ten.
+function checkTr(body: string): boolean {
+  let sum = 0;
+  for (let i = 1; i <= 9; i++) {
+    const n = d(body, 9 - i);
+    const c1 = (n + i) % 10;
+    if (c1 === 0) continue;
+    const c2 = (c1 * 2 ** i) % 9;
+    sum += c2 === 0 ? 9 : c2;
+  }
+  return mod(10 - sum % 10, 10) === d(body, 9);
+}
+
 // --- branching countries ---------------------------------------------------
 
 // BG: legal entities (9 digits) and natural persons (10) use different sums.
@@ -317,8 +342,17 @@ function checkFr(body: string): boolean {
 // government departments and health authorities, distinguished by their
 // numeric range rather than a checksum.
 function checkGb(body: string): boolean {
-  if (body.startsWith('GD')) return Number(body.substring(2)) < 500;
-  if (body.startsWith('HA')) return Number(body.substring(2)) >= 500;
+  if (body.startsWith('GD') || body.startsWith('HA')) {
+    // Two spellings: short ('GD001', three digits) and long ('GD8888' plus
+    // three digits and two check digits). The number itself decides whether
+    // this is a government department (< 500) or a health authority (>= 500);
+    // in the long form the last two digits are its remainder modulo 97.
+    const long = body.length === 11;
+    const n = Number(body.substring(long ? 6 : 2, long ? 9 : 5));
+    if (body.startsWith('GD') ? n >= 500 : n < 500) return false;
+    if (long && n % 97 !== Number(body.substring(9, 11))) return false;
+    return true;
+  }
   const nine = body.substring(0, 9);
   const sum = weighted(nine, [8, 7, 6, 5, 4, 3, 2, 10, 1]) % 97;
   if (Number(nine.substring(0, 3)) >= 100) {
@@ -420,7 +454,8 @@ const CHECKS: Record<string, (body: string) => boolean> = {
   DE: checkDe, DK: checkDk, EE: checkEe, ES: checkEs, FI: checkFi, FR: checkFr,
   GB: checkGb, GR: checkGr, HR: checkHr, HU: checkHu, IE: checkIe, IT: checkIt,
   LT: checkLt, LU: checkLu, LV: checkLv, MT: checkMt, NL: checkNl, PL: checkPl,
-  PT: checkPt, RO: checkRo, SE: checkSe, SI: checkSi, SK: checkSk, XI: checkGb,
+  PT: checkPt, RO: checkRo, SE: checkSe, SI: checkSi, SK: checkSk,
+  NO: checkNo, RS: checkRs, TR: checkTr, XI: checkGb,
 };
 
 const SUBTYPES: Record<string, (body: string) => VatSubtype> = {

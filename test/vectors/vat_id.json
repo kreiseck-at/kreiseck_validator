@@ -407,5 +407,94 @@
   "input": "SK7120001714",
   "isValid": false,
   "code": "vatBadChecksum"
+ },
+ {
+  "input": "NO995525828MVA",
+  "isValid": true,
+  "normalized": "NO995525828MVA",
+  "format": "NO995525828MVA"
+ },
+ {
+  "input": "NO 995 525 828 MVA",
+  "isValid": true,
+  "normalized": "NO995525828MVA"
+ },
+ {
+  "input": "NO995525829MVA",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "NO995525828",
+  "isValid": false,
+  "code": "vatBadFormat"
+ },
+ {
+  "input": "RS101134702",
+  "isValid": true,
+  "normalized": "RS101134702",
+  "format": "RS101134702"
+ },
+ {
+  "input": "RS101134703",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "TR4540536920",
+  "isValid": true,
+  "normalized": "TR4540536920",
+  "format": "TR4540536920"
+ },
+ {
+  "input": "TR4540536921",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "TR454053692",
+  "isValid": false,
+  "code": "vatBadFormat"
+ },
+ {
+  "input": "CHE-116.281.710 MWST",
+  "isValid": true,
+  "normalized": "CHE116281710"
+ },
+ {
+  "input": "CHE-116.281.710 HR/MWST",
+  "isValid": true,
+  "normalized": "CHE116281710"
+ },
+ {
+  "input": "CHE116281710TVA",
+  "isValid": true,
+  "normalized": "CHE116281710"
+ },
+ {
+  "input": "GBGD001",
+  "isValid": true,
+  "normalized": "GBGD001",
+  "parse": {
+   "subtype": "government"
+  }
+ },
+ {
+  "input": "GBHA599",
+  "isValid": true,
+  "normalized": "GBHA599",
+  "parse": {
+   "subtype": "healthAuthority"
+  }
+ },
+ {
+  "input": "GBGD500",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "GBHA499",
+  "isValid": false,
+  "code": "vatBadChecksum"
  }
 ]

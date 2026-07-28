@@ -39,8 +39,8 @@ describe('vat id conformance', () => {
 });
 
 describe('vat id metadata', () => {
-  it('covers 30 prefixes', () => {
-    expect(Object.keys(kVatFormats).length).toBe(30);
+  it('covers 33 prefixes', () => {
+    expect(Object.keys(kVatFormats).length).toBe(33);
   });
   it('spells Greece EL and keeps the ISO key GR', () => {
     expect(kVatFormats.GR.prefix).toBe('EL');
