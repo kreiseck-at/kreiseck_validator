@@ -10,6 +10,8 @@ export type { HostInfo, HostType } from './host/types';
 export { CreditCard, type CardNetwork } from './credit-card/index';
 export { Bic } from './bic/index';
 export { Gtin } from './gtin/index';
+export { SocialSecurityNumber } from './social-security/index';
+export type { SocialSecurityInfo, SsnBirthDate } from './social-security/types';
 export { TaxNumber } from './tax-number/index';
 export type { TaxNumberInfo } from './tax-number/types';
 export type { GtinInfo } from './gtin/types';

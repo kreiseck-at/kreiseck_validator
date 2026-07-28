@@ -15,7 +15,7 @@ export type IssueCode =
   | 'bicEmpty' | 'bicBadLength' | 'bicBadChars' | 'bicUnknownCountry'
   | 'gtinEmpty' | 'gtinBadChars' | 'gtinBadLength' | 'gtinBadChecksum'
   | 'vatEmpty' | 'vatBadFormat' | 'vatBadChecksum' | 'vatUnknownCountry' | 'vatAmbiguousCountry'
-  | 'ssnEmpty' | 'ssnBadChars' | 'ssnBadLength' | 'ssnBadChecksum' | 'ssnBadDate' | 'ssnUnknownCountry'
+  | 'ssnEmpty' | 'ssnBadChars' | 'ssnBadLength' | 'ssnBadChecksum' | 'ssnUnknownCountry'
   | 'companyRegisterEmpty' | 'companyRegisterBadFormat' | 'companyRegisterBadChecksum' | 'companyRegisterUnknownCountry'
   | 'taxNumberEmpty' | 'taxNumberBadChars' | 'taxNumberBadLength' | 'taxNumberBadChecksum' | 'taxNumberUnknownCountry';
 

@@ -11,6 +11,7 @@ export default defineConfig({
     'src/credit-card/index.ts',
     'src/bic/index.ts',
     'src/gtin/index.ts',
+    'src/social-security/index.ts',
     'src/tax-number/index.ts',
     'src/imei/index.ts',
     'src/iccid/index.ts',

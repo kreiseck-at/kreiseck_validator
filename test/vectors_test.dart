@@ -152,6 +152,32 @@ void main() {
     }
   });
 
+  group('social_security', () {
+    for (final c in _load('social_security.json')) {
+      final input = c['input']! as String;
+      final country = c['country']! as String;
+      _check('social_security', c,
+          () => SocialSecurityNumber.validate(input, country: country),
+          () => SocialSecurityNumber.format(input, country: country));
+      if (c.containsKey('parse')) {
+        test('social_security parse: $input', () {
+          final info = SocialSecurityNumber.parse(input, country: country)!;
+          final p = c['parse']! as Map<String, Object?>;
+          expect(info.serial, p['serial']);
+          expect(info.checkDigit, p['checkDigit']);
+          final b = p['birthDate'] as Map<String, Object?>?;
+          if (b == null) {
+            expect(info.birthDate, isNull);
+          } else {
+            expect(info.birthDate!.day, b['day']);
+            expect(info.birthDate!.month, b['month']);
+            expect(info.birthDate!.twoDigitYear, b['twoDigitYear']);
+          }
+        });
+      }
+    }
+  });
+
   group('credit_card', () {
     for (final c in _load('credit_card.json')) {
       final input = c['input']! as String;

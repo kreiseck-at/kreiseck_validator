@@ -1,0 +1,18 @@
+[
+  {"input": "1238 010190", "country": "AT", "isValid": true, "normalized": "1238010190", "format": "1238 010190",
+   "parse": {"serial": "123", "checkDigit": "8", "birthDate": {"day": 1, "month": 1, "twoDigitYear": 90}}},
+  {"input": "1238010190", "country": "AT", "isValid": true, "format": "1238 010190"},
+  {"input": "1238-010190", "country": "AT", "isValid": true, "normalized": "1238010190"},
+  {"input": "1235 011390", "country": "AT", "isValid": true, "normalized": "1235011390",
+   "parse": {"serial": "123", "checkDigit": "5", "birthDate": null}},
+  {"input": "1236 300290", "country": "AT", "isValid": true, "normalized": "1236300290",
+   "parse": {"serial": "123", "checkDigit": "6", "birthDate": null}},
+  {"input": "1234010190", "country": "AT", "isValid": false, "code": "ssnBadChecksum"},
+  {"input": "1300010190", "country": "AT", "isValid": false, "code": "ssnBadChecksum"},
+  {"input": "", "country": "AT", "isValid": false, "code": "ssnEmpty"},
+  {"input": "   ", "country": "AT", "isValid": false, "code": "ssnEmpty"},
+  {"input": "123801019X", "country": "AT", "isValid": false, "code": "ssnBadChars"},
+  {"input": "123801019", "country": "AT", "isValid": false, "code": "ssnBadLength"},
+  {"input": "12380101900", "country": "AT", "isValid": false, "code": "ssnBadLength"},
+  {"input": "1238010190", "country": "DE", "isValid": false, "code": "ssnUnknownCountry"}
+]

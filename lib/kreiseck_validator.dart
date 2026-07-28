@@ -32,6 +32,8 @@ export 'src/phone/phone_number_type.dart';
 export 'src/postal_code/postal_code.dart';
 export 'src/postal_code/postal_info.dart';
 export 'src/postal_code/postal_pattern.dart';
+export 'src/social_security/social_security.dart';
+export 'src/social_security/social_security_info.dart';
 export 'src/tax_number/tax_number.dart';
 export 'src/tax_number/tax_number_info.dart';
 export 'src/url/url.dart';
