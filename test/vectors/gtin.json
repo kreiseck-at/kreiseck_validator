@@ -1,0 +1,16 @@
+[
+  {"input": "4006381333931", "isValid": true, "normalized": "4006381333931", "format": "4006381333931",
+   "parse": {"length": 13, "checkDigit": "1", "gtin14": "04006381333931"}},
+  {"input": "4006-381 333931", "isValid": true, "normalized": "4006381333931"},
+  {"input": "04012345123456", "isValid": true, "normalized": "04012345123456", "format": "04012345123456",
+   "parse": {"length": 14, "checkDigit": "6", "gtin14": "04012345123456"}},
+  {"input": "96385074", "isValid": true, "normalized": "96385074",
+   "parse": {"length": 8, "checkDigit": "4", "gtin14": "00000096385074"}},
+  {"input": "", "isValid": false, "code": "gtinEmpty"},
+  {"input": "   ", "isValid": false, "code": "gtinEmpty"},
+  {"input": "40063813339A1", "isValid": false, "code": "gtinBadChars"},
+  {"input": "40063813339", "isValid": false, "code": "gtinBadLength"},
+  {"input": "400638133393100", "isValid": false, "code": "gtinBadLength"},
+  {"input": "4006381333932", "isValid": false, "code": "gtinBadChecksum"},
+  {"input": "96385075", "isValid": false, "code": "gtinBadChecksum"}
+]

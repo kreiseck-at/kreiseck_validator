@@ -117,6 +117,22 @@ void main() {
     }
   });
 
+  group('gtin', () {
+    for (final c in _load('gtin.json')) {
+      final input = c['input']! as String;
+      _check('gtin', c, () => Gtin.validate(input), () => Gtin.format(input));
+      if (c.containsKey('parse')) {
+        test('gtin parse: $input', () {
+          final info = Gtin.parse(input)!;
+          final p = c['parse']! as Map<String, Object?>;
+          expect(info.length, p['length']);
+          expect(info.checkDigit, p['checkDigit']);
+          expect(info.gtin14, p['gtin14']);
+        });
+      }
+    }
+  });
+
   group('credit_card', () {
     for (final c in _load('credit_card.json')) {
       final input = c['input']! as String;
