@@ -4,6 +4,8 @@ library;
 export 'src/bic/bic.dart';
 export 'src/bic/bic_info.dart';
 export 'src/common/country.dart';
+export 'src/company_register/company_register.dart';
+export 'src/company_register/company_register_info.dart';
 export 'src/common/field_descriptor.dart';
 export 'src/common/issue_code.dart';
 export 'src/common/validation_result.dart';

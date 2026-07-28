@@ -455,3 +455,118 @@ on every `PostalCode` operation, since the same bare digit string (a plain
 4-digit code, for instance) is a valid postal code in a dozen different
 countries at once; a country missing from the table yields
 `IssueCode.postalUnknownCountry` rather than a guess.
+
+## GS1 mod-10 check digit (GTIN-8/12/13/14)
+
+`Gtin` (`lib/src/gtin/gtin.dart`) implements the GS1 check digit shared by
+EAN-8, UPC-A, EAN-13 and ITF-14: digits are weighted 3 and 1 alternately
+**from the right**, starting with 3 on the digit immediately left of the check
+digit, and the check digit is whatever completes the sum to a multiple of ten.
+Only lengths 8, 12, 13 and 14 exist; anything else is `gtinBadLength` before
+the checksum is even attempted.
+
+`Gtin.parse` deliberately exposes no GS1 prefix and no country. A GS1 prefix
+identifies the member organisation that issued the number, not where the goods
+came from, and an API that surfaces it is reliably misread as
+country-of-origin. What it does expose is `gtin14`, the zero-padded 14-digit
+form GS1 recommends for storage, so an EAN-13 scanned at the till can be
+matched against an ITF-14 printed on the outer case.
+
+## Austrian Abgabenkontonummer check digit (tax number)
+
+`TaxNumber` (`lib/src/tax_number/tax_number.dart`) validates the nine-digit
+Austrian tax number — a two-digit Finanzamt number, six free digits and a check
+digit, written `12-345/6789`.
+
+The official description states the check as
+`S = F + Q(A) + N1 + Q(N2) + N3 + Q(N4) + N5 + Q(N6)`, where `Q(z)` is the
+digit sum of `2z`, and `P = (80 - S) mod 10`. Written out, that is exactly the
+Luhn algorithm over all nine digits, so the implementation reuses `luhnOk`
+rather than restating the formula. Verified against the documented worked
+example `98-123/4560`: S = 40, P = 0, and Luhn over `981234560` gives 40 ≡ 0
+(mod 10).
+
+**The Finanzamt number never rejects.** Austria reorganised its tax
+administration on 2021-01-01 into Finanzamt Österreich and Finanzamt für
+Großbetriebe, and froze existing account numbers at that point — so historical
+office prefixes stay valid forever and appear on documents indefinitely. Any
+bundled list of office numbers would be a snapshot that quietly refuses valid
+numbers as it ages, and most of the offices those digits refer to no longer
+exist, so no office-name table is shipped either. `parse` reports the two
+digits and nothing more.
+
+## Austrian Versicherungsnummer check digit (social-security number)
+
+`SocialSecurityNumber` (`lib/src/social_security/social_security.dart`)
+validates the ten-digit Austrian number `NNNP TTMMJJ`. The nine non-check
+digits are weighted 3, 7, 9, 5, 8, 4, 2, 1, 6 from the left (equivalently: the
+full ten positions weighted 3, 7, 9, **0**, 5, 8, 4, 2, 1, 6, since position 4
+is the check digit itself) and the sum taken modulo 11. A remainder of 10 is
+never issued — the assigning system skips to the next serial — so it is
+rejected rather than accommodated.
+
+**Validation never inspects the date**, and this is the important part. The
+date portion is routinely fictitious by design:
+
+- Only a limited number of serials exist per birth date, so when they run out
+  the number is issued with **month 13, 14 or 15**.
+- Someone whose exact birthday is unknown is registered as 1 January or 1 July
+  of their birth year.
+
+Those are correct, issued numbers. Rejecting an out-of-range month would reject
+real people, so the checksum alone decides validity and
+`SocialSecurityInfo.birthDate` is simply null whenever the digits do not form a
+real calendar date.
+
+The century is not inferred either. A two-digit year is genuinely ambiguous,
+and every rule for resolving it is an age heuristic that belongs to the calling
+application — so `SsnBirthDate` carries `day`, `month` and `twoDigitYear` and
+stops there. February is treated as having 29 days for the same reason: without
+a century, leap years are unknowable.
+
+## Austrian Firmenbuchnummer check letter (company register)
+
+`CompanyRegister` (`lib/src/company_register/company_register.dart`) computes
+the check letter as follows:
+
+1. Zero-pad the digits to six.
+2. Weight them 6, 4, 14, 15, 10, 1 from the left.
+3. Sum, take modulo 17.
+4. Index into `A B D F G H I K M P S T V W X Y Z` — 17 letters, with the
+   confusable `C`, `E`, `J`, `L`, `N`, `O`, `Q`, `R` and `U` omitted.
+
+No official specification of this algorithm could be obtained, so it was
+established empirically and must not be changed without new evidence. **Twelve
+real, independently published Firmenbuchnummern all satisfy it:**
+
+| Number | Letter | Source |
+|---|---|---|
+| 415772 | f | gps365 GmbH, imprint |
+| 187010 | s | Umweltbundesamt GmbH, imprint |
+| 536480 | t | VLR Austria GmbH, imprint |
+| 512160 | b | FS19 GmbH, imprint |
+| 271797 | b | ÖBB-Operative Services GmbH & Co KG, imprint |
+| 270943 | x | ÖBB-Operative Services GmbH, imprint |
+| 247642 | f | ÖBB-Holding AG, register service |
+| 254941 | p | Wienerberger West European Holding GmbH, register service |
+| 71396 | w | ÖBB-Infrastruktur AG, register service |
+| 93363 | z | OMV AG, imprint |
+| 77676 | f | Wienerberger AG, imprint |
+| 94684 | t | Wienerberger Österreich GmbH, imprint |
+
+Two widely repeated claims about this letter are **wrong**, and both are
+refuted by the table above:
+
+- **"It is the number modulo 26, with a = 0."** This reproduces exactly one of
+  the twelve (187010 s), by coincidence. It gives `g` for 415772, `w` for
+  536480 and `m` for 512160, all of which are wrong.
+- **"The letter encodes the legal form."** Seven of the twelve are GmbHs and
+  they carry seven different letters.
+
+The zero-padding matters and is what the short numbers pin down: applying the
+weights **left-aligned** to an unpadded five-digit number instead reproduces
+none of `71396 w`, `93363 z`, `77676 f` or `94684 t`. One circulating
+five-digit example that *does* match left-alignment, `92754 f`, appears in the
+README of a third-party checker that uses left-alignment — i.e. it is almost
+certainly output of that implementation rather than a real number, and it is
+kept in the vectors as a **rejected** case.

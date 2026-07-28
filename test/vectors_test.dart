@@ -178,6 +178,24 @@ void main() {
     }
   });
 
+  group('company_register', () {
+    for (final c in _load('company_register.json')) {
+      final input = c['input']! as String;
+      final country = c['country']! as String;
+      _check('company_register', c,
+          () => CompanyRegister.validate(input, country: country),
+          () => CompanyRegister.format(input, country: country));
+      if (c.containsKey('parse')) {
+        test('company_register parse: $input', () {
+          final info = CompanyRegister.parse(input, country: country)!;
+          final p = c['parse']! as Map<String, Object?>;
+          expect(info.number, p['number']);
+          expect(info.checkChar, p['checkChar']);
+        });
+      }
+    }
+  });
+
   group('credit_card', () {
     for (final c in _load('credit_card.json')) {
       final input = c['input']! as String;

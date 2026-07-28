@@ -54,6 +54,7 @@
     "./iban":       { "types": "./dist/iban/index.d.ts",  "import": "./dist/iban/index.js",  "require": "./dist/iban/index.cjs" },
     "./credit-card":{ "types": "./dist/credit-card/index.d.ts", "import": "./dist/credit-card/index.js", "require": "./dist/credit-card/index.cjs" },
     "./bic":        { "types": "./dist/bic/index.d.ts",   "import": "./dist/bic/index.js",   "require": "./dist/bic/index.cjs" },
+    "./company-register": { "types": "./dist/company-register/index.d.ts", "import": "./dist/company-register/index.js", "require": "./dist/company-register/index.cjs" },
     "./gtin":       { "types": "./dist/gtin/index.d.ts",  "import": "./dist/gtin/index.js",  "require": "./dist/gtin/index.cjs" },
     "./social-security": { "types": "./dist/social-security/index.d.ts", "import": "./dist/social-security/index.js", "require": "./dist/social-security/index.cjs" },
     "./tax-number": { "types": "./dist/tax-number/index.d.ts", "import": "./dist/tax-number/index.js", "require": "./dist/tax-number/index.cjs" },

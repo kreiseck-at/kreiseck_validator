@@ -10,6 +10,7 @@ export default defineConfig({
     'src/iban/index.ts',
     'src/credit-card/index.ts',
     'src/bic/index.ts',
+    'src/company-register/index.ts',
     'src/gtin/index.ts',
     'src/social-security/index.ts',
     'src/tax-number/index.ts',
