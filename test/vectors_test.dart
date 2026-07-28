@@ -133,6 +133,25 @@ void main() {
     }
   });
 
+  group('tax_number', () {
+    for (final c in _load('tax_number.json')) {
+      final input = c['input']! as String;
+      final country = c['country']! as String;
+      _check('tax_number', c,
+          () => TaxNumber.validate(input, country: country),
+          () => TaxNumber.format(input, country: country));
+      if (c.containsKey('parse')) {
+        test('tax_number parse: $input', () {
+          final info = TaxNumber.parse(input, country: country)!;
+          final p = c['parse']! as Map<String, Object?>;
+          expect(info.office, p['office']);
+          expect(info.number, p['number']);
+          expect(info.checkDigit, p['checkDigit']);
+        });
+      }
+    }
+  });
+
   group('credit_card', () {
     for (final c in _load('credit_card.json')) {
       final input = c['input']! as String;

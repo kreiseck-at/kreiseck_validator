@@ -1,0 +1,14 @@
+[
+  {"input": "98-123/4560", "country": "AT", "isValid": true, "normalized": "981234560", "format": "98-123/4560",
+   "parse": {"office": "98", "number": "1234560", "checkDigit": "0"}},
+  {"input": "981234560", "country": "AT", "isValid": true, "normalized": "981234560", "format": "98-123/4560"},
+  {"input": "98 123 4560", "country": "AT", "isValid": true, "normalized": "981234560"},
+  {"input": "98.123.4560", "country": "AT", "isValid": true, "normalized": "981234560"},
+  {"input": "981234561", "country": "AT", "isValid": false, "code": "taxNumberBadChecksum"},
+  {"input": "", "country": "AT", "isValid": false, "code": "taxNumberEmpty"},
+  {"input": "   ", "country": "AT", "isValid": false, "code": "taxNumberEmpty"},
+  {"input": "98123456X", "country": "AT", "isValid": false, "code": "taxNumberBadChars"},
+  {"input": "98123456", "country": "AT", "isValid": false, "code": "taxNumberBadLength"},
+  {"input": "9812345600", "country": "AT", "isValid": false, "code": "taxNumberBadLength"},
+  {"input": "981234560", "country": "DE", "isValid": false, "code": "taxNumberUnknownCountry"}
+]
