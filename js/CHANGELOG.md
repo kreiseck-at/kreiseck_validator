@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.11.1
+
+- `VatId.prefixFor(country)` — the VAT prefix a country writes in front of its
+  number (`ATU`, `CHE`, `EL`, `XI` and otherwise the ISO code), or null when the
+  country has no VAT ID here. A form that shows the prefix beside the input, or
+  re-prefixes a number when the user switches country, could not get at this;
+  deriving it from the ISO code is wrong for four countries.
+
+
 ## 0.11.0
 
 Six new types and, for the TypeScript port, a `dom` subpath.

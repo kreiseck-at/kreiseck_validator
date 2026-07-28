@@ -156,6 +156,22 @@ function parse(input: string, o: VatOptions = {}): VatInfo | null {
   return null;
 }
 
+// The VAT prefix a country writes in front of its number, or null when the
+// country has no VAT ID in this package.
+//
+// Mostly the ISO code, but not always: Austria writes 'ATU', Switzerland
+// 'CHE', Greece 'EL' and Northern Ireland 'XI'. A form that shows the prefix as
+// a fixed label next to the input -- or that re-prefixes a number when the user
+// switches country -- needs exactly this, and guessing it from the ISO code is
+// wrong for four countries.
+//
+// Also the cheapest way to ask "does this country have a VAT ID at all?" before
+// rendering the field.
+function prefixFor(country: string): string | null {
+  const key = keyForCountry(country);
+  return key === null ? null : kVatFormats[key].prefix;
+}
+
 const VIES_BASE = 'https://ec.europa.eu/taxation_customs/vies/rest-api/ms';
 
 // Builds the VIES request for value, or null when value is not a valid VAT ID
@@ -245,7 +261,7 @@ function formatPartial(input: string, o: VatOptions = {}): string {
 }
 
 export const VatId = {
-  isValid, validate, normalize, format, tryFormat, parse, viesRequest,
+  isValid, validate, normalize, format, tryFormat, parse, prefixFor, viesRequest,
   parseViesResponse, fieldDescriptor, formatPartial,
 };
 export type { VatInfo, VatSubtype, ViesRequest, VatRegistration };

@@ -66,3 +66,18 @@ describe('parseViesResponse', () => {
     expect(VatId.parseViesResponse('{}')).toBeNull();
   });
 });
+
+describe('prefixFor', () => {
+  it('returns the tax spelling, which is not always the ISO code', () => {
+    expect(VatId.prefixFor('AT')).toBe('ATU');
+    expect(VatId.prefixFor('CH')).toBe('CHE');
+    expect(VatId.prefixFor('GR')).toBe('EL');
+    expect(VatId.prefixFor('EL')).toBe('EL');
+    expect(VatId.prefixFor('XI')).toBe('XI');
+    expect(VatId.prefixFor('de')).toBe('DE');
+  });
+  it('returns null for a country without a VAT ID here', () => {
+    expect(VatId.prefixFor('US')).toBeNull();
+    expect(VatId.prefixFor('ZZ')).toBeNull();
+  });
+});

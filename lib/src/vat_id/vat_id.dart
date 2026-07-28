@@ -189,6 +189,22 @@ class VatId {
     return null;
   }
 
+  /// The VAT prefix [country] writes in front of its number, or null when the
+  /// country has no VAT ID in this package.
+  ///
+  /// Mostly the ISO code, but not always: Austria writes `ATU`, Switzerland
+  /// `CHE`, Greece `EL` and Northern Ireland `XI`. A form that shows the prefix
+  /// as a fixed label next to the input — or that re-prefixes a number when the
+  /// user switches country — needs exactly this, and guessing it from the ISO
+  /// code is wrong for four countries.
+  ///
+  /// Also the cheapest way to ask "does this country have a VAT ID at all?"
+  /// before rendering the field.
+  static String? prefixFor(String country) {
+    final key = _keyForCountry(country);
+    return key == null ? null : kVatFormats[key]!.prefix;
+  }
+
   /// Builds the VIES request for [value], or null when [value] is not a valid
   /// VAT ID or its country is outside VIES.
   ///

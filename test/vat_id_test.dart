@@ -54,6 +54,32 @@ void main() {
     }
   });
 
+  group('prefixFor', () {
+    test('returns the tax spelling, which is not always the ISO code', () {
+      expect(VatId.prefixFor('AT'), 'ATU');
+      expect(VatId.prefixFor('CH'), 'CHE');
+      expect(VatId.prefixFor('GR'), 'EL');
+      expect(VatId.prefixFor('EL'), 'EL');
+      expect(VatId.prefixFor('XI'), 'XI');
+      expect(VatId.prefixFor('DE'), 'DE');
+      expect(VatId.prefixFor('de'), 'DE');
+    });
+
+    test('returns null for a country without a VAT ID here', () {
+      expect(VatId.prefixFor('US'), isNull);
+      expect(VatId.prefixFor('ZZ'), isNull);
+    });
+
+    test('agrees with the prefix parse reports', () {
+      for (final entry in kVatFormats.entries) {
+        final example = entry.value.example;
+        if (example == null) continue;
+        expect(VatId.prefixFor(entry.key), VatId.parse(example)!.prefix,
+            reason: 'prefixFor(${entry.key}) disagrees with parse');
+      }
+    });
+  });
+
   test('a prefix in the value wins over the country option', () {
     expect(VatId.parse('ATU16210507', country: 'DE')!.country, 'AT');
   });
