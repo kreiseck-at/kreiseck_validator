@@ -1,7 +1,7 @@
 {
   "name": "@kreiseck/validator",
   "version": "0.10.0",
-  "description": "Validate, normalize and format email, phone, URL, host, IBAN, credit-card, license-plate, IMEI, ICCID, MAC, VIN and postal-code input. Zero dependencies, DACH-aware. By Kreiseck.",
+  "description": "Validate, normalize and format email, phone, URL, host, IBAN, BIC, VAT-ID, GTIN, credit-card, license-plate, IMEI, ICCID, MAC, VIN, postal-code and Austrian social-security, company-register and tax numbers. Zero runtime dependencies, DACH-aware. By Kreiseck.",
   "keywords": [
     "kreiseck",
     "validator",
@@ -29,7 +29,15 @@
     "typescript",
     "zero-dependency",
     "normalize",
-    "format"
+    "format",
+    "vat",
+    "vat-id",
+    "ust-id",
+    "swift",
+    "gtin",
+    "ean",
+    "barcode",
+    "firmenbuch"
   ],
   "license": "Apache-2.0",
   "author": "Kreiseck Software Solutions (https://kreiseck.com)",
@@ -53,7 +61,11 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
-    "./dom":        { "types": "./dist/dom/index.d.ts",   "import": "./dist/dom/index.js",   "require": "./dist/dom/index.cjs" },
+    "./dom": {
+      "types": "./dist/dom/index.d.ts",
+      "import": "./dist/dom/index.js",
+      "require": "./dist/dom/index.cjs"
+    },
     "./email": {
       "types": "./dist/email/index.d.ts",
       "import": "./dist/email/index.js",

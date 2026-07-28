@@ -1,8 +1,29 @@
 # @kreiseck/validator
 
 Validate, normalize and format the input every app collects — **email, phone,
-URL, host, IBAN, credit-card, license plate, IMEI, ICCID, MAC address, VIN and
-postal code** — in a few lines of TypeScript. Zero dependencies, DACH-aware.
+URL, host, IBAN, BIC, VAT ID, GTIN, credit-card, license plate, IMEI, ICCID,
+MAC address, VIN, postal code** and the Austrian **social-security**,
+**company-register** and **tax** numbers — in a few lines of TypeScript. Zero
+runtime dependencies, DACH-aware.
+
+Building a form? `@kreiseck/validator/dom` turns any type's `fieldDescriptor()`
+into HTML attributes and can bind a live input for you:
+
+```ts
+import { bindInput } from '@kreiseck/validator/dom'
+import { Iban } from '@kreiseck/validator/iban'
+
+const unbind = bindInput(document.querySelector('#iban')!, {
+  descriptor: Iban.fieldDescriptor({ country: 'AT' }),
+  formatPartial: (v) => Iban.formatPartial(v, { country: 'AT' }),
+  validate: (v) => Iban.validate(v, { country: 'AT' }),
+  onState: ({ state, normalized }) => console.log(state, normalized),
+})
+```
+
+It applies `inputmode`, `autocapitalize`, `autocomplete`, `maxlength` and the
+placeholder, formats as the user types **without losing the caret**, and reports
+`empty` / `valid` / `invalid` on blur.
 
 This is the TypeScript/JavaScript port of the
 [`kreiseck_validator`](https://pub.dev/packages/kreiseck_validator) Dart

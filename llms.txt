@@ -1,9 +1,11 @@
 # kreiseck_validator
 
 > Zero-dependency Dart package to validate, normalize and pretty-format common
-> user input: email, phone, URL, host, IBAN, credit-card, license plate, IMEI,
-> ICCID, MAC address, VIN and postal code. Global phone support, DACH-aware
-> elsewhere. Apache-2.0. By Kreiseck Software Solutions (https://kreiseck.com).
+> user and business input: email, phone, URL, host, IBAN, BIC, VAT ID, GTIN,
+> credit-card, license plate, IMEI, ICCID, MAC address, VIN, postal code, and
+> Austrian social-security, company-register and tax numbers. Global phone
+> support, DACH-aware elsewhere. Apache-2.0. By Kreiseck Software Solutions
+> (https://kreiseck.com).
 
 Package name: `kreiseck_validator` (Dart, pub.dev). A TypeScript port ships as
 `@kreiseck/validator` (npm) from the same repository. No runtime dependencies, no
@@ -23,7 +25,7 @@ import 'package:kreiseck_validator/kreiseck_validator.dart';
 
 ## API
 
-Twelve types, each a class with static methods. The common core is
+Eighteen types, each a class with static methods. The common core is
 `isValid` / `validate` / `normalize` / `format` (+ `tryFormat`), and every type has
 `fieldDescriptor` / `formatPartial`. Nine also have `parse`, returning a structured
 info object or null. `Email` is the one gap: it has no `format`/`tryFormat`/`parse`,
@@ -64,6 +66,42 @@ are named parameters, identical across all methods of a type.
 - `PostalCode({required String country})` — curated patterns for 51 countries
   (Europe + Turkey) and canonical spacing (`1234AB` -> `1234 AB`); `parse -> PostalInfo`.
   The country is required: a bare postal code is ambiguous across countries.
+- `VatId({String? country})` — the 27 EU member states plus CH, GB and XI, each
+  with a real check-digit algorithm; there is no structure-only tier.
+  `parse -> VatInfo` with `country` (ISO), `prefix` (tax spelling) and `subtype`
+  (`standard`, `legal`, `person`, `individual`, `special`, `dni`, `nie`, `cif`,
+  `temporary`, `branch`, `government`, `healthAuthority`, `bsn`, `btwId`).
+  Greece is keyed `GR` and prefixed `EL`; Northern Ireland is prefixed `XI` and
+  reports country `GB`. `viesRequest` / `parseViesResponse` are an offline seam
+  around the EU VIES service — the package makes no request.
+- `Bic` — ISO 9362; the country segment is checked against the bundled country
+  table, an `XXX` branch is preserved, and `parse -> BicInfo` reports
+  `kind` (`live`, `test`, `passive`, `reverseBilling`) from the location code's
+  second character. `Bic.matchesIban(bic, iban)` compares country segments.
+- `Gtin` — GS1 mod-10 over lengths 8, 12, 13 and 14; `parse -> GtinInfo`
+  (`length`, `checkDigit`, `gtin14`). No GS1 prefix or country is exposed.
+  `Gtin.checkDigit(body)` completes a partial scan.
+- `SocialSecurityNumber({required String country})` — AT only; mod-11 over
+  weights 3,7,9,5,8,4,2,1,6, remainder 10 rejected.
+  `parse -> SocialSecurityInfo` with `birthDate` as `SsnBirthDate {day, month,
+  twoDigitYear}` or null.
+- `CompanyRegister({required String country})` — AT only; check letter from the
+  digits zero-padded to six, weights 6,4,14,15,10,1, mod 17, into a 17-letter
+  table. The only type whose `normalize` does not upper-case.
+- `TaxNumber({required String country})` — AT only; Luhn over nine digits,
+  formatted `12-345/6789`. The Finanzamt number is reported, never rejected.
+
+### Input fields (TypeScript: `@kreiseck/validator/dom`)
+
+The TS port maps `FieldDescriptor` onto HTML attributes in code, in a separate
+`dom` subpath: `fieldAttrs(descriptor)` -> `{inputMode, autoCapitalize,
+autoComplete, maxLength, placeholder}`, `filterValue(value, descriptor)`, and
+`bindInput(el, {descriptor, formatPartial, validate, onState})` which formats
+as the user types (preserving the caret by significant-character offset) and
+reports `'empty' | 'incomplete' | 'valid' | 'invalid'` on blur. It is not
+re-exported from the main entry, which stays platform-neutral. **There is no
+Dart counterpart on purpose** — one would require a Flutter dependency; the
+README's mapping table stays the Dart-side answer.
 
 ### Input fields
 
@@ -101,7 +139,21 @@ Result model:
 - `fieldDescriptor` and `formatPartial` never throw, not even for an unknown
   country: they degrade to a generic descriptor. The error belongs to `validate`,
   which reports `postalUnknownCountry` / `plateUnknownCountry` for the same input.
-- No DNS/MX/network lookups anywhere; the email typo hint is a purely local edit-distance heuristic.
+- No DNS/MX/network lookups anywhere; the email typo hint is a purely local
+  edit-distance heuristic, and `VatId` never contacts VIES.
+- `VatId.parseViesResponse` returns null when VIES gave no conclusive answer (a
+  busy or unavailable member state). Null is "ask again later", NOT "invalid".
+- `SocialSecurityNumber` never validates the date: Austria issues months 13-15
+  and 1 January/1 July placeholders on purpose. `birthDate` is null for those.
+  The century is never inferred.
+- `TaxNumber` never rejects an unknown Finanzamt number: account numbers were
+  frozen in the 2021 administration reform, so historical prefixes stay valid.
+- `CompanyRegister.normalize` keeps the check letter lower-case, and the `FN`
+  prefix is presentation only.
+- The Czech nine-digit birth-number VAT form carries no check digit at all;
+  only the ten-digit form does.
+- `Gtin` exposes no GS1 prefix: it identifies the issuing member organisation,
+  not the country of origin.
 
 ## Cross-language consistency
 

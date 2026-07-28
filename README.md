@@ -70,6 +70,23 @@ dependencies, no network calls, no telemetry.**
 - 🚗 **VIN** — ISO 3779 structure validation (17-char charset, `I`/`O`/`Q` forbidden),
   plus **`parse`** into a `VinInfo` with the ISO check-digit result and the decoded
   **model year** (e.g. `Vin.parse('1HGCM82633A004352')!.modelYear` → `2003`)
+- 🧾 **VAT ID** — the **27 EU member states plus Switzerland, the UK and Northern
+  Ireland**, each with its **real check-digit algorithm** (not just a length check),
+  `parse` into a `VatInfo` and a `subtype` that says which kind of number it is
+  (Spanish DNI/NIE/CIF, Bulgarian legal/person, UK branch trader, Dutch pre/post-2020, …),
+  plus an **offline VIES seam** (`viesRequest` / `parseViesResponse`)
+- 🏦 **BIC** — **ISO 9362** structure with the country checked against the bundled
+  country table, `parse` into a `BicInfo`, and the location code's second character
+  read rather than ignored (**test**, **passive** and **reverse-billing** BICs are flagged)
+- 🏷️ **GTIN** — GS1 **mod-10** check digit over EAN-8, UPC-A, EAN-13 and ITF-14, plus the
+  zero-padded `gtin14` form so a till scan matches a case label
+- 🪪 **Social-security number** (AT) — mod-11 check digit, and a `birthDate` that is
+  **null when the number carries a fictitious date** (Austria really does issue month 13)
+- 🏛️ **Company register** (AT) — the Firmenbuchnummer's **check letter**, verified against
+  twelve published numbers (the widely repeated `mod 26` rule is wrong — see
+  [`doc/algorithms.md`](doc/algorithms.md))
+- 🧮 **Tax number** (AT) — the Abgabenkontonummer's Luhn check digit and `12-345/6789`
+  formatting
 - 📮 **Postal code** — curated per-country pattern table for **Europe + Turkey**
   (51 countries), canonical spacing (`1234AB` → `1234 AB`, `00950` → `00-950`, …) and
   **`parse`** into a `PostalInfo`
@@ -89,6 +106,14 @@ typed text, how long the formatted value can get, an example value, and which
 characters are allowed — as a platform-neutral `FieldDescriptor`. The package has **no
 Flutter and no DOM dependency**: the mapping tables below are what *you* write in your
 own widget or DOM code.
+
+> **On the web you no longer have to.** The TypeScript port ships that mapping as
+> code in the `@kreiseck/validator/dom` subpath — `fieldAttrs(descriptor)` returns
+> the HTML attributes, `filterValue` applies the character filter, and `bindInput`
+> wires a live element up (including caret preservation, which is the part that is
+> easy to get wrong). There is deliberately no Dart counterpart: one would need a
+> Flutter dependency, and staying framework-free is the point of `FieldDescriptor`.
+> The Dart-side answer stays the mapping table below.
 
 ```dart
 final d = Iban.fieldDescriptor(country: 'AT');
@@ -402,6 +427,117 @@ exception: `Email.normalize` doesn't validate at all — it's a pure `trim` + lo
 transform, so it never throws. Use `tryFormat` for a null-returning variant instead of a
 `try`/`catch` on the types that do throw.
 
+### 🧾 VAT ID
+
+```dart
+VatId.isValid('ATU16210507');                 // true
+VatId.isValid('ATU16210508');                 // false -- check digit
+VatId.normalize('atu 162 105 07');            // 'ATU16210507'
+VatId.normalize('094259216', country: 'GR');  // 'EL094259216'  (tax spelling)
+
+final info = VatId.parse('ESA28015865')!;
+info.country;  // 'ES'
+info.subtype;  // VatSubtype.cif
+```
+
+Every supported country is checked **arithmetically**, so a transposed digit is
+caught everywhere — there is no "structure only" tier. Two spellings differ from
+ISO 3166 and both are handled: Greece writes `EL` (ISO `GR`) and Northern Ireland
+writes `XI` (ISO `GB`). `VatInfo.prefix` is what goes on the invoice,
+`VatInfo.country` is always the ISO code.
+
+Whether a number is *registered* is a fact about a company, not about the string,
+and only the EU's VIES service knows it. The package never calls out, but it
+builds the request and parses the answer:
+
+```dart
+final req = VatId.viesRequest('ATU16210507')!;   // url, method, headers
+final body = await yourHttpClient.get(req.url);  // your call, your retries
+final reg = VatId.parseViesResponse(body);
+// null means "no conclusive answer" -- a busy member state is NOT a rejection
+```
+
+### 🏦 BIC
+
+```dart
+Bic.isValid('BKAUATWW');                      // true
+Bic.parse('COBADEFFXXX')!.branch;             // 'XXX'  (kept, not stripped)
+Bic.parse('BKAUATW0')!.kind;                  // BicKind.test
+Bic.matchesIban('BKAUATWW', 'AT61 1904 3002 3457 3201');  // true
+```
+
+A test-and-training BIC in a production SEPA file fails silently, so `kind`
+surfaces it. `matchesIban` compares only the country segments — cheap, and it
+catches the pasted-from-the-wrong-account mistake.
+
+### 🏷️ GTIN
+
+```dart
+Gtin.isValid('4006381333931');   // true (EAN-13)
+Gtin.parse('96385074')!.gtin14;  // '00000096385074'
+Gtin.checkDigit('400638133393'); // '1'  -- complete a partial scan
+```
+
+No GS1 prefix or country is exposed: a GS1 prefix identifies the *issuing member
+organisation*, not where the goods came from, and every API that surfaces it ends
+up misread as country-of-origin.
+
+### 🪪 Social-security number
+
+```dart
+SocialSecurityNumber.isValid('1238 010190', country: 'AT');  // true
+SocialSecurityNumber.format('1238010190', country: 'AT');    // '1238 010190'
+
+final info = SocialSecurityNumber.parse('1235 011390', country: 'AT')!;
+info.birthDate;  // null -- month 13 is a real, issued placeholder
+```
+
+Validation never looks at the date. Austria issues months 13, 14 and 15 when the
+serials for a real birth date run out, and registers an unknown birthday as
+1 January or 1 July — rejecting those would reject real people. The century is
+never inferred either: `SsnBirthDate` carries `day`, `month` and `twoDigitYear`,
+and any age heuristic belongs to your application.
+
+### 🏛️ Company register
+
+```dart
+CompanyRegister.isValid('FN 415772 f', country: 'AT');  // true
+CompanyRegister.normalize('415772F', country: 'AT');    // '415772f'  (lower!)
+CompanyRegister.format('415772f', country: 'AT');       // 'FN 415772f'
+```
+
+This is the one type whose `normalize` does **not** upper-case — the canonical
+written form keeps the check letter lower-case. The `FN` prefix is presentation:
+accepted on input, not stored.
+
+### 🧮 Tax number
+
+```dart
+TaxNumber.isValid('98-123/4560', country: 'AT');   // true
+TaxNumber.normalize('98-123/4560', country: 'AT'); // '981234560'
+TaxNumber.parse('981234560', country: 'AT')!.office;  // '98'
+```
+
+The Finanzamt number is reported but **never rejected**: Austria froze existing
+account numbers in the 2021 administration reform, so historical office prefixes
+stay valid forever and any bundled list would age into false rejections.
+
+
+### ⚠️ Deliberate design decisions
+
+Each of these looks like an oversight until you know why:
+
+| Behaviour | Why |
+|---|---|
+| `CompanyRegister.normalize` does not upper-case | the canonical Firmenbuchnummer keeps its check letter lower-case |
+| `Gtin` exposes no GS1 prefix or country | a GS1 prefix names the *issuing organisation*, not the origin of the goods |
+| `SocialSecurityNumber.parse` returns a two-digit year | the century is genuinely ambiguous; guessing it stores wrong birth dates |
+| `SocialSecurityNumber` never rejects a date | months 13-15 and 1 January placeholders are really issued |
+| `TaxNumber` never rejects an unknown Finanzamt number | numbers were frozen in 2021, so historical prefixes stay valid forever |
+| `VatId` performs no online check | registration is a fact about a company, not the string — see `viesRequest` |
+| `parseViesResponse` returns null for a busy member state | that is "ask again later", not "not registered" |
+| The CZ nine-digit birth-number form has no check digit | none exists; only the ten-digit form carries one |
+
 ## 🧾 The result model
 
 `validate` returns a **sealed** `ValidationResult`, so a `switch` is exhaustive:
@@ -432,6 +568,12 @@ stable enums you can switch on and translate; the English `message` is only a de
 | `MacAddress` | ✅ | ✅ | ✅ | ✅ | ✅ | none (EUI-48/64 notation handling is global) |
 | `Vin`        | ✅ | ✅ | ✅ | ✅ | ✅ | none (structure + check digit + model year are global, ISO 3779) |
 | `PostalCode` | ✅ | ✅ | ✅ | ✅ | ✅ | curated pattern table for Europe + Turkey (51 countries) |
+| `VatId`      | ✅ | ✅ | ✅ | ✅ | ✅ | check digit for all 27 EU states + CH/GB/XI; `subtype` per country |
+| `Bic`        | ✅ | ✅ | ✅ | ✅ | ✅ | none (ISO 9362 is global); country segment checked against the country table |
+| `Gtin`       | ✅ | ✅ | ✅ | ✅ | ✅ | none (GS1 mod-10 is global) |
+| `SocialSecurityNumber` | ✅ | ✅ | ✅ | ✅ | ✅ | AT only; `country` required so others can follow |
+| `CompanyRegister` | ✅ | ✅ | ✅ | ✅ | ✅ | AT only; `country` required |
+| `TaxNumber`  | ✅ | ✅ | ✅ | ✅ | ✅ | AT only; `country` required |
 
 ## 🪶 Zero dependencies, Apache-2.0
 
