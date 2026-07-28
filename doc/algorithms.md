@@ -570,3 +570,95 @@ five-digit example that *does* match left-alignment, `92754 f`, appears in the
 README of a third-party checker that uses left-alignment — i.e. it is almost
 certainly output of that implementation rather than a real number, and it is
 kept in the vectors as a **rejected** case.
+
+## VAT check digits (27 EU member states plus CH, GB and XI)
+
+`VatId` (`lib/src/vat_id/vat_id.dart`) splits into two parts: the **structure**
+of each country's number is data (`tool/data/vat-formats.json`, generated into
+`vat_metadata.g.dart` and `js/src/data/vat-metadata.json`), and the **check
+digit** is code (`vat_checks.dart`), because the algorithms have nothing in
+common and no table could express them.
+
+Every supported country has a real arithmetic check — there is no
+structure-only tier, and `checkVat` throws rather than falling back to one, so
+a country cannot be added to the metadata and quietly validate on shape alone.
+
+| Country | Rule |
+|---|---|
+| AT | Luhn over the eight digits; check digit `(6 − luhn(first seven)) mod 10` |
+| BE | `int(first 8) + int(last 2)` is a multiple of 97 (an addition, not one long number) |
+| BG | 9 digits: `Σ(i+1)·dᵢ mod 11`, retried with `Σ(i+3)·dᵢ` when that is 10 — 10 digits: weights 4,3,2,7,6,5,4,3,2 |
+| CH | weights 5,4,3,2,7,6,5,4; check `(11 − Σ) mod 11`, a computed 10 is not issued |
+| CY | even positions through a substitution table, odd positions as they are, mod 26 → letter |
+| CZ | three forms; see below |
+| DE, HR | ISO 7064 MOD 11,10 |
+| DK | weights 2,7,6,5,4,3,2,1, multiple of 11 |
+| EE | weights 3,7,1 repeated, multiple of 10 |
+| ES | four forms; see below |
+| FI | weights 7,9,10,5,8,4,2,1, multiple of 11 |
+| FR | numeric prefix: `int(SIREN + "12") mod 97` — letter prefix: alphabet-index formula; SIREN itself Luhn unless `000` |
+| GB, XI | weights 8,7,6,5,4,3,2,10,1 mod 97 ∈ {0, 42, 55} for blocks from 100, otherwise 0 |
+| GR | `c ← 2c + dᵢ` over the first eight; check `2c mod 11 mod 10` |
+| HU | weights 9,7,3,1 repeated, multiple of 10 |
+| IE | 23-letter alphabet `WABCDEFGHIJKLMNOPQRSTUV` indexed by a weighted sum mod 23 |
+| IT | Luhn, plus office code `001`–`100`/`120`/`121`/`888`/`999` and a non-zero company part |
+| LT | `Σ(1 + i mod 9)·dᵢ mod 11`, retried with the sequence shifted by two when that is 10 |
+| LU | `int(first 6) mod 89` equals the last two |
+| LV | first digit > 3: weights 9,1,4,8,3,10,2,5,7,6,1 with remainder **3** — otherwise the personal-code rule |
+| MT | weights 3,4,6,7,8,9,10,1, multiple of 37 |
+| NL | eleven-proof on the first nine **or** ISO 7064 MOD 97,10 over `NL` + number |
+| PL | weights 6,5,7,2,3,4,5,6,7,−1, multiple of 11 |
+| PT | weights 9…2; check `(11 − Σ) mod 11 mod 10` |
+| RO | left-padded to nine, weights 7,5,3,2,1,7,5,3,2; check `10Σ mod 11 mod 10` |
+| SE | last two digits are `01`; first ten satisfy Luhn |
+| SI | weights 8…2; check `11 − (Σ mod 11)`, 10 becomes 0 |
+| SK | the whole ten-digit number is a multiple of 11 |
+
+### The countries that pack several identifiers into one field
+
+- **CZ** — eight digits is a legal entity (and may not start with `9`); nine
+  digits starting with `6` is a historical special form; nine or ten digits
+  otherwise is a rodné číslo. Only the ten-digit birth number carries a check
+  digit; the nine-digit one carries none at all, so nothing beyond the
+  structure can be verified for it. The birth date embedded in a rodné číslo is
+  a plausibility rule about a person rather than a checksum and is deliberately
+  not enforced.
+- **ES** — the first character decides: a digit or `K`/`L`/`M` is a DNI, `X`,
+  `Y` or `Z` is an NIE, and one of `ABCDEFGHJNPQRSUVW` is a CIF. DNI and NIE
+  index the letter table `TRWAGMYFPDXBNJZSQVHLCKE` by the number modulo 23; a
+  CIF takes the Luhn check digit over its seven digits and accepts it either as
+  that digit or as the letter it maps to through `JABCDEFGHI`, because sources
+  disagree on which organisation types must use which form.
+- **BG, LV, LT, NL, GB** — see the table; `VatInfo.subtype` reports which
+  branch validated, so a consumer never has to re-derive it.
+
+### Two spellings that are not ISO
+
+Greece writes **EL** where ISO 3166 says `GR`, and Northern Ireland writes
+**XI** where ISO says `GB`. The metadata is keyed by the ISO code and carries
+the tax prefix as data, so `VatInfo.country` is always ISO and
+`VatInfo.prefix` is always what goes on the invoice. Both spellings are
+accepted as the `country` option.
+
+### How the vectors were sourced
+
+`test/vectors/vat_id.json` pins one published number per country plus a
+deliberately broken twin. Twelve of them — BE, CZ, DE, ES, IE, IT, LV, PL, PT,
+SE, SI and SK — were confirmed as live registrations through the Commission's
+VIES service during implementation. AT's are published in company imprints and
+were checked by hand. The rest come from documented third-party test data.
+**No valid vector was produced by this implementation.** Three cases are stated
+rather than hidden:
+
+- **FR** — the SIREN `919434894` is published (L'Oréal France, in the French
+  government's company register); the two-digit key was computed from it with
+  the documented rule rather than copied from a published TVA number. VIES
+  returned `MS_MAX_CONCURRENT_REQ` on every attempt, so it could not be
+  confirmed as a live registration.
+- **HU** — `10625790` is the published trunk of MOL Nyrt.'s adószám and
+  satisfies the checksum, but VIES reports it as not registered. The vector
+  therefore pins the arithmetic, which is all this type promises: whether a
+  number is *registered* is a fact about a company, not about the string.
+- **XI** — no published Northern Ireland registration was obtainable. An XI
+  number is the holder's GB number re-prefixed and uses GB's algorithm
+  unchanged, so GB's vectors cover it and the metadata ships no XI example.

@@ -1,17 +1,411 @@
 [
-  {"input": "ATU16210507", "isValid": true, "normalized": "ATU16210507", "format": "ATU16210507",
-   "parse": {"country": "AT", "prefix": "ATU", "number": "16210507", "subtype": "standard"}},
-  {"input": "atu 162 105 07", "isValid": true, "normalized": "ATU16210507"},
-  {"input": "ATU14189108", "isValid": true, "normalized": "ATU14189108"},
-  {"input": "ATU14589505", "isValid": true, "normalized": "ATU14589505"},
-  {"input": "ATU13585627", "isValid": true, "normalized": "ATU13585627"},
-  {"input": "16210507", "country": "AT", "isValid": true, "normalized": "ATU16210507"},
-  {"input": "U16210507", "country": "AT", "isValid": false, "code": "vatBadFormat"},
-  {"input": "ATU16210508", "isValid": false, "code": "vatBadChecksum"},
-  {"input": "ATU1621050", "isValid": false, "code": "vatBadFormat"},
-  {"input": "", "isValid": false, "code": "vatEmpty"},
-  {"input": "   ", "isValid": false, "code": "vatEmpty"},
-  {"input": "16210507", "isValid": false, "code": "vatAmbiguousCountry"},
-  {"input": "ZZ16210507", "isValid": false, "code": "vatUnknownCountry"},
-  {"input": "16210507", "country": "ZZ", "isValid": false, "code": "vatUnknownCountry"}
+ {
+  "input": "ATU16210507",
+  "isValid": true,
+  "normalized": "ATU16210507",
+  "format": "ATU16210507",
+  "parse": {
+   "country": "AT",
+   "prefix": "ATU",
+   "number": "16210507",
+   "subtype": "standard"
+  }
+ },
+ {
+  "input": "atu 162 105 07",
+  "isValid": true,
+  "normalized": "ATU16210507"
+ },
+ {
+  "input": "ATU14189108",
+  "isValid": true,
+  "normalized": "ATU14189108"
+ },
+ {
+  "input": "ATU14589505",
+  "isValid": true,
+  "normalized": "ATU14589505"
+ },
+ {
+  "input": "ATU13585627",
+  "isValid": true,
+  "normalized": "ATU13585627"
+ },
+ {
+  "input": "16210507",
+  "country": "AT",
+  "isValid": true,
+  "normalized": "ATU16210507"
+ },
+ {
+  "input": "U16210507",
+  "country": "AT",
+  "isValid": false,
+  "code": "vatBadFormat"
+ },
+ {
+  "input": "ATU16210508",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "ATU1621050",
+  "isValid": false,
+  "code": "vatBadFormat"
+ },
+ {
+  "input": "",
+  "isValid": false,
+  "code": "vatEmpty"
+ },
+ {
+  "input": "   ",
+  "isValid": false,
+  "code": "vatEmpty"
+ },
+ {
+  "input": "16210507",
+  "isValid": false,
+  "code": "vatAmbiguousCountry"
+ },
+ {
+  "input": "ZZ16210507",
+  "isValid": false,
+  "code": "vatUnknownCountry"
+ },
+ {
+  "input": "16210507",
+  "country": "ZZ",
+  "isValid": false,
+  "code": "vatUnknownCountry"
+ },
+ {
+  "input": "BE0417497106",
+  "isValid": true,
+  "normalized": "BE0417497106",
+  "format": "BE0417497106"
+ },
+ {
+  "input": "BE0417497107",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "BG175074752",
+  "isValid": true,
+  "normalized": "BG175074752",
+  "format": "BG175074752",
+  "parse": {
+   "subtype": "legal"
+  }
+ },
+ {
+  "input": "BG175074753",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "CHE116281710",
+  "isValid": true,
+  "normalized": "CHE116281710",
+  "format": "CHE116281710"
+ },
+ {
+  "input": "CHE116281711",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "CY10259033P",
+  "isValid": true,
+  "normalized": "CY10259033P",
+  "format": "CY10259033P"
+ },
+ {
+  "input": "CY10259033Q",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "CZ00177041",
+  "isValid": true,
+  "normalized": "CZ00177041",
+  "format": "CZ00177041",
+  "parse": {
+   "subtype": "legal"
+  }
+ },
+ {
+  "input": "CZ00177042",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "DE129274202",
+  "isValid": true,
+  "normalized": "DE129274202",
+  "format": "DE129274202"
+ },
+ {
+  "input": "DE129274203",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "DK13585628",
+  "isValid": true,
+  "normalized": "DK13585628",
+  "format": "DK13585628"
+ },
+ {
+  "input": "DK13585629",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "EE100594102",
+  "isValid": true,
+  "normalized": "EE100594102",
+  "format": "EE100594102"
+ },
+ {
+  "input": "EE100594103",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "ESA28015865",
+  "isValid": true,
+  "normalized": "ESA28015865",
+  "format": "ESA28015865",
+  "parse": {
+   "subtype": "cif"
+  }
+ },
+ {
+  "input": "ESA28015866",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "FI20774740",
+  "isValid": true,
+  "normalized": "FI20774740",
+  "format": "FI20774740"
+ },
+ {
+  "input": "FI20774741",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "FR84919434894",
+  "isValid": true,
+  "normalized": "FR84919434894",
+  "format": "FR84919434894"
+ },
+ {
+  "input": "FR84919434895",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "GB220430231",
+  "isValid": true,
+  "normalized": "GB220430231",
+  "format": "GB220430231",
+  "parse": {
+   "subtype": "standard"
+  }
+ },
+ {
+  "input": "GB220430232",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "EL094259216",
+  "isValid": true,
+  "normalized": "EL094259216",
+  "format": "EL094259216"
+ },
+ {
+  "input": "EL094259217",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "HR33392005961",
+  "isValid": true,
+  "normalized": "HR33392005961",
+  "format": "HR33392005961"
+ },
+ {
+  "input": "HR33392005962",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "HU10625790",
+  "isValid": true,
+  "normalized": "HU10625790",
+  "format": "HU10625790"
+ },
+ {
+  "input": "HU10625791",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "IE4749148U",
+  "isValid": true,
+  "normalized": "IE4749148U",
+  "format": "IE4749148U"
+ },
+ {
+  "input": "IE4749148V",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "IT03656470360",
+  "isValid": true,
+  "normalized": "IT03656470360",
+  "format": "IT03656470360"
+ },
+ {
+  "input": "IT03656470361",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "LT119511515",
+  "isValid": true,
+  "normalized": "LT119511515",
+  "format": "LT119511515",
+  "parse": {
+   "subtype": "standard"
+  }
+ },
+ {
+  "input": "LT119511516",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "LU15027442",
+  "isValid": true,
+  "normalized": "LU15027442",
+  "format": "LU15027442"
+ },
+ {
+  "input": "LU15027443",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "LV40003032949",
+  "isValid": true,
+  "normalized": "LV40003032949",
+  "format": "LV40003032949",
+  "parse": {
+   "subtype": "legal"
+  }
+ },
+ {
+  "input": "LV40003032940",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "MT11679112",
+  "isValid": true,
+  "normalized": "MT11679112",
+  "format": "MT11679112"
+ },
+ {
+  "input": "MT11679113",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "NL002455799B11",
+  "isValid": true,
+  "normalized": "NL002455799B11",
+  "format": "NL002455799B11",
+  "parse": {
+   "subtype": "btwId"
+  }
+ },
+ {
+  "input": "NL002455799B12",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "PL7742372663",
+  "isValid": true,
+  "normalized": "PL7742372663",
+  "format": "PL7742372663"
+ },
+ {
+  "input": "PL7742372664",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "PT505060515",
+  "isValid": true,
+  "normalized": "PT505060515",
+  "format": "PT505060515"
+ },
+ {
+  "input": "PT505060516",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "RO18547290",
+  "isValid": true,
+  "normalized": "RO18547290",
+  "format": "RO18547290"
+ },
+ {
+  "input": "RO18547291",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "SE556034348401",
+  "isValid": true,
+  "normalized": "SE556034348401",
+  "format": "SE556034348401"
+ },
+ {
+  "input": "SE556034348402",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "SI82646716",
+  "isValid": true,
+  "normalized": "SI82646716",
+  "format": "SI82646716"
+ },
+ {
+  "input": "SI82646717",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ },
+ {
+  "input": "SK7120001713",
+  "isValid": true,
+  "normalized": "SK7120001713",
+  "format": "SK7120001713"
+ },
+ {
+  "input": "SK7120001714",
+  "isValid": false,
+  "code": "vatBadChecksum"
+ }
 ]

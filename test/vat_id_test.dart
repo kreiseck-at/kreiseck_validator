@@ -1,17 +1,13 @@
 import 'package:kreiseck_validator/kreiseck_validator.dart';
 import 'package:test/test.dart';
 
-/// Countries whose check-digit algorithm is not implemented yet.
+/// Prefixes that ship no bundled example, with the reason.
 ///
-/// This list is the release gate: `checkVat` throws for anything on it, so a
-/// country cannot be added to `kVatFormats` and quietly validate on structure
-/// alone. Every entry removed here must be removed because its algorithm and a
-/// published example both landed.
-const Set<String> kAwaitingCheckDigit = {
-  'BE', 'BG', 'CH', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB',
-  'GR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT',
-  'RO', 'SE', 'SI', 'SK', 'XI',
-};
+/// `XI` is the only one. A Northern Ireland VAT number is the holder's GB
+/// number re-prefixed, so it shares GB's algorithm exactly and GB's vectors
+/// cover it; no published XI registration was obtainable, and inventing one
+/// would put a number in the metadata that nobody ever issued.
+const Set<String> kWithoutExample = {'XI'};
 
 void main() {
   test('covers 30 VAT prefixes', () {
@@ -21,31 +17,48 @@ void main() {
   test('Greece is keyed GR and prefixed EL', () {
     expect(kVatFormats['GR']!.prefix, 'EL');
     expect(kVatFormats.containsKey('EL'), isFalse);
-    expect(VatId.normalize('094259216', country: 'GR'), startsWith('EL'));
-  }, skip: kAwaitingCheckDigit.contains('GR') ? 'GR check digit pending' : null);
+    expect(VatId.normalize('094259216', country: 'GR'), 'EL094259216');
+    expect(VatId.normalize('094259216', country: 'EL'), 'EL094259216');
+    expect(VatId.parse('EL094259216')!.country, 'GR');
+  });
 
-  test('every implemented country has a bundled example that validates', () {
+  test('Northern Ireland keeps the XI prefix but reports GB', () {
+    // Same digits as the GB vector, re-prefixed -- that is how HMRC issues an
+    // XI number in the first place.
+    final info = VatId.parse('XI220430231')!;
+    expect(info.prefix, 'XI');
+    expect(info.country, 'GB');
+  });
+
+  test('every country has a check-digit implementation', () {
+    for (final iso2 in kVatFormats.keys) {
+      // Reaching the checksum at all proves a function is registered:
+      // checkVat throws StateError when one is missing.
+      expect(() => VatId.isValid('${kVatFormats[iso2]!.prefix}0'), returnsNormally,
+          reason: 'no check-digit implementation for $iso2');
+    }
+  });
+
+  test('every bundled example validates and is canonical', () {
     for (final entry in kVatFormats.entries) {
-      if (kAwaitingCheckDigit.contains(entry.key)) continue;
+      if (kWithoutExample.contains(entry.key)) {
+        expect(entry.value.example, isNull);
+        continue;
+      }
       final example = entry.value.example;
-      expect(example, isNotNull,
-          reason: '${entry.key} has a check digit but no published example');
+      expect(example, isNotNull, reason: '${entry.key} has no example');
       expect(VatId.isValid(example!), isTrue,
           reason: '${entry.key} example $example does not validate');
       expect(VatId.normalize(example), example,
-          reason: '${entry.key} example $example is not in canonical form');
+          reason: '${entry.key} example $example is not canonical');
     }
   });
 
-  test('no country awaiting a check digit ships an example', () {
-    for (final key in kAwaitingCheckDigit) {
-      expect(kVatFormats[key]!.example, isNull,
-          reason: '$key ships an example but cannot check it');
-    }
+  test('a prefix in the value wins over the country option', () {
+    expect(VatId.parse('ATU16210507', country: 'DE')!.country, 'AT');
   });
 
-  test('an unimplemented country throws rather than passing structurally', () {
-    // The dispatch seam must never degrade to "structure is enough".
-    expect(() => VatId.isValid('DE123456789'), throwsStateError);
-  }, skip: kAwaitingCheckDigit.isEmpty ? 'all countries implemented' : null);
+  test("Belgium's nine-digit legacy form gains its leading zero", () {
+    expect(VatId.normalize('BE417497106'), 'BE0417497106');
+  });
 }

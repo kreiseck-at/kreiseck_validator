@@ -206,10 +206,10 @@ void main() {
         test('vat_id parse: $input', () {
           final info = VatId.parse(input, country: country)!;
           final p = c['parse']! as Map<String, Object?>;
-          expect(info.country, p['country']);
-          expect(info.prefix, p['prefix']);
-          expect(info.number, p['number']);
-          expect(info.subtype.name, p['subtype']);
+          if (p.containsKey('country')) expect(info.country, p['country']);
+          if (p.containsKey('prefix')) expect(info.prefix, p['prefix']);
+          if (p.containsKey('number')) expect(info.number, p['number']);
+          if (p.containsKey('subtype')) expect(info.subtype.name, p['subtype']);
         });
       }
     }
