@@ -53,6 +53,24 @@ describe('bundle isolation', () => {
     expect(closure.includes('nationalPrefixFormattingRule')).toBe(false);
   });
 
+  it('every 0.11 subpath is individually importable', () => {
+    // The exports map promises these; a missing tsup entry would only show up
+    // as a broken import in a consumer's build.
+    for (const entry of [
+      'bic', 'gtin', 'vat-id', 'social-security', 'company-register',
+      'tax-number', 'dom',
+    ]) {
+      expect(() => readTransitiveClosure(resolve(DIST_DIR, `${entry}/index.js`)))
+        .not.toThrow();
+    }
+  });
+
+  it('the dom subpath is not reachable from the main entry', () => {
+    // The main entry stays platform-neutral: no DOM types, no document.
+    const closure = readTransitiveClosure(resolve(DIST_DIR, 'index.js'));
+    expect(closure.includes('addEventListener')).toBe(false);
+  });
+
   it('positive control: the phone entry closure does contain the sentinel', () => {
     const closure = readTransitiveClosure(resolve(DIST_DIR, 'phone/index.js'));
     // Proves `callingCode` actually survives the build and isn't stripped

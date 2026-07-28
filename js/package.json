@@ -44,27 +44,106 @@
   },
   "type": "module",
   "sideEffects": false,
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "exports": {
-    ".":            { "types": "./dist/index.d.ts",       "import": "./dist/index.js",       "require": "./dist/index.cjs" },
-    "./email":      { "types": "./dist/email/index.d.ts", "import": "./dist/email/index.js", "require": "./dist/email/index.cjs" },
-    "./phone":      { "types": "./dist/phone/index.d.ts", "import": "./dist/phone/index.js", "require": "./dist/phone/index.cjs" },
-    "./url":        { "types": "./dist/url/index.d.ts",   "import": "./dist/url/index.js",   "require": "./dist/url/index.cjs" },
-    "./host":       { "types": "./dist/host/index.d.ts",  "import": "./dist/host/index.js",  "require": "./dist/host/index.cjs" },
-    "./iban":       { "types": "./dist/iban/index.d.ts",  "import": "./dist/iban/index.js",  "require": "./dist/iban/index.cjs" },
-    "./credit-card":{ "types": "./dist/credit-card/index.d.ts", "import": "./dist/credit-card/index.js", "require": "./dist/credit-card/index.cjs" },
-    "./bic":        { "types": "./dist/bic/index.d.ts",   "import": "./dist/bic/index.js",   "require": "./dist/bic/index.cjs" },
-    "./company-register": { "types": "./dist/company-register/index.d.ts", "import": "./dist/company-register/index.js", "require": "./dist/company-register/index.cjs" },
-    "./gtin":       { "types": "./dist/gtin/index.d.ts",  "import": "./dist/gtin/index.js",  "require": "./dist/gtin/index.cjs" },
-    "./social-security": { "types": "./dist/social-security/index.d.ts", "import": "./dist/social-security/index.js", "require": "./dist/social-security/index.cjs" },
-    "./tax-number": { "types": "./dist/tax-number/index.d.ts", "import": "./dist/tax-number/index.js", "require": "./dist/tax-number/index.cjs" },
-    "./imei":       { "types": "./dist/imei/index.d.ts",   "import": "./dist/imei/index.js",   "require": "./dist/imei/index.cjs" },
-    "./iccid":      { "types": "./dist/iccid/index.d.ts",  "import": "./dist/iccid/index.js",  "require": "./dist/iccid/index.cjs" },
-    "./mac-address":{ "types": "./dist/mac-address/index.d.ts", "import": "./dist/mac-address/index.js", "require": "./dist/mac-address/index.cjs" },
-    "./license-plate":{ "types": "./dist/license-plate/index.d.ts", "import": "./dist/license-plate/index.js", "require": "./dist/license-plate/index.cjs" },
-    "./vat-id":     { "types": "./dist/vat-id/index.d.ts", "import": "./dist/vat-id/index.js", "require": "./dist/vat-id/index.cjs" },
-    "./vin":        { "types": "./dist/vin/index.d.ts",   "import": "./dist/vin/index.js",   "require": "./dist/vin/index.cjs" },
-    "./postal-code":{ "types": "./dist/postal-code/index.d.ts", "import": "./dist/postal-code/index.js", "require": "./dist/postal-code/index.cjs" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./dom":        { "types": "./dist/dom/index.d.ts",   "import": "./dist/dom/index.js",   "require": "./dist/dom/index.cjs" },
+    "./email": {
+      "types": "./dist/email/index.d.ts",
+      "import": "./dist/email/index.js",
+      "require": "./dist/email/index.cjs"
+    },
+    "./phone": {
+      "types": "./dist/phone/index.d.ts",
+      "import": "./dist/phone/index.js",
+      "require": "./dist/phone/index.cjs"
+    },
+    "./url": {
+      "types": "./dist/url/index.d.ts",
+      "import": "./dist/url/index.js",
+      "require": "./dist/url/index.cjs"
+    },
+    "./host": {
+      "types": "./dist/host/index.d.ts",
+      "import": "./dist/host/index.js",
+      "require": "./dist/host/index.cjs"
+    },
+    "./iban": {
+      "types": "./dist/iban/index.d.ts",
+      "import": "./dist/iban/index.js",
+      "require": "./dist/iban/index.cjs"
+    },
+    "./credit-card": {
+      "types": "./dist/credit-card/index.d.ts",
+      "import": "./dist/credit-card/index.js",
+      "require": "./dist/credit-card/index.cjs"
+    },
+    "./bic": {
+      "types": "./dist/bic/index.d.ts",
+      "import": "./dist/bic/index.js",
+      "require": "./dist/bic/index.cjs"
+    },
+    "./company-register": {
+      "types": "./dist/company-register/index.d.ts",
+      "import": "./dist/company-register/index.js",
+      "require": "./dist/company-register/index.cjs"
+    },
+    "./gtin": {
+      "types": "./dist/gtin/index.d.ts",
+      "import": "./dist/gtin/index.js",
+      "require": "./dist/gtin/index.cjs"
+    },
+    "./social-security": {
+      "types": "./dist/social-security/index.d.ts",
+      "import": "./dist/social-security/index.js",
+      "require": "./dist/social-security/index.cjs"
+    },
+    "./tax-number": {
+      "types": "./dist/tax-number/index.d.ts",
+      "import": "./dist/tax-number/index.js",
+      "require": "./dist/tax-number/index.cjs"
+    },
+    "./imei": {
+      "types": "./dist/imei/index.d.ts",
+      "import": "./dist/imei/index.js",
+      "require": "./dist/imei/index.cjs"
+    },
+    "./iccid": {
+      "types": "./dist/iccid/index.d.ts",
+      "import": "./dist/iccid/index.js",
+      "require": "./dist/iccid/index.cjs"
+    },
+    "./mac-address": {
+      "types": "./dist/mac-address/index.d.ts",
+      "import": "./dist/mac-address/index.js",
+      "require": "./dist/mac-address/index.cjs"
+    },
+    "./license-plate": {
+      "types": "./dist/license-plate/index.d.ts",
+      "import": "./dist/license-plate/index.js",
+      "require": "./dist/license-plate/index.cjs"
+    },
+    "./vat-id": {
+      "types": "./dist/vat-id/index.d.ts",
+      "import": "./dist/vat-id/index.js",
+      "require": "./dist/vat-id/index.cjs"
+    },
+    "./vin": {
+      "types": "./dist/vin/index.d.ts",
+      "import": "./dist/vin/index.js",
+      "require": "./dist/vin/index.cjs"
+    },
+    "./postal-code": {
+      "types": "./dist/postal-code/index.d.ts",
+      "import": "./dist/postal-code/index.js",
+      "require": "./dist/postal-code/index.cjs"
+    }
   },
   "scripts": {
     "build": "tsup",
@@ -72,6 +151,7 @@
     "lint": "eslint src test"
   },
   "devDependencies": {
+    "jsdom": "^30.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.4.0",
     "vitest": "^1.6.0"
