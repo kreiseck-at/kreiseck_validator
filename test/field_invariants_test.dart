@@ -54,6 +54,24 @@ final List<_Type> _types = [
   // changes.
   _Type('phone:AT', () => Phone.fieldDescriptor(country: _country('AT')),
       (v) => Phone.tryFormat(v, country: _country('AT'))),
+  _Type('bic', Bic.fieldDescriptor, Bic.tryFormat),
+  _Type('gtin', Gtin.fieldDescriptor, Gtin.tryFormat),
+  _Type('vat_id:AT', () => VatId.fieldDescriptor(country: 'AT'),
+      (v) => VatId.tryFormat(v, country: 'AT')),
+  _Type('vat_id:NL', () => VatId.fieldDescriptor(country: 'NL'),
+      (v) => VatId.tryFormat(v, country: 'NL')),
+  _Type(
+      'social_security:AT',
+      () => SocialSecurityNumber.fieldDescriptor(country: 'AT'),
+      (v) => SocialSecurityNumber.tryFormat(v, country: 'AT')),
+  _Type('tax_number:AT', () => TaxNumber.fieldDescriptor(country: 'AT'),
+      (v) => TaxNumber.tryFormat(v, country: 'AT')),
+  // CompanyRegister's `format` prepends a presentational `FN `, which
+  // `formatPartial` deliberately does not while the user is still typing, so
+  // this type has no format for a partial formatter to agree with -- the same
+  // situation as email, url and host below.
+  _Type('company_register:AT',
+      () => CompanyRegister.fieldDescriptor(country: 'AT'), null),
   _Type('email', Email.fieldDescriptor, null),
   _Type('url', Url.fieldDescriptor, null),
   _Type('host', Host.fieldDescriptor, null),
@@ -88,6 +106,15 @@ FieldDescriptor _descriptorForPartial(String type, Map<String, Object?> o) =>
       'license_plate' =>
         LicensePlate.fieldDescriptor(country: o['country'] as String?),
       'phone' => Phone.fieldDescriptor(country: _country(o['country'] as String?)),
+      'bic' => Bic.fieldDescriptor(),
+      'gtin' => Gtin.fieldDescriptor(),
+      'vat_id' => VatId.fieldDescriptor(country: o['country'] as String?),
+      'social_security' =>
+        SocialSecurityNumber.fieldDescriptor(country: o['country'] as String?),
+      'company_register' =>
+        CompanyRegister.fieldDescriptor(country: o['country'] as String?),
+      'tax_number' =>
+        TaxNumber.fieldDescriptor(country: o['country'] as String?),
       'email' => Email.fieldDescriptor(),
       'url' => Url.fieldDescriptor(),
       'host' => Host.fieldDescriptor(),
@@ -113,6 +140,15 @@ String _partialForType(String type, String input, Map<String, Object?> o) =>
         LicensePlate.formatPartial(input, country: o['country'] as String?),
       'phone' =>
         Phone.formatPartial(input, country: _country(o['country'] as String?)),
+      'bic' => Bic.formatPartial(input),
+      'gtin' => Gtin.formatPartial(input),
+      'vat_id' => VatId.formatPartial(input, country: o['country'] as String?),
+      'social_security' => SocialSecurityNumber.formatPartial(input,
+          country: o['country'] as String?),
+      'company_register' => CompanyRegister.formatPartial(input,
+          country: o['country'] as String?),
+      'tax_number' =>
+        TaxNumber.formatPartial(input, country: o['country'] as String?),
       'email' => Email.formatPartial(input),
       'url' => Url.formatPartial(input),
       'host' => Host.formatPartial(input),
@@ -160,7 +196,11 @@ String? _groupingSeparatorsOf(String type, Map<String, Object?> o) =>
       // emits ' ' and '-'; including '.' in the strip set is harmless.
       'license_plate' => ' .-',
       'phone' => ' ',
-      _ => null, // imei, iccid, vin, email, url, host: never group.
+      'social_security' => ' ',
+      // TaxNumber.format writes 12-345/6789: two different separators, both
+      // inserted by the grouping step and neither ever content.
+      'tax_number' => '/-',
+      _ => null, // imei, iccid, vin, bic, gtin, vat_id, email, url, host.
     };
 
 void main() {
@@ -296,9 +336,17 @@ void main() {
         // final case pass outside the descriptor's own `capitalization`;
         // that's a casing detail, not a reordering one, so it must not make
         // this check spuriously fail.
-        var expectedFull =
-            (type == 'host' ? _hostFiltered(input, d.allowedChars!) : prepare(input, d))
-                .toUpperCase();
+        var expectedFull = (switch (type) {
+          'host' => _hostFiltered(input, d.allowedChars!),
+          // CompanyRegister strips a leading `FN`, which its allowedChars
+          // otherwise admits (F and N are letters). That prefix is
+          // presentation, not content, so the baseline has to drop it too --
+          // the same kind of documented deviation as `host` above.
+          'company_register' =>
+            prepare(input.replaceFirst(RegExp(r'^\s*[Ff][Nn][\s.]*'), ''), d),
+          _ => prepare(input, d),
+        })
+            .toUpperCase();
         var actualSignificant = output.toUpperCase();
         if (sep != null) {
           final sepRe = RegExp('[$sep]');

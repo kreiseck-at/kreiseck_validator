@@ -65,6 +65,15 @@ FieldDescriptor _descriptorFor(String type, Map<String, Object?> o) =>
       'license_plate' =>
         LicensePlate.fieldDescriptor(country: o['country'] as String?),
       'phone' => Phone.fieldDescriptor(country: _country(o['country'] as String?)),
+      'bic' => Bic.fieldDescriptor(),
+      'gtin' => Gtin.fieldDescriptor(),
+      'vat_id' => VatId.fieldDescriptor(country: o['country'] as String?),
+      'social_security' =>
+        SocialSecurityNumber.fieldDescriptor(country: o['country'] as String?),
+      'company_register' =>
+        CompanyRegister.fieldDescriptor(country: o['country'] as String?),
+      'tax_number' =>
+        TaxNumber.fieldDescriptor(country: o['country'] as String?),
       'email' => Email.fieldDescriptor(),
       'url' => Url.fieldDescriptor(),
       'host' => Host.fieldDescriptor(),
@@ -90,6 +99,15 @@ String _partialFor(String type, String input, Map<String, Object?> o) =>
         LicensePlate.formatPartial(input, country: o['country'] as String?),
       'phone' =>
         Phone.formatPartial(input, country: _country(o['country'] as String?)),
+      'bic' => Bic.formatPartial(input),
+      'gtin' => Gtin.formatPartial(input),
+      'vat_id' => VatId.formatPartial(input, country: o['country'] as String?),
+      'social_security' => SocialSecurityNumber.formatPartial(input,
+          country: o['country'] as String?),
+      'company_register' => CompanyRegister.formatPartial(input,
+          country: o['country'] as String?),
+      'tax_number' =>
+        TaxNumber.formatPartial(input, country: o['country'] as String?),
       'email' => Email.formatPartial(input),
       'url' => Url.formatPartial(input),
       'host' => Host.formatPartial(input),

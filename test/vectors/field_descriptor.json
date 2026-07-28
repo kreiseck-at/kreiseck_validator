@@ -11,7 +11,9 @@
   },
   {
     "type": "imei",
-    "options": { "allowSv": true },
+    "options": {
+      "allowSv": true
+    },
     "keyboard": "digits",
     "autofill": null,
     "capitalization": "none",
@@ -51,7 +53,9 @@
   },
   {
     "type": "iban",
-    "options": { "country": "AT" },
+    "options": {
+      "country": "AT"
+    },
     "keyboard": "text",
     "autofill": null,
     "capitalization": "characters",
@@ -61,7 +65,9 @@
   },
   {
     "type": "iban",
-    "options": { "country": "ZZ" },
+    "options": {
+      "country": "ZZ"
+    },
     "keyboard": "text",
     "autofill": null,
     "capitalization": "characters",
@@ -91,7 +97,10 @@
   },
   {
     "type": "mac_address",
-    "options": { "notation": "hyphen", "upperCase": true },
+    "options": {
+      "notation": "hyphen",
+      "upperCase": true
+    },
     "keyboard": "text",
     "autofill": null,
     "capitalization": "characters",
@@ -101,7 +110,9 @@
   },
   {
     "type": "mac_address",
-    "options": { "notation": "dot" },
+    "options": {
+      "notation": "dot"
+    },
     "keyboard": "text",
     "autofill": null,
     "capitalization": "none",
@@ -111,7 +122,9 @@
   },
   {
     "type": "mac_address",
-    "options": { "notation": "bare" },
+    "options": {
+      "notation": "bare"
+    },
     "keyboard": "text",
     "autofill": null,
     "capitalization": "none",
@@ -131,7 +144,9 @@
   },
   {
     "type": "postal_code",
-    "options": { "country": "DE" },
+    "options": {
+      "country": "DE"
+    },
     "keyboard": "digits",
     "autofill": "postalCode",
     "capitalization": "none",
@@ -141,7 +156,9 @@
   },
   {
     "type": "postal_code",
-    "options": { "country": "NL" },
+    "options": {
+      "country": "NL"
+    },
     "keyboard": "text",
     "autofill": "postalCode",
     "capitalization": "characters",
@@ -151,7 +168,9 @@
   },
   {
     "type": "postal_code",
-    "options": { "country": "PL" },
+    "options": {
+      "country": "PL"
+    },
     "keyboard": "digits",
     "autofill": "postalCode",
     "capitalization": "none",
@@ -161,7 +180,9 @@
   },
   {
     "type": "postal_code",
-    "options": { "country": "GB" },
+    "options": {
+      "country": "GB"
+    },
     "keyboard": "text",
     "autofill": "postalCode",
     "capitalization": "characters",
@@ -171,7 +192,9 @@
   },
   {
     "type": "postal_code",
-    "options": { "country": "AL" },
+    "options": {
+      "country": "AL"
+    },
     "keyboard": "digits",
     "autofill": "postalCode",
     "capitalization": "none",
@@ -181,7 +204,9 @@
   },
   {
     "type": "postal_code",
-    "options": { "country": "MT" },
+    "options": {
+      "country": "MT"
+    },
     "keyboard": "text",
     "autofill": "postalCode",
     "capitalization": "characters",
@@ -201,7 +226,9 @@
   },
   {
     "type": "license_plate",
-    "options": { "country": "AT" },
+    "options": {
+      "country": "AT"
+    },
     "keyboard": "text",
     "autofill": null,
     "capitalization": "characters",
@@ -211,7 +238,9 @@
   },
   {
     "type": "license_plate",
-    "options": { "country": "DE" },
+    "options": {
+      "country": "DE"
+    },
     "keyboard": "text",
     "autofill": null,
     "capitalization": "characters",
@@ -231,7 +260,9 @@
   },
   {
     "type": "phone",
-    "options": { "country": "AT" },
+    "options": {
+      "country": "AT"
+    },
     "keyboard": "phone",
     "autofill": "telephoneNumber",
     "capitalization": "none",
@@ -268,5 +299,105 @@
     "maxLength": 259,
     "example": "example.com",
     "allowedChars": "0-9A-Za-z.:\\[\\]-"
+  },
+  {
+    "type": "bic",
+    "options": {},
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": 11,
+    "example": "BKAUATWW",
+    "allowedChars": "0-9A-Z"
+  },
+  {
+    "type": "gtin",
+    "options": {},
+    "keyboard": "digits",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 14,
+    "example": "4006381333931",
+    "allowedChars": "0-9"
+  },
+  {
+    "type": "vat_id",
+    "options": {},
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": null,
+    "example": null,
+    "allowedChars": "0-9A-Z"
+  },
+  {
+    "type": "vat_id",
+    "options": {
+      "country": "AT"
+    },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": 11,
+    "example": "ATU16210507",
+    "allowedChars": "0-9A-Z"
+  },
+  {
+    "type": "vat_id",
+    "options": {
+      "country": "NL"
+    },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": 14,
+    "example": "NL002455799B11",
+    "allowedChars": "0-9A-Z"
+  },
+  {
+    "type": "social_security",
+    "options": {
+      "country": "AT"
+    },
+    "keyboard": "digits",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 11,
+    "example": "1238 010190",
+    "allowedChars": "0-9 "
+  },
+  {
+    "type": "social_security",
+    "options": {},
+    "keyboard": "digits",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": null,
+    "example": null,
+    "allowedChars": "0-9 "
+  },
+  {
+    "type": "company_register",
+    "options": {
+      "country": "AT"
+    },
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 7,
+    "example": "415772f",
+    "allowedChars": "0-9A-Za-z"
+  },
+  {
+    "type": "tax_number",
+    "options": {
+      "country": "AT"
+    },
+    "keyboard": "digits",
+    "autofill": null,
+    "capitalization": "none",
+    "maxLength": 11,
+    "example": "98-123/4560",
+    "allowedChars": "0-9/-"
   }
 ]

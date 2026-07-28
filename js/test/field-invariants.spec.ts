@@ -13,6 +13,12 @@ import { PostalCode } from '../src/postal-code/index';
 import { LicensePlate } from '../src/license-plate/index';
 import { Phone } from '../src/phone/index';
 import { Email } from '../src/email/index';
+import { Bic } from '../src/bic/index';
+import { Gtin } from '../src/gtin/index';
+import { VatId } from '../src/vat-id/index';
+import { SocialSecurityNumber } from '../src/social-security/index';
+import { CompanyRegister } from '../src/company-register/index';
+import { TaxNumber } from '../src/tax-number/index';
 import { Url } from '../src/url/index';
 import { Host } from '../src/host/index';
 import type { MacNotation } from '../src/mac-address/types';
@@ -92,6 +98,37 @@ const types: Type[] = [
     name: 'phone:AT',
     descriptor: () => Phone.fieldDescriptor({ country: 'AT' }),
     formatValid: (v) => Phone.tryFormat(v, { country: 'AT' }),
+  },
+  { name: 'bic', descriptor: () => Bic.fieldDescriptor(), formatValid: Bic.tryFormat },
+  { name: 'gtin', descriptor: () => Gtin.fieldDescriptor(), formatValid: Gtin.tryFormat },
+  {
+    name: 'vat_id:AT',
+    descriptor: () => VatId.fieldDescriptor({ country: 'AT' }),
+    formatValid: (v) => VatId.tryFormat(v, { country: 'AT' }),
+  },
+  {
+    name: 'vat_id:NL',
+    descriptor: () => VatId.fieldDescriptor({ country: 'NL' }),
+    formatValid: (v) => VatId.tryFormat(v, { country: 'NL' }),
+  },
+  {
+    name: 'social_security:AT',
+    descriptor: () => SocialSecurityNumber.fieldDescriptor({ country: 'AT' }),
+    formatValid: (v) => SocialSecurityNumber.tryFormat(v, { country: 'AT' }),
+  },
+  {
+    name: 'tax_number:AT',
+    descriptor: () => TaxNumber.fieldDescriptor({ country: 'AT' }),
+    formatValid: (v) => TaxNumber.tryFormat(v, { country: 'AT' }),
+  },
+  // CompanyRegister's format prepends a presentational 'FN ', which
+  // formatPartial deliberately does not while the user is still typing, so
+  // this type has no format for a partial formatter to agree with -- the same
+  // situation as email, url and host below.
+  {
+    name: 'company_register:AT',
+    descriptor: () => CompanyRegister.fieldDescriptor({ country: 'AT' }),
+    formatValid: null,
   },
   { name: 'email', descriptor: () => Email.fieldDescriptor(), formatValid: null },
   { name: 'url', descriptor: () => Url.fieldDescriptor(), formatValid: null },
@@ -280,6 +317,18 @@ function descriptorForPartial(type: string, o: Options): FieldDescriptor {
       return LicensePlate.fieldDescriptor({ country: o.country as string | undefined });
     case 'phone':
       return Phone.fieldDescriptor({ country: o.country as string | undefined });
+    case 'bic':
+      return Bic.fieldDescriptor();
+    case 'gtin':
+      return Gtin.fieldDescriptor();
+    case 'vat_id':
+      return VatId.fieldDescriptor({ country: o.country as string | undefined });
+    case 'social_security':
+      return SocialSecurityNumber.fieldDescriptor({ country: o.country as string | undefined });
+    case 'company_register':
+      return CompanyRegister.fieldDescriptor({ country: o.country as string | undefined });
+    case 'tax_number':
+      return TaxNumber.fieldDescriptor({ country: o.country as string | undefined });
     case 'email':
       return Email.fieldDescriptor();
     case 'url':
@@ -314,6 +363,18 @@ function partialForType(type: string, input: string, o: Options): string {
       return LicensePlate.formatPartial(input, { country: o.country as string | undefined });
     case 'phone':
       return Phone.formatPartial(input, { country: o.country as string | undefined });
+    case 'bic':
+      return Bic.formatPartial(input);
+    case 'gtin':
+      return Gtin.formatPartial(input);
+    case 'vat_id':
+      return VatId.formatPartial(input, { country: o.country as string | undefined });
+    case 'social_security':
+      return SocialSecurityNumber.formatPartial(input, { country: o.country as string | undefined });
+    case 'company_register':
+      return CompanyRegister.formatPartial(input, { country: o.country as string | undefined });
+    case 'tax_number':
+      return TaxNumber.formatPartial(input, { country: o.country as string | undefined });
     case 'email':
       return Email.formatPartial(input);
     case 'url':
@@ -376,6 +437,12 @@ function groupingSeparatorsOf(type: string, o: Options): string | null {
       return ' .-';
     case 'phone':
       return ' ';
+    case 'social_security':
+      return ' ';
+    // TaxNumber.format writes 12-345/6789: two different separators, both
+    // inserted by the grouping step and neither ever content.
+    case 'tax_number':
+      return '/-';
     default:
       return null; // imei, iccid, vin, email, url, host: never group.
   }
@@ -402,7 +469,14 @@ describe('character fidelity', () => {
       // final case pass outside the descriptor's own capitalization; that's
       // a casing detail, not a reordering one, so it must not make this
       // check spuriously fail.
-      let expectedFull = (v.type === 'host' ? hostFiltered(v.input, d.allowedChars!) : prepare(v.input, d)).toUpperCase();
+      // CompanyRegister strips a leading 'FN', which its allowedChars
+      // otherwise admits (F and N are letters). That prefix is presentation,
+      // not content, so the baseline has to drop it too -- the same kind of
+      // documented deviation as 'host'.
+      const baseInput = v.type === 'company_register'
+        ? v.input.replace(/^\s*[Ff][Nn][\s.]*/, '')
+        : v.input;
+      let expectedFull = (v.type === 'host' ? hostFiltered(v.input, d.allowedChars!) : prepare(baseInput, d)).toUpperCase();
       let actualSignificant = output.toUpperCase();
       if (sep !== null) {
         const sepRe = new RegExp(`[${sep}]`, 'g');

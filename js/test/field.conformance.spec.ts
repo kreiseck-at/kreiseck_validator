@@ -13,6 +13,12 @@ import { PostalCode } from '../src/postal-code/index';
 import { LicensePlate } from '../src/license-plate/index';
 import { Phone } from '../src/phone/index';
 import { Email } from '../src/email/index';
+import { Bic } from '../src/bic/index';
+import { Gtin } from '../src/gtin/index';
+import { VatId } from '../src/vat-id/index';
+import { SocialSecurityNumber } from '../src/social-security/index';
+import { CompanyRegister } from '../src/company-register/index';
+import { TaxNumber } from '../src/tax-number/index';
 import { Url } from '../src/url/index';
 import { Host } from '../src/host/index';
 
@@ -49,6 +55,18 @@ function descriptorFor(type: string, o: Options): FieldDescriptor {
       return LicensePlate.fieldDescriptor({ country: o.country as string | undefined });
     case 'phone':
       return Phone.fieldDescriptor({ country: o.country as string | undefined });
+    case 'bic':
+      return Bic.fieldDescriptor();
+    case 'gtin':
+      return Gtin.fieldDescriptor();
+    case 'vat_id':
+      return VatId.fieldDescriptor({ country: o.country as string | undefined });
+    case 'social_security':
+      return SocialSecurityNumber.fieldDescriptor({ country: o.country as string | undefined });
+    case 'company_register':
+      return CompanyRegister.fieldDescriptor({ country: o.country as string | undefined });
+    case 'tax_number':
+      return TaxNumber.fieldDescriptor({ country: o.country as string | undefined });
     case 'email':
       return Email.fieldDescriptor();
     case 'url':
@@ -83,6 +101,18 @@ function partialFor(type: string, input: string, o: Options): string {
       return LicensePlate.formatPartial(input, { country: o.country as string | undefined });
     case 'phone':
       return Phone.formatPartial(input, { country: o.country as string | undefined });
+    case 'bic':
+      return Bic.formatPartial(input);
+    case 'gtin':
+      return Gtin.formatPartial(input);
+    case 'vat_id':
+      return VatId.formatPartial(input, { country: o.country as string | undefined });
+    case 'social_security':
+      return SocialSecurityNumber.formatPartial(input, { country: o.country as string | undefined });
+    case 'company_register':
+      return CompanyRegister.formatPartial(input, { country: o.country as string | undefined });
+    case 'tax_number':
+      return TaxNumber.formatPartial(input, { country: o.country as string | undefined });
     case 'email':
       return Email.formatPartial(input);
     case 'url':
