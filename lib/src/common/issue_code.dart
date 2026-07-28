@@ -60,4 +60,38 @@ enum IssueCode {
   hostEmpty,
   hostBadFormat,
   hostBadPort,
+  // bic
+  bicEmpty,
+  bicBadLength,
+  bicBadChars,
+  bicUnknownCountry,
+  // gtin
+  gtinEmpty,
+  gtinBadChars,
+  gtinBadLength,
+  gtinBadChecksum,
+  // vat id
+  vatEmpty,
+  vatBadFormat,
+  vatBadChecksum,
+  vatUnknownCountry,
+  vatAmbiguousCountry,
+  // social security number
+  ssnEmpty,
+  ssnBadChars,
+  ssnBadLength,
+  ssnBadChecksum,
+  ssnBadDate,
+  ssnUnknownCountry,
+  // company register
+  companyRegisterEmpty,
+  companyRegisterBadFormat,
+  companyRegisterBadChecksum,
+  companyRegisterUnknownCountry,
+  // tax number
+  taxNumberEmpty,
+  taxNumberBadChars,
+  taxNumberBadLength,
+  taxNumberBadChecksum,
+  taxNumberUnknownCountry,
 }

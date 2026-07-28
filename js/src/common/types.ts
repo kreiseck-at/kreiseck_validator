@@ -11,7 +11,13 @@ export type IssueCode =
   | 'macEmpty' | 'macBadFormat'
   | 'vinEmpty' | 'vinBadChars' | 'vinBadLength'
   | 'postalEmpty' | 'postalBadFormat' | 'postalUnknownCountry'
-  | 'hostEmpty' | 'hostBadFormat' | 'hostBadPort';
+  | 'hostEmpty' | 'hostBadFormat' | 'hostBadPort'
+  | 'bicEmpty' | 'bicBadLength' | 'bicBadChars' | 'bicUnknownCountry'
+  | 'gtinEmpty' | 'gtinBadChars' | 'gtinBadLength' | 'gtinBadChecksum'
+  | 'vatEmpty' | 'vatBadFormat' | 'vatBadChecksum' | 'vatUnknownCountry' | 'vatAmbiguousCountry'
+  | 'ssnEmpty' | 'ssnBadChars' | 'ssnBadLength' | 'ssnBadChecksum' | 'ssnBadDate' | 'ssnUnknownCountry'
+  | 'companyRegisterEmpty' | 'companyRegisterBadFormat' | 'companyRegisterBadChecksum' | 'companyRegisterUnknownCountry'
+  | 'taxNumberEmpty' | 'taxNumberBadChars' | 'taxNumberBadLength' | 'taxNumberBadChecksum' | 'taxNumberUnknownCountry';
 
 export interface ValidationIssue { readonly code: IssueCode; readonly message: string }
 export interface Suggestion { readonly value: string; readonly reason: string }
