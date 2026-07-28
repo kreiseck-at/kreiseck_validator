@@ -97,6 +97,26 @@ String _partialFor(String type, String input, Map<String, Object?> o) =>
     };
 
 void main() {
+  group('bic', () {
+    for (final c in _load('bic.json')) {
+      final input = c['input']! as String;
+      _check('bic', c, () => Bic.validate(input), () => Bic.format(input));
+      if (c.containsKey('parse')) {
+        test('bic parse: $input', () {
+          final info = Bic.parse(input)!;
+          final p = c['parse']! as Map<String, Object?>;
+          if (p.containsKey('institution')) {
+            expect(info.institution, p['institution']);
+          }
+          if (p.containsKey('country')) expect(info.country, p['country']);
+          if (p.containsKey('location')) expect(info.location, p['location']);
+          if (p.containsKey('branch')) expect(info.branch, p['branch']);
+          if (p.containsKey('kind')) expect(info.kind.name, p['kind']);
+        });
+      }
+    }
+  });
+
   group('credit_card', () {
     for (final c in _load('credit_card.json')) {
       final input = c['input']! as String;

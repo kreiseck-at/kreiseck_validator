@@ -1,6 +1,8 @@
 /// Zero-dependency validation, normalization and formatting for common inputs.
 library;
 
+export 'src/bic/bic.dart';
+export 'src/bic/bic_info.dart';
 export 'src/common/country.dart';
 export 'src/common/field_descriptor.dart';
 export 'src/common/issue_code.dart';

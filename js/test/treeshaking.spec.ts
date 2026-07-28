@@ -43,6 +43,16 @@ describe('bundle isolation', () => {
     expect(closure.includes('nationalPrefixFormattingRule')).toBe(false);
   });
 
+  it('the bic entry closure does not contain phone metadata', () => {
+    // Bic needs to know which ISO country codes exist, but reaching the shared
+    // country table would drag 245 countries' phone data into an entry point
+    // whose whole job is an 8-character string. It carries its own packed list
+    // instead; test/bic_country_parity_test.dart keeps the two in step.
+    const closure = readTransitiveClosure(resolve(DIST_DIR, 'bic/index.js'));
+    expect(closure.includes('callingCode')).toBe(false);
+    expect(closure.includes('nationalPrefixFormattingRule')).toBe(false);
+  });
+
   it('positive control: the phone entry closure does contain the sentinel', () => {
     const closure = readTransitiveClosure(resolve(DIST_DIR, 'phone/index.js'));
     // Proves `callingCode` actually survives the build and isn't stripped

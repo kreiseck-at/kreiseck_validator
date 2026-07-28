@@ -8,6 +8,8 @@ export { Url } from './url/index';
 export { Host } from './host/index';
 export type { HostInfo, HostType } from './host/types';
 export { CreditCard, type CardNetwork } from './credit-card/index';
+export { Bic } from './bic/index';
+export type { BicInfo, BicKind } from './bic/types';
 export { Iban, type IbanInfo } from './iban/index';
 export { IbanCountry } from './iban/country';
 export type { IbanCountry as IbanCountryInfo } from './iban/country';

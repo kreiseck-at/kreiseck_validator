@@ -1,0 +1,20 @@
+[
+  {"input": "BKAUATWW", "isValid": true, "normalized": "BKAUATWW", "format": "BKAUATWW",
+   "parse": {"institution": "BKAU", "country": "AT", "location": "WW", "branch": null, "kind": "live"}},
+  {"input": "bkau at ww", "isValid": true, "normalized": "BKAUATWW"},
+  {"input": "COBADEFFXXX", "isValid": true, "normalized": "COBADEFFXXX", "format": "COBADEFFXXX",
+   "parse": {"institution": "COBA", "country": "DE", "location": "FF", "branch": "XXX", "kind": "live"}},
+  {"input": "SNBZCHZZ", "isValid": true, "normalized": "SNBZCHZZ",
+   "parse": {"institution": "SNBZ", "country": "CH", "location": "ZZ", "branch": null, "kind": "live"}},
+  {"input": "BKAUATW0", "isValid": true, "parse": {"kind": "test"}},
+  {"input": "BKAUATW1", "isValid": true, "parse": {"kind": "passive"}},
+  {"input": "BKAUATW2", "isValid": true, "parse": {"kind": "reverseBilling"}},
+  {"input": "", "isValid": false, "code": "bicEmpty"},
+  {"input": "   ", "isValid": false, "code": "bicEmpty"},
+  {"input": "BKAUATW", "isValid": false, "code": "bicBadLength"},
+  {"input": "BKAUATWWXX", "isValid": false, "code": "bicBadLength"},
+  {"input": "BK1UATWW", "isValid": false, "code": "bicBadChars"},
+  {"input": "BKAU1TWW", "isValid": false, "code": "bicBadChars"},
+  {"input": "BKAUAT-W", "isValid": false, "code": "bicBadChars"},
+  {"input": "BKAUZZWW", "isValid": false, "code": "bicUnknownCountry"}
+]
