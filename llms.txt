@@ -81,8 +81,9 @@ are named parameters, identical across all methods of a type.
 - `Gtin` — GS1 mod-10 over lengths 8, 12, 13 and 14; `parse -> GtinInfo`
   (`length`, `checkDigit`, `gtin14`). No GS1 prefix or country is exposed.
   `Gtin.checkDigit(body)` completes a partial scan.
-- `SocialSecurityNumber({required String country})` — AT only; mod-11 over
-  weights 3,7,9,5,8,4,2,1,6, remainder 10 rejected.
+- `SocialSecurityNumber({required String country})` — AT only; serial 100-999
+  (leading zero rejected as `ssnBadSerial`), mod-11 over weights
+  3,7,9,5,8,4,2,1,6, remainder 10 rejected.
   `parse -> SocialSecurityInfo` with `birthDate` as `SsnBirthDate {day, month,
   twoDigitYear}` or null.
 - `CompanyRegister({required String country})` — AT only; check letter from the
@@ -145,7 +146,9 @@ Result model:
   busy or unavailable member state). Null is "ask again later", NOT "invalid".
 - `SocialSecurityNumber` never validates the date: Austria issues months 13-15
   and 1 January/1 July placeholders on purpose. `birthDate` is null for those.
-  The century is never inferred.
+  The century is never inferred. A non-null `birthDate` is the date as written,
+  not a verified one — § 358 ASVG gives it no civil-status quality. The serial
+  is validated: 100-999, leading zero rejected.
 - `TaxNumber` never rejects an unknown Finanzamt number: account numbers were
   frozen in the 2021 administration reform, so historical prefixes stay valid.
 - `CompanyRegister.normalize` keeps the check letter lower-case, and the `FN`

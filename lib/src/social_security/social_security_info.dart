@@ -38,13 +38,20 @@ class SocialSecurityInfo {
   /// The check digit, position 4.
   final String checkDigit;
 
-  /// The date of birth, or null when the number does not carry a real one.
+  /// The date of birth **as written in the number**, or null when the digits
+  /// do not form a real calendar date.
   ///
-  /// Austria issues numbers whose date part is deliberately fictitious: when
-  /// every serial for a real date is used up, months 13, 14 and 15 are issued,
-  /// and a person whose birthday is unknown gets 1 January or 1 July of their
-  /// birth year. Those are correct, valid numbers — so validation never looks
-  /// at the date, and this field is simply null whenever the digits do not
-  /// form a real calendar date.
+  /// A non-null value is not a verified date of birth. Austria issues numbers
+  /// whose date part is deliberately fictitious: when every serial for a real
+  /// date is used up, months 13, 14 and 15 are issued, and a person whose
+  /// birthday is unknown is registered as 1 January or 1 July of their birth
+  /// year. The last case produces a perfectly ordinary calendar date that no
+  /// amount of inspection can tell apart from a real one.
+  ///
+  /// § 358 ASVG settles what that means: social-insurance records do not have
+  /// the quality of civil-status records, and the date carried in the number
+  /// plays no part in establishing when someone was born. Treat this as the
+  /// digits the number happens to contain, and collect a date of birth
+  /// separately if you need one.
   final SsnBirthDate? birthDate;
 }

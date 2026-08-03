@@ -498,6 +498,15 @@ serials for a real birth date run out, and registers an unknown birthday as
 never inferred either: `SsnBirthDate` carries `day`, `month` and `twoDigitYear`,
 and any age heuristic belongs to your application.
 
+The serial *is* checked: it runs from 100 to 999, so a leading zero is rejected
+with `ssnBadSerial`. `0000TTMMJJ` is what Austrian forms carry to mean "number
+unknown, birth date follows", and it is not a valid number.
+
+Note that a non-null `birthDate` is the date **as written**, not a verified one —
+the 1 January and 1 July placeholders are ordinary calendar dates and cannot be
+told apart from real ones. Per § 358 ASVG the date in the number has no
+civil-status quality at all, so collect a date of birth separately if you need it.
+
 ### 🏛️ Company register
 
 ```dart
@@ -533,6 +542,7 @@ Each of these looks like an oversight until you know why:
 | `Gtin` exposes no GS1 prefix or country | a GS1 prefix names the *issuing organisation*, not the origin of the goods |
 | `SocialSecurityNumber.parse` returns a two-digit year | the century is genuinely ambiguous; guessing it stores wrong birth dates |
 | `SocialSecurityNumber` never rejects a date | months 13-15 and 1 January placeholders are really issued |
+| `SocialSecurityNumber.parse` gives a date that may be fictitious | the 1 January / 1 July placeholders are valid calendar dates; § 358 ASVG gives the number's date no civil-status quality |
 | `TaxNumber` never rejects an unknown Finanzamt number | numbers were frozen in 2021, so historical prefixes stay valid forever |
 | `VatId` performs no online check | registration is a fact about a company, not the string — see `viesRequest` |
 | `parseViesResponse` returns null for a busy member state | that is "ask again later", not "not registered" |

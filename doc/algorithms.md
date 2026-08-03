@@ -505,6 +505,13 @@ is the check digit itself) and the sum taken modulo 11. A remainder of 10 is
 never issued — the assigning system skips to the next serial — so it is
 rejected rather than accommodated.
 
+**The serial is 100 to 999.** Its first digit is never zero, so a leading zero
+is rejected with `ssnBadSerial` before the check digit is even computed —
+`0454 010190` carries a correct check digit and would otherwise be blamed on
+the wrong field. This matters in practice because `0000TTMMJJ` is the form
+written on Austrian paperwork to say "insurance number unknown, birth date
+follows"; without the rule it validates as a real number.
+
 **Validation never inspects the date**, and this is the important part. The
 date portion is routinely fictitious by design:
 
@@ -523,6 +530,12 @@ and every rule for resolving it is an age heuristic that belongs to the calling
 application — so `SsnBirthDate` carries `day`, `month` and `twoDigitYear` and
 stops there. February is treated as having 29 days for the same reason: without
 a century, leap years are unknowable.
+
+Sources: [ÖGK, Versicherungsnummer](https://www.oegk.at/cdscontent/?contentid=10007.870557);
+[agsolutions, Die technischen Details der österreichischen SVNR](https://www.agsolutions.at/stories/die-technischen-details-der-oesterreichischen-sozialversicherungsnummer-svnr);
+[parliamentary answer 7147/AB of 6 September 2021](https://www.parlament.gv.at/dokument/XXVII/AB/7147/imfname_995754.pdf),
+which states that the birth date need not be part of the number at all
+(§ 358 ASVG) and that it may diverge for technical reasons.
 
 ## Austrian Firmenbuchnummer check letter (company register)
 

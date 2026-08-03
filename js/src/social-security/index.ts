@@ -12,11 +12,13 @@ import type { SocialSecurityInfo, SsnBirthDate } from './types';
 // be added without a breaking rename.
 //
 // The Austrian Versicherungsnummer is ten digits, written `NNNP TTMMJJ`: a
-// three-digit serial, a check digit, then the date of birth. The nine
-// non-check digits are weighted 3, 7, 9, 5, 8, 4, 2, 1, 6 from the left and
-// the sum taken modulo 11. A remainder of 10 is never issued -- the serial is
-// skipped instead -- so such a number is rejected rather than treated as an
-// edge case.
+// three-digit serial, a check digit, then the date of birth. The serial runs
+// from 100 to 999 -- it never starts with a zero, and `0000TTMMJJ` is the
+// placeholder written on forms to mean the number is unknown, so a leading
+// zero is rejected. The nine non-check digits are weighted 3, 7, 9, 5, 8, 4,
+// 2, 1, 6 from the left and the sum taken modulo 11. A remainder of 10 is
+// never issued -- the serial is skipped instead -- so such a number is
+// rejected rather than treated as an edge case.
 //
 // Validation never looks at the date. Fictitious dates are issued on purpose:
 // when every serial for a real date is used up, months 13, 14 and 15 are
