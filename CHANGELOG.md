@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.12.0
+
+**Breaking — social-security numbers with a serial below 100 are now rejected.**
+The Austrian Laufnummer is only ever issued in the range 100-999, so its first
+digit is never zero. Validation checked the mod-11 check digit alone, which let
+through `0000000000` and 90.909.091 further numbers that cannot have been
+issued — a tenth of everything it accepted. `0000TTMMJJ` in particular is the
+form written on Austrian paperwork to mean "insurance number unknown, birth
+date follows", so this was the likeliest wrong answer in practice, not a
+theoretical one. The new `ssnBadSerial` code is reported before the checksum,
+so a number wrong on both counts reports the serial it cannot have rather than
+a check-digit failure that would send you looking in the wrong place.
+
+**`SocialSecurityInfo.birthDate` is documented for what it is.** No behaviour
+changed. The field was described as null whenever the digits do not form a real
+calendar date, which is accurate but reads as a promise that a non-null value is
+the person's date of birth. It is not: someone whose birthday is unknown is
+registered as 1 January or 1 July of their birth year, and that is an ordinary
+calendar date no inspection can tell from a real one. § 358 ASVG is explicit
+that the date carried in the number has no civil-status quality. Collect a date
+of birth separately if you need one.
+
+
 ## 0.11.2
 
 **Fix — Irish VAT IDs could not be typed.** The historical Irish form carries a
