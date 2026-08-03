@@ -69,9 +69,12 @@ could be recovered, and the year alone is not worth a breaking change.
 leading zero is a different mistake from a wrong check digit and deserves its
 own message.
 
-**The serial check runs before the checksum.** `0454 010190` carries a
-correct check digit; with the opposite ordering the new code would never fire
-for exactly the cases that motivate it.
+**The serial check runs before the checksum.** Ordering only changes the
+outcome for a number wrong on both counts — `0451 010190`, say — which now
+reports the serial rather than a check-digit failure that would send the
+caller looking in the wrong place. A number with a bad serial but a correct
+check digit, such as `0454 010190`, is rejected either way, so the ordering is
+about the quality of the message rather than about catching anything extra.
 
 ## Changes
 
