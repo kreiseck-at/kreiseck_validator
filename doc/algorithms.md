@@ -506,11 +506,12 @@ never issued — the assigning system skips to the next serial — so it is
 rejected rather than accommodated.
 
 **The serial is 100 to 999.** Its first digit is never zero, so a leading zero
-is rejected with `ssnBadSerial` before the check digit is even computed —
-`0454 010190` carries a correct check digit and would otherwise be blamed on
-the wrong field. This matters in practice because `0000TTMMJJ` is the form
-written on Austrian paperwork to say "insurance number unknown, birth date
-follows"; without the rule it validates as a real number.
+is rejected with `ssnBadSerial` before the check digit is computed — a number
+wrong on both counts, such as `0451 010190`, then reports the serial rather
+than a check-digit failure that would send you looking in the wrong place.
+This matters in practice because `0000TTMMJJ` is the form written on Austrian
+paperwork to say "insurance number unknown, birth date follows"; without the
+rule it validates as a real number.
 
 **Validation never inspects the date**, and this is the important part. The
 date portion is routinely fictitious by design:
