@@ -67,6 +67,12 @@ class SocialSecurityNumber {
             'Social-security number must be 10 digits.')
       ]);
     }
+    if (compact.codeUnitAt(0) == 0x30) {
+      return const Invalid([
+        ValidationIssue(IssueCode.ssnBadSerial,
+            'Social-security number serial must be 100-999.')
+      ]);
+    }
     var sum = 0;
     for (var i = 0; i < 10; i++) {
       sum += (compact.codeUnitAt(i) - 0x30) * _weights[i];

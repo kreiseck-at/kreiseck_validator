@@ -80,6 +80,7 @@ enum IssueCode {
   ssnEmpty,
   ssnBadChars,
   ssnBadLength,
+  ssnBadSerial,
   ssnBadChecksum,
   ssnUnknownCountry,
   // company register

@@ -58,6 +58,9 @@ function validate(input: string, o: SsnOptions): ValidationResult {
   if (compact.length !== 10) {
     return invalid('ssnBadLength', 'Social-security number must be 10 digits.');
   }
+  if (compact.charCodeAt(0) === 48) {
+    return invalid('ssnBadSerial', 'Social-security number serial must be 100-999.');
+  }
   let sum = 0;
   for (let i = 0; i < 10; i++) {
     sum += (compact.charCodeAt(i) - 48) * WEIGHTS[i];
