@@ -12,6 +12,7 @@
   {"input": "0000000000", "country": "AT", "isValid": false, "code": "ssnBadSerial"},
   {"input": "0454 010190", "country": "AT", "isValid": false, "code": "ssnBadSerial"},
   {"input": "0999 010190", "country": "AT", "isValid": false, "code": "ssnBadSerial"},
+  {"input": "0451 010190", "country": "AT", "isValid": false, "code": "ssnBadSerial"},
   {"input": "1000 010190", "country": "AT", "isValid": true, "normalized": "1000010190", "format": "1000 010190"},
   {"input": "9993 010190", "country": "AT", "isValid": true, "normalized": "9993010190", "format": "9993 010190"},
   {"input": "", "country": "AT", "isValid": false, "code": "ssnEmpty"},

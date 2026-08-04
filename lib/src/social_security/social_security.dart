@@ -23,8 +23,8 @@ import 'social_security_info.dart';
 /// purpose: when every serial for a real date is used up, months 13, 14 and 15
 /// are handed out, and someone whose birthday is unknown gets 1 January or
 /// 1 July of their birth year. Rejecting those would reject real people. The
-/// checksum alone decides, and [SocialSecurityInfo.birthDate] is null whenever
-/// the digits do not form a real calendar date.
+/// date plays no part in validity, and [SocialSecurityInfo.birthDate] is null
+/// whenever the digits do not form a real calendar date.
 class SocialSecurityNumber {
   SocialSecurityNumber._();
 

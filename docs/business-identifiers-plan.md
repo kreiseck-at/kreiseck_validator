@@ -1,7 +1,5 @@
 # kreiseck_validator 0.11.0 — Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Add six business-identifier types (`VatId`, `Bic`, `Gtin`,
 `SocialSecurityNumber`, `CompanyRegister`, `TaxNumber`) and a DOM field-binding
 subpath to the TypeScript port, then release 0.11.0 on pub.dev and npm.

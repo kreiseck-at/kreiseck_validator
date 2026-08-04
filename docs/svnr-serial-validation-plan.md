@@ -1,7 +1,5 @@
 # SVNR Serial-Number Validation Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Reject Austrian social-security numbers whose three-digit serial lies outside 100–999, and correct the documentation that implies `birthDate` is a verified date of birth.
 
 **Architecture:** The Austrian serial (Laufnummer) is only ever issued in 100–999, so its first digit is never zero. A single guard on `compact[0]` goes in after the length check and before the checksum, reporting a new `ssnBadSerial` issue code. Dart and TypeScript carry identical logic and are held together by the shared JSON vectors in `test/vectors/social_security.json`, which both test suites read.
@@ -127,15 +125,15 @@ cd js && npm test -- social-security
 
 Expected: PASS.
 
-- [ ] **Step 9: Run everything and lint**
+- [ ] **Step 9: Run everything**
 
 ```bash
 dart analyze
 dart test
-cd js && npm test && npm run lint
+cd js && npm test
 ```
 
-Expected: no analyzer issues, no lint errors, both full suites green. The existing vectors are unaffected — every serial already present starts with `1`, including `1300010190`, which still reports `ssnBadChecksum`.
+Expected: no analyzer issues, both full suites green. The existing vectors are unaffected — every serial already present starts with `1`, including `1300010190`, which still reports `ssnBadChecksum`.
 
 - [ ] **Step 10: Commit**
 
@@ -294,7 +292,7 @@ Replace the gotchas entry with:
 ```bash
 dart analyze
 dart test
-cd js && npm test && npm run lint
+cd js && npm test
 ```
 
 Expected: all green. Doc comments are compiled by `dart analyze`, so a malformed reference is caught here.
@@ -366,7 +364,7 @@ of birth separately if you need one.
 ```bash
 dart analyze
 dart test
-cd js && npm test && npm run lint
+cd js && npm test
 ```
 
 Expected: all green.

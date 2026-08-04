@@ -23,9 +23,9 @@ import type { SocialSecurityInfo, SsnBirthDate } from './types';
 // Validation never looks at the date. Fictitious dates are issued on purpose:
 // when every serial for a real date is used up, months 13, 14 and 15 are
 // handed out, and someone whose birthday is unknown gets 1 January or 1 July
-// of their birth year. Rejecting those would reject real people. The checksum
-// alone decides, and birthDate is null whenever the digits do not form a real
-// calendar date.
+// of their birth year. Rejecting those would reject real people. The date
+// plays no part in validity, and birthDate is null whenever the digits do
+// not form a real calendar date.
 
 export interface SsnOptions { country: string }
 export interface SsnFieldOptions { country?: string }

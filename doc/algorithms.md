@@ -495,7 +495,7 @@ numbers as it ages, and most of the offices those digits refer to no longer
 exist, so no office-name table is shipped either. `parse` reports the two
 digits and nothing more.
 
-## Austrian Versicherungsnummer check digit (social-security number)
+## Austrian Versicherungsnummer (social-security number)
 
 `SocialSecurityNumber` (`lib/src/social_security/social_security.dart`)
 validates the ten-digit Austrian number `NNNP TTMMJJ`. The nine non-check
@@ -522,7 +522,7 @@ date portion is routinely fictitious by design:
   of their birth year.
 
 Those are correct, issued numbers. Rejecting an out-of-range month would reject
-real people, so the checksum alone decides validity and
+real people, so the date plays no part in validity and
 `SocialSecurityInfo.birthDate` is simply null whenever the digits do not form a
 real calendar date.
 

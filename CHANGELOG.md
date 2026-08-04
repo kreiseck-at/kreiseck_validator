@@ -5,8 +5,8 @@
 **Breaking — social-security numbers with a serial below 100 are now rejected.**
 The Austrian Laufnummer is only ever issued in the range 100-999, so its first
 digit is never zero. Validation checked the mod-11 check digit alone, which let
-through `0000000000` and 90.909.091 further numbers that cannot have been
-issued — a tenth of everything it accepted. `0000TTMMJJ` in particular is the
+through 90.909.091 numbers that cannot have been issued, `0000000000` among
+them — a tenth of everything it accepted. `0000TTMMJJ` in particular is the
 form written on Austrian paperwork to mean "insurance number unknown, birth
 date follows", so this was the likeliest wrong answer in practice, not a
 theoretical one. The new `ssnBadSerial` code is reported before the checksum,
