@@ -159,8 +159,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "test": "vitest run",
-    "lint": "eslint src test"
+    "test": "vitest run"
   },
   "devDependencies": {
     "jsdom": "^24.1.3",

@@ -2,6 +2,5 @@
 build/
 pubspec.lock
 .DS_Store
-.superpowers/
 __pycache__/
 *.tgz
