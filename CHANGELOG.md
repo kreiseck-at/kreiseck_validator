@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.12.1
+
+**Packaging — the published archive was four times larger than it needed to be.**
+`.pubignore` excluded the design notes and the generator scripts and nothing
+else, so every download also carried the TypeScript package's sources and
+lockfile, the test suite with all its vectors, the phone-metadata JSON that
+only `tool/gen_phone_metadata.py` ever reads, and a tarball left behind by
+`npm pack`. That last one is why 0.12.0 shipped at 922 KB rather than the
+498 KB its own dry run had reported: pub reads `.pubignore` *instead of*
+`.gitignore`, so the root `*.tgz` rule never applied. 232 KB now.
+
+No library code changed, and nothing was removed that any of it imports. This
+release is Dart-only — the npm package was never affected and stays at 0.12.0,
+so the two changelogs diverge from here.
+
 ## 0.12.0
 
 **Breaking — social-security numbers with a serial below 100 are now rejected.**

@@ -2,3 +2,20 @@
 # shipped in the published package.
 docs/
 tool/
+
+# The TypeScript package is a sibling in this repository, not part of the Dart
+# package. Its sources, lockfile and any tarball left behind by `npm pack` are
+# of no use to a Dart consumer.
+js/
+
+# Tests and their vectors. The vectors are the cross-language contract and
+# belong in the repository, but nothing needs them to use the library.
+test/
+
+# Generator input only: tool/gen_phone_metadata.py reads this, and no Dart
+# code imports it.
+lib/src/phone/data/
+
+# pub reads this file *instead of* .gitignore, so the root .gitignore rules do
+# not apply and have to be repeated here.
+*.tgz
