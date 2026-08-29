@@ -19,6 +19,11 @@ enum IssueCode {
   urlBadScheme,
   urlBadHost,
   urlBadTld,
+  urlProtocolMissing,
+  urlProtocolNotAllowed,
+  urlCredentials,
+  urlHostNotPublic,
+  urlWhitespace,
   // iban
   ibanEmpty,
   ibanBadChars,

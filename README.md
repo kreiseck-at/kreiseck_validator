@@ -43,6 +43,9 @@ dependencies, no network calls, no telemetry.**
   notation, plus Austrian number-**type** classification (mobile, landline, VoIP, …)
 - 🔗 **URL / Domain** — scheme/host/TLD plausibility check (accepts `:port`, `?query`,
   `#fragment`), canonical normalization, and a compact display form (`https://www.example.com/` → `example.com`)
+  — plus strict options for addresses a machine will call (`requireProtocol`, `protocols`,
+  `allowCredentials`, `allowLocalhost`) and the shortcut **`Url.webhook`** (`https://` required,
+  no credentials, no localhost/private hosts)
 - 🖧 **Host** — a bare hostname (RFC 1123), IPv4 or IPv6 address with an optional port,
   classified and parsed into a `HostInfo`; more lenient than `Url` (no scheme required,
   accepts `localhost` and IP literals)

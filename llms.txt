@@ -42,6 +42,11 @@ are named parameters, identical across all methods of a type.
 - `Url({String defaultScheme = 'https'})` — scheme/host/TLD plausibility;
   `normalize` adds the scheme and lowercases the host; `format` is a compact
   display form (no scheme, no `www.`, no trailing slash).
+  Strict options on `validate`: `requireProtocol` (missing `scheme://` ->
+  `urlProtocolMissing`), `protocols` (e.g. `['https']` -> `urlProtocolNotAllowed`),
+  `allowCredentials: false` (`user:pass@` -> `urlCredentials`), `allowLocalhost: false`
+  (localhost, IP literals, private ranges -> `urlHostNotPublic`); whitespace inside is
+  always `urlWhitespace`. `Url.webhook(input)` = all four strict options at once.
 - `Host` — bare hostname (RFC 1123), IPv4 or IPv6, optional port; `parse -> HostInfo`.
   More lenient than `Url`: no scheme required, accepts `localhost` and IP literals.
   ASCII only — no IDNA/punycode.

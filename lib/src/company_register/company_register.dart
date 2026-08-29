@@ -1,6 +1,7 @@
 import '../common/field_descriptor.dart';
 import '../common/issue_code.dart';
 import '../common/validation_result.dart';
+import 'company_register_court.dart';
 import 'company_register_info.dart';
 
 /// Validation, normalization, formatting and parsing of company-register
@@ -127,6 +128,14 @@ class CompanyRegister {
       checkChar: n[n.length - 1],
     );
   }
+
+  /// The Austrian register courts (Firmenbuchgerichte), for pickers.
+  static List<CompanyRegisterCourt> get courts => CompanyRegisterCourt.all;
+
+  /// Resolves free text such as „LG Salzburg" or „Salzburg" to a court,
+  /// or `null`. See [CompanyRegisterCourt.resolve].
+  static CompanyRegisterCourt? court(String input) =>
+      CompanyRegisterCourt.resolve(input);
 
   /// Describes a company-register input field.
   ///
