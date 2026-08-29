@@ -11,6 +11,7 @@ export { CreditCard, type CardNetwork } from './credit-card/index';
 export { Bic } from './bic/index';
 export { CompanyRegister } from './company-register/index';
 export type { CompanyRegisterInfo } from './company-register/types';
+export type { CompanyRegisterCourt } from './company-register/courts';
 export { Gtin } from './gtin/index';
 export { SocialSecurityNumber } from './social-security/index';
 export type { SocialSecurityInfo, SsnBirthDate } from './social-security/types';

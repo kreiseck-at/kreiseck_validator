@@ -2,6 +2,26 @@
 
 ## 0.13.0
 
+**Company register — the Austrian courts.** `CompanyRegister.courts` lists the
+sixteen Firmenbuchgerichte (Handelsgericht Wien, Landesgericht für
+Zivilrechtssachen Graz and the fourteen Landesgerichte incl. Krems an der
+Donau, Steyr, Wels and Ried im Innkreis; § 120 JN, justiz.gv.at, checked
+2026-08) with `code`, `name`, `city`, `bundesland` (ISO 3166-2:AT) and
+`bundeslandName`. `CompanyRegister.court(input)` resolves free text — „LG
+Salzburg", „Landesgericht Salzburg", „Salzburg", `LG_SALZBURG` — to one entry
+and returns `null` for anything else (a federal state, a foreign court). Dart
+and JS identical, vectors in `test/vectors/company_register_courts.json`.
+
+**Company register — the Austrian courts.** `CompanyRegister.courts` lists the
+sixteen Firmenbuchgerichte (Handelsgericht Wien, Landesgericht für
+Zivilrechtssachen Graz and the fourteen Landesgerichte incl. Krems an der
+Donau, Steyr, Wels and Ried im Innkreis; § 120 JN, justiz.gv.at, checked
+2026-08) with `code`, `name`, `city`, `bundesland` (ISO 3166-2:AT) and
+`bundeslandName`. `CompanyRegister.court(input)` resolves free text — „LG
+Salzburg", „Landesgericht Salzburg", „Salzburg", `LG_SALZBURG` — to one entry
+and returns `null` for anything else (a federal state, a foreign court). Dart
+and JS identical, vectors in `test/vectors/company_register_courts.json`.
+
 **URL — strict mode for addresses a machine will call.** `Url.validate` keeps its
 lenient defaults (scheme optional, `http` and `https` both accepted) and gains
 four options: `requireProtocol` (a missing `scheme://` is now an error,

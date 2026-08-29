@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.13.0
+
+**Company register — the Austrian courts.** `CompanyRegister.courts` lists the
+sixteen Firmenbuchgerichte (Handelsgericht Wien, Landesgericht für
+Zivilrechtssachen Graz and the fourteen Landesgerichte incl. Krems an der
+Donau, Steyr, Wels and Ried im Innkreis; § 120 JN, justiz.gv.at, checked
+2026-08) with `code`, `name`, `city`, `bundesland` (ISO 3166-2:AT) and
+`bundeslandName`. `CompanyRegister.court(input)` resolves free text — „LG
+Salzburg", „Landesgericht Salzburg", „Salzburg", `LG_SALZBURG` — to one entry
+and returns `null` for anything else (a federal state, a foreign court). Dart
+and JS identical, vectors in `test/vectors/company_register_courts.json`.
+See the root CHANGELOG for the strict URL options of this release.
+
 ## 0.12.0
 
 **Breaking — social-security numbers with a serial below 100 are now rejected.**

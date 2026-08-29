@@ -3,6 +3,8 @@ import type { ValidationResult } from '../common/types';
 import { FormatError } from '../common/errors';
 import type { FieldDescriptor } from '../common/field';
 import type { CompanyRegisterInfo } from './types';
+import { COURTS, court } from './courts';
+import type { CompanyRegisterCourt } from './courts';
 
 // Validation, normalization, formatting and parsing of company-register
 // numbers.
@@ -161,5 +163,7 @@ function formatPartial(input: string, _o: CompanyRegisterFieldOptions = {}): str
 export const CompanyRegister = {
   isValid, validate, normalize, format, tryFormat, parse, checkChar,
   fieldDescriptor, formatPartial,
+  // The Austrian register courts and a tolerant resolver for free text.
+  courts: COURTS, court,
 };
-export type { CompanyRegisterInfo };
+export type { CompanyRegisterInfo, CompanyRegisterCourt };
