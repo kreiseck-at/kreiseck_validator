@@ -14,6 +14,32 @@ const HOST_RE = /^([a-z0-9](-?[a-z0-9])*\.)+[a-z]{2,}$/;
 
 interface Options {
   defaultScheme?: string;
+  // Strict options for addresses a machine will call (see `webhook`):
+  requireProtocol?: boolean; // missing `scheme://` -> urlProtocolMissing
+  protocols?: string[]; // schemes outside the list -> urlProtocolNotAllowed
+  allowCredentials?: boolean; // `user:pass@` -> urlCredentials when false
+  allowLocalhost?: boolean; // localhost / IP literals / private ranges -> urlHostNotPublic when false
+}
+
+const WHITESPACE_RE = /[\s\x00-\x1f\x7f]/;
+const IPV4_RE = /^\d{1,3}(\.\d{1,3}){3}$/;
+
+// True for hosts that are never reachable from the public internet:
+// localhost, *.localhost, IPv6 literals and IPv4 loopback/private/link-local.
+function isNonPublicHost(host: string): boolean {
+  if (host === 'localhost' || host.endsWith('.localhost')) return true;
+  if (host.startsWith('[')) return true;
+  if (!IPV4_RE.test(host)) return false;
+  const o = host.split('.').map((n) => parseInt(n, 10));
+  if (o.some((n) => n > 255)) return false;
+  return (
+    o[0] === 127 ||
+    o[0] === 10 ||
+    o[0] === 0 ||
+    (o[0] === 172 && o[1] >= 16 && o[1] <= 31) ||
+    (o[0] === 192 && o[1] === 168) ||
+    (o[0] === 169 && o[1] === 254)
+  );
 }
 
 // Splits input into (scheme, hostToken, tail), where scheme is lower-cased
@@ -33,25 +59,62 @@ function parts(input: string): [string | null, string, string] {
 
 // Returns the lower-cased hostname from a host token, dropping any `:port`.
 function hostname(hostToken: string): string {
+  if (hostToken.startsWith('[')) {
+    const j = hostToken.indexOf(']');
+    return (j === -1 ? hostToken : hostToken.substring(0, j + 1)).toLowerCase();
+  }
   const i = hostToken.indexOf(':');
   return (i === -1 ? hostToken : hostToken.substring(0, i)).toLowerCase();
 }
 
-// Validates input, returning a valid result with the normalize form.
+// Validates input, returning a valid result with the normalize form. The
+// defaults keep the lenient behaviour (scheme optional, http and https both
+// fine); the strict options are for addresses a machine will call.
 function validate(input: string, options: Options = {}): ValidationResult {
   const defaultScheme = options.defaultScheme ?? 'https';
+  const requireProtocol = options.requireProtocol ?? false;
+  const protocols = options.protocols ?? null;
+  const allowCredentials = options.allowCredentials ?? true;
+  const allowLocalhost = options.allowLocalhost ?? true;
   const trimmed = input.trim();
   if (trimmed.length === 0) {
     return invalid('urlEmpty', 'URL is empty.');
   }
+  if (WHITESPACE_RE.test(trimmed)) {
+    return invalid('urlWhitespace', 'URL contains whitespace.');
+  }
   const [scheme, hostToken] = parts(trimmed);
+  if (scheme === null && requireProtocol) {
+    return invalid('urlProtocolMissing', 'Protocol (https://) is missing.');
+  }
   if (scheme !== null && scheme !== 'http' && scheme !== 'https') {
     return invalid('urlBadScheme', 'Only http/https allowed.');
   }
-  if (!HOST_RE.test(hostname(hostToken))) {
+  if (scheme !== null && protocols !== null && !protocols.includes(scheme)) {
+    return invalid('urlProtocolNotAllowed', `Only ${protocols.join('/')} allowed.`);
+  }
+  if (!allowCredentials && hostToken.includes('@')) {
+    return invalid('urlCredentials', 'Credentials in the URL are not allowed.');
+  }
+  const host = hostname(hostToken);
+  if (!allowLocalhost && isNonPublicHost(host)) {
+    return invalid('urlHostNotPublic', 'Host is not reachable from the public internet.');
+  }
+  if (!HOST_RE.test(host)) {
     return invalid('urlBadHost', 'Invalid host.');
   }
   return valid(normalize(trimmed, { defaultScheme }));
+}
+
+// Strict check for addresses a server will call: https:// required, no other
+// scheme, no credentials, no localhost/private hosts.
+function webhook(input: string): ValidationResult {
+  return validate(input, {
+    requireProtocol: true,
+    protocols: ['https'],
+    allowCredentials: false,
+    allowLocalhost: false,
+  });
 }
 
 // True when validate returns a valid result.
@@ -116,4 +179,4 @@ function formatPartial(input: string): string {
   return prepare(input, fieldDescriptor());
 }
 
-export const Url = { isValid, validate, normalize, format, tryFormat, fieldDescriptor, formatPartial };
+export const Url = { isValid, validate, webhook, normalize, format, tryFormat, fieldDescriptor, formatPartial };

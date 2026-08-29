@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.13.0
+
+**URL — strict mode for addresses a machine will call.** `Url.validate` keeps its
+lenient defaults (scheme optional, `http` and `https` both accepted) and gains
+four options: `requireProtocol` (a missing `scheme://` is now an error,
+`urlProtocolMissing`, instead of being silently completed), `protocols`
+(anything outside the list is `urlProtocolNotAllowed`), `allowCredentials`
+(`user:pass@` is `urlCredentials` when false) and `allowLocalhost` (`localhost`,
+IP literals and private ranges are `urlHostNotPublic` when false). The shortcut
+`Url.webhook(input)` switches all four on. Whitespace inside a URL is reported
+as `urlWhitespace` rather than the generic `urlBadHost`. Scheme and host are
+still lower-cased on normalization; path and query keep their case. Same
+behaviour in Dart and TypeScript, pinned by 20 new shared vectors.
+
+Both packages move to 0.13.0 (the TypeScript package skips 0.12.1, which was a
+Dart-only packaging release).
+
 ## 0.12.1
 
 **Packaging — the published archive was four times larger than it needed to be.**

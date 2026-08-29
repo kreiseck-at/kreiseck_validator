@@ -402,7 +402,17 @@ void main() {
   group('url', () {
     for (final c in _load('url.json')) {
       final input = c['input']! as String;
-      _check('url', c, () => Url.validate(input), () => Url.format(input));
+      final o = (c['options'] as Map<String, Object?>?) ?? const {};
+      ValidationResult urlValidate() => c['webhook'] == true
+          ? Url.webhook(input)
+          : Url.validate(
+              input,
+              requireProtocol: o['requireProtocol'] as bool? ?? false,
+              protocols: (o['protocols'] as List?)?.cast<String>(),
+              allowCredentials: o['allowCredentials'] as bool? ?? true,
+              allowLocalhost: o['allowLocalhost'] as bool? ?? true,
+            );
+      _check('url', c, urlValidate, () => Url.format(input));
     }
   });
 

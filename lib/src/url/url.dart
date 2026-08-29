@@ -30,30 +30,112 @@ class Url {
 
   /// Returns the lower-cased hostname from a host token, dropping any `:port`.
   static String _hostname(String hostToken) {
+    if (hostToken.startsWith('[')) {
+      final j = hostToken.indexOf(']');
+      return (j == -1 ? hostToken : hostToken.substring(0, j + 1)).toLowerCase();
+    }
     final i = hostToken.indexOf(':');
     return (i == -1 ? hostToken : hostToken.substring(0, i)).toLowerCase();
   }
 
+  static final RegExp _whitespace = RegExp(r'[\s\x00-\x1f\x7f]');
+  static final RegExp _ipv4 = RegExp(r'^\d{1,3}(\.\d{1,3}){3}$');
+
+  /// True for hosts that are never reachable from the public internet:
+  /// `localhost`, `*.localhost`, IPv6 literals and IPv4 loopback/private/
+  /// link-local ranges. Used by the strict options ([allowLocalhost] false).
+  static bool _isNonPublicHost(String host) {
+    if (host == 'localhost' || host.endsWith('.localhost')) return true;
+    if (host.startsWith('[')) return true; // IPv6 literal, never public here
+    if (!_ipv4.hasMatch(host)) return false;
+    final o = host.split('.').map(int.parse).toList();
+    if (o.any((n) => n > 255)) return false;
+    return o[0] == 127 ||
+        o[0] == 10 ||
+        o[0] == 0 ||
+        (o[0] == 172 && o[1] >= 16 && o[1] <= 31) ||
+        (o[0] == 192 && o[1] == 168) ||
+        (o[0] == 169 && o[1] == 254);
+  }
+
   /// Validates [input], returning [Valid] with the [normalize] form.
-  static ValidationResult validate(String input,
-      {String defaultScheme = 'https'}) {
+  ///
+  /// The defaults keep the lenient behaviour (scheme optional, `http` and
+  /// `https` both fine). The strict options are meant for addresses a machine
+  /// will call, e.g. webhooks — see [webhook]:
+  ///
+  /// * [requireProtocol] — a missing `scheme://` is [IssueCode.urlProtocolMissing].
+  /// * [protocols] — schemes outside the list are [IssueCode.urlProtocolNotAllowed].
+  /// * [allowCredentials] — `user:pass@` before the host is
+  ///   [IssueCode.urlCredentials] when false (and [IssueCode.urlBadHost] when true,
+  ///   as before).
+  /// * [allowLocalhost] — `localhost`, IP literals and private ranges are
+  ///   [IssueCode.urlHostNotPublic] when false.
+  static ValidationResult validate(
+    String input, {
+    String defaultScheme = 'https',
+    bool requireProtocol = false,
+    List<String>? protocols,
+    bool allowCredentials = true,
+    bool allowLocalhost = true,
+  }) {
     final trimmed = input.trim();
     if (trimmed.isEmpty) {
       return const Invalid(
           [ValidationIssue(IssueCode.urlEmpty, 'URL is empty.')]);
     }
+    if (_whitespace.hasMatch(trimmed)) {
+      return const Invalid([
+        ValidationIssue(IssueCode.urlWhitespace, 'URL contains whitespace.')
+      ]);
+    }
     final (scheme, hostToken, _) = _parts(trimmed);
+    if (scheme == null && requireProtocol) {
+      return const Invalid([
+        ValidationIssue(
+            IssueCode.urlProtocolMissing, 'Protocol (https://) is missing.')
+      ]);
+    }
     if (scheme != null && scheme != 'http' && scheme != 'https') {
       return const Invalid([
         ValidationIssue(IssueCode.urlBadScheme, 'Only http/https allowed.')
       ]);
     }
-    if (!_host.hasMatch(_hostname(hostToken))) {
+    if (scheme != null && protocols != null && !protocols.contains(scheme)) {
+      return Invalid([
+        ValidationIssue(IssueCode.urlProtocolNotAllowed,
+            'Only ${protocols.join('/')} allowed.')
+      ]);
+    }
+    if (!allowCredentials && hostToken.contains('@')) {
+      return const Invalid([
+        ValidationIssue(
+            IssueCode.urlCredentials, 'Credentials in the URL are not allowed.')
+      ]);
+    }
+    final host = _hostname(hostToken);
+    if (!allowLocalhost && _isNonPublicHost(host)) {
+      return const Invalid([
+        ValidationIssue(IssueCode.urlHostNotPublic,
+            'Host is not reachable from the public internet.')
+      ]);
+    }
+    if (!_host.hasMatch(host)) {
       return const Invalid(
           [ValidationIssue(IssueCode.urlBadHost, 'Invalid host.')]);
     }
     return Valid(normalize(trimmed, defaultScheme: defaultScheme));
   }
+
+  /// Strict check for addresses a server will call: `https://` required, no
+  /// other scheme, no credentials, no localhost/private hosts.
+  static ValidationResult webhook(String input) => validate(
+        input,
+        requireProtocol: true,
+        protocols: const ['https'],
+        allowCredentials: false,
+        allowLocalhost: false,
+      );
 
   /// True when [validate] returns [Valid].
   static bool isValid(String input) => validate(input) is Valid;

@@ -3,6 +3,7 @@ export type IssueCode =
   | 'phoneEmpty' | 'phoneBadChars' | 'phoneTooShort' | 'phoneTooLong'
   | 'phoneAmbiguousCountry' | 'phoneUnknownCountry' | 'phoneInvalid'
   | 'urlEmpty' | 'urlBadScheme' | 'urlBadHost' | 'urlBadTld'
+  | 'urlProtocolMissing' | 'urlProtocolNotAllowed' | 'urlCredentials' | 'urlHostNotPublic' | 'urlWhitespace'
   | 'ibanEmpty' | 'ibanBadChars' | 'ibanBadChecksum' | 'ibanBadLength'
   | 'cardEmpty' | 'cardBadChars' | 'cardBadLength' | 'cardBadLuhn'
   | 'plateEmpty' | 'plateBadChars' | 'plateBadFormat' | 'plateUnknownCountry' | 'plateAmbiguousCountry'
