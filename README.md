@@ -445,9 +445,9 @@ transform, so it never throws. Use `tryFormat` for a null-returning variant inst
 ### 🧾 VAT ID
 
 ```dart
-VatId.isValid('ATU16210507');                 // true
-VatId.isValid('ATU16210508');                 // false -- check digit
-VatId.normalize('atu 162 105 07');            // 'ATU16210507'
+VatId.isValid('ATU12345675');                 // true
+VatId.isValid('ATU12345676');                 // false -- check digit
+VatId.normalize('atu 123 456 75');            // 'ATU12345675'
 VatId.normalize('094259216', country: 'GR');  // 'EL094259216'  (tax spelling)
 
 final info = VatId.parse('ESA28015865')!;
@@ -466,7 +466,7 @@ and only the EU's VIES service knows it. The package never calls out, but it
 builds the request and parses the answer:
 
 ```dart
-final req = VatId.viesRequest('ATU16210507')!;   // url, method, headers
+final req = VatId.viesRequest('ATU12345675')!;   // url, method, headers
 final body = await yourHttpClient.get(req.url);  // your call, your retries
 final reg = VatId.parseViesResponse(body);
 // null means "no conclusive answer" -- a busy member state is NOT a rejection

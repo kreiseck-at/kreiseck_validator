@@ -349,7 +349,7 @@
     "autofill": null,
     "capitalization": "characters",
     "maxLength": 11,
-    "example": "ATU16210507",
+    "example": "ATU12345675",
     "allowedChars": "0-9A-Z"
   },
   {

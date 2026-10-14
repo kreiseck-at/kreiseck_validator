@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.14.1
+
+**Docs and examples.** The Austrian example VAT ID (`VatId` field metadata,
+README, tests) is now the made-up `ATU12345675`. No behaviour change.
+
 ## 0.14.0
 
 **Voucher codes.** New `VoucherCode`: 12-symbol codes over Crockford Base32

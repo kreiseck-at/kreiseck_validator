@@ -5,7 +5,7 @@
 part of 'vat_id.dart';
 
 const Map<String, VatFormat> kVatFormats = {
-  'AT': VatFormat('ATU', '^[0-9]{8}\$', 8, 'ATU16210507'),
+  'AT': VatFormat('ATU', '^[0-9]{8}\$', 8, 'ATU12345675'),
   'BE': VatFormat('BE', '^[01][0-9]{9}\$', 10, 'BE0417497106'),
   'BG': VatFormat('BG', '^[0-9]{9,10}\$', 10, 'BG175074752'),
   'CH': VatFormat('CHE', '^[0-9]{9}\$', 9, 'CHE116281710'),
