@@ -1,0 +1,86 @@
+[
+  {
+    "input": "K7QM3XRP9DWF",
+    "isValid": true,
+    "normalized": "K7QM3XRP9DWF",
+    "format": "K7QM-3XRP-9DWF"
+  },
+  {
+    "input": "000000000000",
+    "isValid": true,
+    "normalized": "000000000000",
+    "format": "0000-0000-0000"
+  },
+  {
+    "input": "ZZZZZZZZZZZK",
+    "isValid": true,
+    "normalized": "ZZZZZZZZZZZK",
+    "format": "ZZZZ-ZZZZ-ZZZK"
+  },
+  {
+    "input": "ABCDEFGHJKMC",
+    "isValid": true,
+    "normalized": "ABCDEFGHJKMC",
+    "format": "ABCD-EFGH-JKMC"
+  },
+  {
+    "input": "k7qm-3xrp-9dwf",
+    "isValid": true,
+    "normalized": "K7QM3XRP9DWF",
+    "format": "K7QM-3XRP-9DWF"
+  },
+  {
+    "input": " k7qm 3XRP 9DWF ",
+    "isValid": true,
+    "normalized": "K7QM3XRP9DWF",
+    "format": "K7QM-3XRP-9DWF"
+  },
+  {
+    "input": "1OM0R1Z0N1ED",
+    "isValid": true,
+    "normalized": "10M0R1Z0N1ED",
+    "format": "10M0-R1Z0-N1ED"
+  },
+  {
+    "input": "I0M0R1Z0N1ED",
+    "isValid": true,
+    "normalized": "10M0R1Z0N1ED",
+    "format": "10M0-R1Z0-N1ED"
+  },
+  {
+    "input": "l0M0R1Z0N1ED",
+    "isValid": true,
+    "normalized": "10M0R1Z0N1ED",
+    "format": "10M0-R1Z0-N1ED"
+  },
+  {
+    "input": "K7QM3XUP9DWF",
+    "isValid": false,
+    "code": "voucherCodeBadChars"
+  },
+  {
+    "input": "K7QM3XRP9DW",
+    "isValid": false,
+    "code": "voucherCodeBadLength"
+  },
+  {
+    "input": "K7QM3XRP9DWF0",
+    "isValid": false,
+    "code": "voucherCodeBadLength"
+  },
+  {
+    "input": "",
+    "isValid": false,
+    "code": "voucherCodeEmpty"
+  },
+  {
+    "input": " - ",
+    "isValid": false,
+    "code": "voucherCodeEmpty"
+  },
+  {
+    "input": "K7QM3XRP9DWG",
+    "isValid": false,
+    "code": "voucherCodeBadChecksum"
+  }
+]

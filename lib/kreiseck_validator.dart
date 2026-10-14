@@ -45,3 +45,4 @@ export 'src/vat_id/vat_info.dart';
 export 'src/vat_id/vies.dart';
 export 'src/vin/vin.dart';
 export 'src/vin/vin_info.dart';
+export 'src/voucher_code/voucher_code.dart';

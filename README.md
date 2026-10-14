@@ -67,6 +67,9 @@ dependencies, no network calls, no telemetry.**
 - 💳 **ICCID** — SIM card identifier (ITU-T E.118): MII + Luhn check on 20-digit cards
   (19-digit cards carry no check digit), plus **`parse`** resolving the issuing
   **country** from the embedded E.164 calling code
+- 🎟️ **Voucher code** — 12-symbol Crockford Base32 codes with a **Damm check symbol**
+  over GF(32) (catches every single-symbol error and adjacent swap), tolerant input
+  (`O`→`0`, `I`/`L`→`1`), `XXXX-XXXX-XXXX` formatting and `generate` from random bytes
 - 🔌 **MAC address** — EUI-48/64 hardware addresses in **colon, hyphen, Cisco-dot and
   bare** notation, format conversion between them, and **`parse`** exposing
   unicast/multicast and universal/local bits plus the OUI/NIC split
@@ -384,6 +387,15 @@ info.mii;     // '89'
 info.country; // Country for 'DE' (resolved from the embedded E.164 code)
 ```
 
+### 🎟️ Voucher code
+
+```dart
+VoucherCode.isValid('K7QM-3XRP-9DWF');   // true
+VoucherCode.normalize('k7qm 3xrp 9dwf'); // 'K7QM3XRP9DWF'
+VoucherCode.format('K7QM3XRP9DWF');      // 'K7QM-3XRP-9DWF'
+VoucherCode.generate(randomBytes);        // 12 symbols from >= 11 random bytes
+```
+
 ### 🔌 MAC address
 
 ```dart
@@ -578,6 +590,7 @@ stable enums you can switch on and translate; the English `message` is only a de
 | `LicensePlate` | ✅ | ✅ | ✅ | ✅ | ✅ | grammar + region-table validation and `parse` for AT/DE/CH/HR/TR |
 | `Imei`       | ✅ | ✅ | ✅ | ✅ | ✅ | none (Luhn checksum is global) |
 | `Iccid`      | ✅ | ✅ | ✅ | ✅ | ✅ | none for checksum; `parse` country resolution is global (E.164 calling codes) |
+| `VoucherCode` | ✅ | ✅ | ✅ | ✅ | ✅ | none (Damm check symbol over GF(32) is global) |
 | `MacAddress` | ✅ | ✅ | ✅ | ✅ | ✅ | none (EUI-48/64 notation handling is global) |
 | `Vin`        | ✅ | ✅ | ✅ | ✅ | ✅ | none (structure + check digit + model year are global, ISO 3779) |
 | `PostalCode` | ✅ | ✅ | ✅ | ✅ | ✅ | curated pattern table for Europe + Turkey (51 countries) |

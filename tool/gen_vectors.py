@@ -110,7 +110,80 @@ def national_to_e164(country: str, national_number: str) -> str:
     return f'+{_CALLING_CODES[country]}{digits}'
 
 
+# ---------------------------------------------------------------------------
+# Damm over GF(32) (voucher_code.json)
+# ---------------------------------------------------------------------------
+
+VC_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+
+
+def gf32_mul(a: int, b: int) -> int:
+    """Multiplication in GF(32) modulo x^5 + x^2 + 1."""
+    r = 0
+    while b:
+        if b & 1:
+            r ^= a
+        b >>= 1
+        a <<= 1
+        if a & 32:
+            a ^= 0x25
+    return r
+
+
+def vc_check_symbol(payload: str) -> str:
+    """Check symbol for an 11-symbol payload (x o y = 2*x xor y)."""
+    interim = 0
+    for ch in payload:
+        interim = gf32_mul(2, interim) ^ VC_ALPHABET.index(ch)
+    return VC_ALPHABET[gf32_mul(2, interim)]
+
+
+def voucher_vectors() -> list:
+    """Builds the entries of test/vectors/voucher_code.json."""
+    out = []
+
+    def ok(inp, norm):
+        out.append({'input': inp, 'isValid': True, 'normalized': norm,
+                    'format': f'{norm[:4]}-{norm[4:8]}-{norm[8:]}'})
+
+    def bad(inp, code):
+        out.append({'input': inp, 'isValid': False, 'code': code})
+
+    codes = []
+    for payload in ('K7QM3XRP9DW', '00000000000', 'ZZZZZZZZZZZ', 'ABCDEFGHJKM'):
+        code = payload + vc_check_symbol(payload)
+        codes.append(code)
+        ok(code, code)
+    main = codes[0]
+    ok(f'{main[:4]}-{main[4:8]}-{main[8:]}'.lower(), main)
+    ok(f' {main[:4].lower()} {main[4:8]} {main[8:]} ', main)
+    # O reads as 0, I and L read as 1: derive from a code containing 0/1.
+    payload = '10M0R1Z0N1E'
+    zero_one = payload + vc_check_symbol(payload)
+    ok(zero_one.replace('0', 'O', 1), zero_one)
+    ok(zero_one.replace('1', 'I', 1), zero_one)
+    ok(zero_one.replace('1', 'l', 1), zero_one)
+    bad(main[:6] + 'U' + main[7:], 'voucherCodeBadChars')
+    bad(main[:11], 'voucherCodeBadLength')
+    bad(main + '0', 'voucherCodeBadLength')
+    bad('', 'voucherCodeEmpty')
+    bad(' - ', 'voucherCodeEmpty')
+    last = main[-1]
+    other = VC_ALPHABET[(VC_ALPHABET.index(last) + 1) % 32]
+    bad(main[:-1] + other, 'voucherCodeBadChecksum')
+    return out
+
+
 def main() -> None:
+    import json
+    import os
+    path = os.path.join(os.path.dirname(__file__), '..', 'test', 'vectors',
+                        'voucher_code.json')
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(voucher_vectors(), f, indent=2, ensure_ascii=False)
+        f.write('\n')
+    print(f'wrote {os.path.normpath(path)}')
+
     print('Luhn check digits:')
     for prefix in ('411111111111111', '37828224631000'):
         digit = luhn_check_digit(prefix)

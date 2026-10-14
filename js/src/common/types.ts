@@ -9,6 +9,7 @@ export type IssueCode =
   | 'plateEmpty' | 'plateBadChars' | 'plateBadFormat' | 'plateUnknownCountry' | 'plateAmbiguousCountry'
   | 'imeiEmpty' | 'imeiBadChars' | 'imeiBadLength' | 'imeiBadChecksum'
   | 'iccidEmpty' | 'iccidBadChars' | 'iccidBadLength' | 'iccidBadChecksum'
+  | 'voucherCodeEmpty' | 'voucherCodeBadChars' | 'voucherCodeBadLength' | 'voucherCodeBadChecksum'
   | 'macEmpty' | 'macBadFormat'
   | 'vinEmpty' | 'vinBadChars' | 'vinBadLength'
   | 'postalEmpty' | 'postalBadFormat' | 'postalUnknownCountry'

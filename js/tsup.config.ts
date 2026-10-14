@@ -18,6 +18,7 @@ export default defineConfig({
     'src/vat-id/index.ts',
     'src/imei/index.ts',
     'src/iccid/index.ts',
+    'src/voucher-code/index.ts',
     'src/mac-address/index.ts',
     'src/license-plate/index.ts',
     'src/vin/index.ts',

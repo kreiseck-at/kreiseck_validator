@@ -50,6 +50,11 @@ enum IssueCode {
   iccidBadChars,
   iccidBadLength,
   iccidBadChecksum,
+  // voucher code
+  voucherCodeEmpty,
+  voucherCodeBadChars,
+  voucherCodeBadLength,
+  voucherCodeBadChecksum,
   // mac address
   macEmpty,
   macBadFormat,

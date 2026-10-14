@@ -456,6 +456,33 @@ on every `PostalCode` operation, since the same bare digit string (a plain
 countries at once; a country missing from the table yields
 `IssueCode.postalUnknownCountry` rather than a guess.
 
+## Voucher code (Damm over GF(32))
+
+`VoucherCode` (`lib/src/voucher_code/voucher_code.dart`) uses 12 symbols from
+the Crockford Base32 alphabet `0123456789ABCDEFGHJKMNPQRSTVWXYZ` (no I, L, O,
+U). Reading is forgiving: input is upper-cased, spaces and dashes are dropped,
+`O` reads as `0`, `I` and `L` read as `1`; any other symbol outside the
+alphabet (e.g. `U`) is `voucherCodeBadChars`.
+
+The last symbol is a Damm check symbol. Symbols are elements of GF(32) =
+GF(2)[x] / (x^5 + x^2 + 1), the alphabet index being the bit pattern. The
+quasigroup operation is `c ∘ x = 2·c ⊕ x`, where `2` is the field element
+`α = x` and `·` is field multiplication (`⊕` is XOR). Starting at `c = 0`, fold
+the 11 payload symbols with `c ← c ∘ s`; the check symbol is `2·c`, so that
+folding all 12 symbols ends at `0` (`2·c ⊕ 2·c = 0`).
+
+Why it works: the operation is a quasigroup (for a fixed `c`, `x ↦ 2·c ⊕ x` is
+a bijection), so changing a single symbol always changes the result. For two
+adjacent symbols `x, y` and an interim `c`, a swap goes undetected only if
+`(c ∘ x) ∘ y = (c ∘ y) ∘ x`, i.e. `4c ⊕ 2x ⊕ y = 4c ⊕ 2y ⊕ x`, i.e.
+`(2 ⊕ 1)·(x ⊕ y) = 0`. Because `α ≠ 1`, the factor `2 ⊕ 1 = 3` is non-zero and
+GF(32) has no zero divisors, so `x = y`: every swap of two different adjacent
+symbols is detected.
+
+`generate` maps each of 11 random bytes to one symbol through its low five bits
+(256 is a multiple of 32, so the distribution is uniform) and appends the check
+symbol. The caller supplies the random bytes; the package has no random source.
+
 ## GS1 mod-10 check digit (GTIN-8/12/13/14)
 
 `Gtin` (`lib/src/gtin/gtin.dart`) implements the GS1 check digit shared by
