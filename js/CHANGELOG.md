@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.14.0
+
+**Voucher codes.** New `VoucherCode`: 12-symbol codes over Crockford Base32
+(`0-9A-Z` without I, L, O, U) whose last symbol is a **Damm check symbol over
+GF(32)** (x^5 + x^2 + 1). It catches every single-symbol error and every swap
+of two adjacent symbols. Input is case-insensitive, `O` reads as `0`, `I`/`L`
+read as `1`, spaces and dashes are ignored. `validate`, `isValid`, `normalize`,
+`format` (`XXXX-XXXX-XXXX`), `tryFormat`, `fieldDescriptor`, `formatPartial`,
+plus `generate` (from at least 11 random bytes, supplied by the caller) and
+`checkSymbol`. New issue codes `voucherCodeEmpty`, `voucherCodeBadChars`,
+`voucherCodeBadLength`, `voucherCodeBadChecksum`. Dart and JS identical,
+vectors in `test/vectors/voucher_code.json`.
+
 ## 0.13.0
 
 **Company register — the Austrian courts.** `CompanyRegister.courts` lists the

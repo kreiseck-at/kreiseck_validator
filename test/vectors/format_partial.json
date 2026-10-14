@@ -44,6 +44,24 @@
   "output": "89490123456789012349"
  },
  {
+  "type": "voucher_code",
+  "options": {},
+  "input": "k7qm3",
+  "output": "K7QM-3"
+ },
+ {
+  "type": "voucher_code",
+  "options": {},
+  "input": "k7qm-3xrp-9dwf-zz",
+  "output": "K7QM-3XRP-9DWF"
+ },
+ {
+  "type": "voucher_code",
+  "options": {},
+  "input": "",
+  "output": ""
+ },
+ {
   "type": "vin",
   "options": {},
   "input": "1hgcm8",

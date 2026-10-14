@@ -28,6 +28,7 @@ Country? _country(String? iso2) => iso2 == null ? null : Country.fromIso2(iso2);
 final List<_Type> _types = [
   _Type('imei', Imei.fieldDescriptor, Imei.tryFormat),
   _Type('iccid', Iccid.fieldDescriptor, Iccid.tryFormat),
+  _Type('voucher_code', VoucherCode.fieldDescriptor, VoucherCode.tryFormat),
   _Type('vin', Vin.fieldDescriptor, Vin.tryFormat),
   _Type('credit_card', CreditCard.fieldDescriptor, CreditCard.tryFormat),
   _Type('iban', Iban.fieldDescriptor, Iban.tryFormat),
@@ -94,6 +95,7 @@ FieldDescriptor _descriptorForPartial(String type, Map<String, Object?> o) =>
     switch (type) {
       'imei' => Imei.fieldDescriptor(allowSv: o['allowSv'] as bool? ?? false),
       'iccid' => Iccid.fieldDescriptor(),
+      'voucher_code' => VoucherCode.fieldDescriptor(),
       'vin' => Vin.fieldDescriptor(),
       'iban' => Iban.fieldDescriptor(country: o['country'] as String?),
       'credit_card' => CreditCard.fieldDescriptor(),
@@ -126,6 +128,7 @@ String _partialForType(String type, String input, Map<String, Object?> o) =>
       'imei' =>
         Imei.formatPartial(input, allowSv: o['allowSv'] as bool? ?? false),
       'iccid' => Iccid.formatPartial(input),
+      'voucher_code' => VoucherCode.formatPartial(input),
       'vin' => Vin.formatPartial(input),
       'iban' => Iban.formatPartial(input, country: o['country'] as String?),
       'credit_card' => CreditCard.formatPartial(input),
@@ -200,6 +203,7 @@ String? _groupingSeparatorsOf(String type, Map<String, Object?> o) =>
       // TaxNumber.format writes 12-345/6789: two different separators, both
       // inserted by the grouping step and neither ever content.
       'tax_number' => '/-',
+      'voucher_code' => '-',
       _ => null, // imei, iccid, vin, bic, gtin, vat_id, email, url, host.
     };
 
@@ -272,6 +276,13 @@ void main() {
       final input = c['input']! as String;
       test('iccid: $input', () {
         expect(Iccid.formatPartial(input), c['format']);
+      });
+    }
+    for (final c in _load('voucher_code.json')) {
+      if (c['isValid'] != true || !c.containsKey('format')) continue;
+      final input = c['input']! as String;
+      test('voucher_code: $input', () {
+        expect(VoucherCode.formatPartial(input), c['format']);
       });
     }
     for (final c in _load('mac.json')) {

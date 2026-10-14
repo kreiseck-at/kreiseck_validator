@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import type { FieldDescriptor } from '../src/common/field';
 import { Imei } from '../src/imei/index';
 import { Iccid } from '../src/iccid/index';
+import { VoucherCode } from '../src/voucher-code/index';
 import { Vin } from '../src/vin/index';
 import { Iban } from '../src/iban/index';
 import { CreditCard } from '../src/credit-card/index';
@@ -38,6 +39,8 @@ function descriptorFor(type: string, o: Options): FieldDescriptor {
       return Imei.fieldDescriptor({ allowSv: (o.allowSv as boolean) ?? false });
     case 'iccid':
       return Iccid.fieldDescriptor();
+    case 'voucher_code':
+      return VoucherCode.fieldDescriptor();
     case 'vin':
       return Vin.fieldDescriptor();
     case 'iban':
@@ -84,6 +87,8 @@ function partialFor(type: string, input: string, o: Options): string {
       return Imei.formatPartial(input, { allowSv: (o.allowSv as boolean) ?? false });
     case 'iccid':
       return Iccid.formatPartial(input);
+    case 'voucher_code':
+      return VoucherCode.formatPartial(input);
     case 'vin':
       return Vin.formatPartial(input);
     case 'iban':

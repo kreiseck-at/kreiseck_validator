@@ -32,6 +32,16 @@
     "allowedChars": "0-9"
   },
   {
+    "type": "voucher_code",
+    "options": {},
+    "keyboard": "text",
+    "autofill": null,
+    "capitalization": "characters",
+    "maxLength": 14,
+    "example": "K7QM-3XRP-9DWF",
+    "allowedChars": "0-9A-Za-z -"
+  },
+  {
     "type": "vin",
     "options": {},
     "keyboard": "text",

@@ -5,6 +5,7 @@ import type { FieldDescriptor } from '../src/common/field';
 import { prepare } from '../src/common/partial';
 import { Imei } from '../src/imei/index';
 import { Iccid } from '../src/iccid/index';
+import { VoucherCode } from '../src/voucher-code/index';
 import { Vin } from '../src/vin/index';
 import { Iban } from '../src/iban/index';
 import { CreditCard } from '../src/credit-card/index';
@@ -53,6 +54,7 @@ interface Type {
 const types: Type[] = [
   { name: 'imei', descriptor: () => Imei.fieldDescriptor(), formatValid: Imei.tryFormat },
   { name: 'iccid', descriptor: () => Iccid.fieldDescriptor(), formatValid: Iccid.tryFormat },
+  { name: 'voucher_code', descriptor: () => VoucherCode.fieldDescriptor(), formatValid: VoucherCode.tryFormat },
   { name: 'vin', descriptor: () => Vin.fieldDescriptor(), formatValid: Vin.tryFormat },
   { name: 'credit_card', descriptor: () => CreditCard.fieldDescriptor(), formatValid: CreditCard.tryFormat },
   { name: 'iban', descriptor: () => Iban.fieldDescriptor(), formatValid: Iban.tryFormat },
@@ -230,6 +232,13 @@ describe('agreement with format', () => {
     });
   }
 
+  for (const c of load<IccidVec>('voucher_code.json')) {
+    if (c.isValid !== true || !('format' in c)) continue;
+    it(`voucher_code: ${c.input}`, () => {
+      expect(VoucherCode.formatPartial(c.input)).toBe(c.format);
+    });
+  }
+
   interface MacVec {
     input: string;
     isValid?: boolean;
@@ -300,6 +309,8 @@ function descriptorForPartial(type: string, o: Options): FieldDescriptor {
       return Imei.fieldDescriptor({ allowSv: (o.allowSv as boolean) ?? false });
     case 'iccid':
       return Iccid.fieldDescriptor();
+    case 'voucher_code':
+      return VoucherCode.fieldDescriptor();
     case 'vin':
       return Vin.fieldDescriptor();
     case 'iban':
@@ -346,6 +357,8 @@ function partialForType(type: string, input: string, o: Options): string {
       return Imei.formatPartial(input, { allowSv: (o.allowSv as boolean) ?? false });
     case 'iccid':
       return Iccid.formatPartial(input);
+    case 'voucher_code':
+      return VoucherCode.formatPartial(input);
     case 'vin':
       return Vin.formatPartial(input);
     case 'iban':
@@ -443,6 +456,8 @@ function groupingSeparatorsOf(type: string, o: Options): string | null {
     // inserted by the grouping step and neither ever content.
     case 'tax_number':
       return '/-';
+    case 'voucher_code':
+      return '-';
     default:
       return null; // imei, iccid, vin, email, url, host: never group.
   }

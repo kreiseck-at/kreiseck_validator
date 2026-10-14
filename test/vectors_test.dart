@@ -54,6 +54,7 @@ FieldDescriptor _descriptorFor(String type, Map<String, Object?> o) =>
     switch (type) {
       'imei' => Imei.fieldDescriptor(allowSv: o['allowSv'] as bool? ?? false),
       'iccid' => Iccid.fieldDescriptor(),
+      'voucher_code' => VoucherCode.fieldDescriptor(),
       'vin' => Vin.fieldDescriptor(),
       'iban' => Iban.fieldDescriptor(country: o['country'] as String?),
       'credit_card' => CreditCard.fieldDescriptor(),
@@ -85,6 +86,7 @@ String _partialFor(String type, String input, Map<String, Object?> o) =>
       'imei' =>
         Imei.formatPartial(input, allowSv: o['allowSv'] as bool? ?? false),
       'iccid' => Iccid.formatPartial(input),
+      'voucher_code' => VoucherCode.formatPartial(input),
       'vin' => Vin.formatPartial(input),
       'iban' => Iban.formatPartial(input, country: o['country'] as String?),
       'credit_card' => CreditCard.formatPartial(input),
@@ -278,6 +280,14 @@ void main() {
           expect(info.softwareVersion, p['softwareVersion']);
         });
       }
+    }
+  });
+
+  group('voucher_code', () {
+    for (final c in _load('voucher_code.json')) {
+      final input = c['input']! as String;
+      _check('voucher_code', c, () => VoucherCode.validate(input),
+          () => VoucherCode.format(input));
     }
   });
 
