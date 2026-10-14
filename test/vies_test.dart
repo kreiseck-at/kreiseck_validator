@@ -7,11 +7,11 @@ import 'package:test/test.dart';
 void main() {
   group('viesRequest', () {
     test('builds a request for a valid number', () {
-      final r = VatId.viesRequest('ATU16210507')!;
+      final r = VatId.viesRequest('ATU12345675')!;
       expect(
           r.url,
           'https://ec.europa.eu/taxation_customs/vies/rest-api/ms/AT/vat/'
-          'U16210507');
+          'U12345675');
       expect(r.method, 'GET');
       expect(r.headers['Accept'], 'application/json');
     });
@@ -22,7 +22,7 @@ void main() {
     });
 
     test('returns null for an invalid number', () {
-      expect(VatId.viesRequest('ATU16210508'), isNull);
+      expect(VatId.viesRequest('ATU12345676'), isNull);
     });
 
     test('returns null for Switzerland, which VIES does not cover', () {

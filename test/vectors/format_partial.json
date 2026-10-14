@@ -502,22 +502,22 @@
   "options": {
    "country": "AT"
   },
-  "input": "atu 162 105 07",
-  "output": "ATU16210507"
+  "input": "atu 123 456 75",
+  "output": "ATU12345675"
  },
  {
   "type": "vat_id",
   "options": {
    "country": "AT"
   },
-  "input": "atu162105070000",
-  "output": "ATU16210507"
+  "input": "atu123456750000",
+  "output": "ATU12345675"
  },
  {
   "type": "vat_id",
   "options": {},
-  "input": "atu 162 105 07",
-  "output": "ATU16210507"
+  "input": "atu 123 456 75",
+  "output": "ATU12345675"
  },
  {
   "type": "social_security",

@@ -7,9 +7,9 @@ import { VatId } from '../src/vat-id/index';
 
 describe('viesRequest', () => {
   it('builds a request for a valid number', () => {
-    const r = VatId.viesRequest('ATU16210507')!;
+    const r = VatId.viesRequest('ATU12345675')!;
     expect(r.url).toBe(
-      'https://ec.europa.eu/taxation_customs/vies/rest-api/ms/AT/vat/U16210507');
+      'https://ec.europa.eu/taxation_customs/vies/rest-api/ms/AT/vat/U12345675');
     expect(r.method).toBe('GET');
     expect(r.headers.Accept).toBe('application/json');
   });
@@ -18,7 +18,7 @@ describe('viesRequest', () => {
     expect(VatId.viesRequest('XI220430231')!.url).toContain('/ms/XI/vat/');
   });
   it('returns null for an invalid number', () => {
-    expect(VatId.viesRequest('ATU16210508')).toBeNull();
+    expect(VatId.viesRequest('ATU12345676')).toBeNull();
   });
   it('returns null for Switzerland, which VIES does not cover', () => {
     expect(VatId.isValid('CHE116281710')).toBe(true);

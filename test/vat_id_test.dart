@@ -81,7 +81,7 @@ void main() {
   });
 
   test('a prefix in the value wins over the country option', () {
-    expect(VatId.parse('ATU16210507', country: 'DE')!.country, 'AT');
+    expect(VatId.parse('ATU12345675', country: 'DE')!.country, 'AT');
   });
 
   test("Belgium's nine-digit legacy form gains its leading zero", () {

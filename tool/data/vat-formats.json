@@ -4,7 +4,7 @@
     "prefix": "ATU",
     "body": "^[0-9]{8}$",
     "maxLen": 8,
-    "example": "ATU16210507"
+    "example": "ATU12345675"
   },
   "BE": {
     "prefix": "BE",
