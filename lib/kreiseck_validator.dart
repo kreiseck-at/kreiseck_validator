@@ -46,3 +46,4 @@ export 'src/vat_id/vies.dart';
 export 'src/vin/vin.dart';
 export 'src/vin/vin_info.dart';
 export 'src/voucher_code/voucher_code.dart';
+export 'src/gender/gender.dart';

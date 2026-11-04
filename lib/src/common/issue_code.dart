@@ -104,4 +104,7 @@ enum IssueCode {
   taxNumberBadLength,
   taxNumberBadChecksum,
   taxNumberUnknownCountry,
+  // gender
+  genderEmpty,
+  genderUnknown,
 }

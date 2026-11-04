@@ -29,6 +29,8 @@ export type { ImeiInfo } from './imei/types';
 export { Iccid } from './iccid/index';
 export type { IccidInfo } from './iccid/types';
 export { VoucherCode } from './voucher-code/index';
+export { Gender } from './gender/index';
+export type { GenderCode, GenderLocale, GenderOption } from './gender/index';
 export { MacAddress } from './mac-address/index';
 export type { MacInfo, MacNotation, MacFormatOptions, MacAddressType } from './mac-address/types';
 export { LicensePlate } from './license-plate/index';

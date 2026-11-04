@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.15.0
+
+**Gender.** New `Gender`: the five values of the Austrian civil register
+(Personenstand) as one-letter codes – `m` male, `f` female, `d` diverse,
+`i` inter, `o` open. "No entry" is deliberately not a value: forms that require
+a gender (payroll: the L16 wage slip) have no way to report it. `validate`
+also accepts the German and English words and `w` (weiblich),
+case-insensitive. `isValid`, `normalize`, `label` (German by default, `en`)
+and `options` for a select. New issue codes `genderEmpty`, `genderUnknown`.
+Dart and JS identical, vectors in `test/vectors/gender.json`.
+
 ## 0.14.1
 
 **Docs and examples.** The Austrian example VAT ID (`VatId` field metadata,

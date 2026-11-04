@@ -291,6 +291,14 @@ void main() {
     }
   });
 
+  group('gender', () {
+    for (final c in _load('gender.json')) {
+      final input = c['input']! as String;
+      _check('gender', c, () => Gender.validate(input),
+          () => Gender.normalize(input));
+    }
+  });
+
   group('iccid', () {
     for (final c in _load('iccid.json')) {
       final input = c['input']! as String;

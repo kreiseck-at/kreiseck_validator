@@ -19,7 +19,8 @@ export type IssueCode =
   | 'vatEmpty' | 'vatBadFormat' | 'vatBadChecksum' | 'vatUnknownCountry' | 'vatAmbiguousCountry'
   | 'ssnEmpty' | 'ssnBadChars' | 'ssnBadLength' | 'ssnBadSerial' | 'ssnBadChecksum' | 'ssnUnknownCountry'
   | 'companyRegisterEmpty' | 'companyRegisterBadFormat' | 'companyRegisterBadChecksum' | 'companyRegisterUnknownCountry'
-  | 'taxNumberEmpty' | 'taxNumberBadChars' | 'taxNumberBadLength' | 'taxNumberBadChecksum' | 'taxNumberUnknownCountry';
+  | 'taxNumberEmpty' | 'taxNumberBadChars' | 'taxNumberBadLength' | 'taxNumberBadChecksum' | 'taxNumberUnknownCountry'
+  | 'genderEmpty' | 'genderUnknown';
 
 export interface ValidationIssue { readonly code: IssueCode; readonly message: string }
 export interface Suggestion { readonly value: string; readonly reason: string }
