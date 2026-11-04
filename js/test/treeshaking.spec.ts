@@ -65,6 +65,10 @@ describe('bundle isolation', () => {
     }
   });
 
+  it('the gender subpath is individually importable', () => {
+    expect(() => readTransitiveClosure(resolve(DIST_DIR, 'gender/index.js'))).not.toThrow();
+  });
+
   it('the dom subpath is not reachable from the main entry', () => {
     // The main entry stays platform-neutral: no DOM types, no document.
     const closure = readTransitiveClosure(resolve(DIST_DIR, 'index.js'));
