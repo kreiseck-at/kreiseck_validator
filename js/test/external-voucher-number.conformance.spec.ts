@@ -18,9 +18,12 @@ describe('external voucher number conformance', () => {
 });
 
 describe('external voucher number', () => {
-  it('composes to NFC before checking', () => {
-    // "e" + combining acute is not in the allowed set, even after composing
-    expect(ExternalVoucherNumber.normalize('é')).toBeNull();
+  it('does not fold look-alike characters into ASCII', () => {
+    expect(ExternalVoucherNumber.normalize('\u212a')).toBeNull();
+  });
+
+  it('does not trim NEL', () => {
+    expect(ExternalVoucherNumber.normalize('FG-1\u0085')).toBeNull();
   });
 
   it('isOwnVoucherCode accepts own codes only', () => {

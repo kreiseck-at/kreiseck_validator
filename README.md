@@ -402,7 +402,7 @@ VoucherCode.generate(randomBytes);        // 12 symbols from >= 11 random bytes
 
 ```dart
 ExternalVoucherNumber.isValid('FG-1234');      // true
-ExternalVoucherNumber.normalize(' fg-1 ');     // 'fg-1' (case kept)
+ExternalVoucherNumber.normalize(' fg-1 ');     // 'fg-1' (case kept, no NFC)
 ExternalVoucherNumber.normalize('a b');        // null
 isOwnVoucherCode('K7QM-3XRP-9DWF');            // true (VoucherCode.isValid)
 ```

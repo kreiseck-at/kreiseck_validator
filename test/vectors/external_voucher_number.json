@@ -60,5 +60,32 @@
   {
     "input": "K7QM​",
     "isValid": false
+  },
+  {
+    "input": "FG-1",
+    "isValid": false
+  },
+  {
+    "input": " FG-1",
+    "isValid": true,
+    "normalized": "FG-1"
+  },
+  {
+    "input": "﻿FG-1",
+    "isValid": true,
+    "normalized": "FG-1"
+  },
+  {
+    "input": "FG-1 ",
+    "isValid": true,
+    "normalized": "FG-1"
+  },
+  {
+    "input": "K",
+    "isValid": false
+  },
+  {
+    "input": "FG-K1",
+    "isValid": false
   }
 ]
