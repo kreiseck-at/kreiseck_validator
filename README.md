@@ -398,15 +398,6 @@ VoucherCode.format('K7QM3XRP9DWF');      // 'K7QM-3XRP-9DWF'
 VoucherCode.generate(randomBytes);        // 12 symbols from >= 11 random bytes
 ```
 
-### 🎟️ External voucher number
-
-```dart
-ExternalVoucherNumber.isValid('FG-1234');      // true
-ExternalVoucherNumber.normalize(' fg-1 ');     // 'fg-1' (case kept, no NFC)
-ExternalVoucherNumber.normalize('a b');        // null
-isOwnVoucherCode('K7QM-3XRP-9DWF');            // true (VoucherCode.isValid)
-```
-
 ### ⚧ Gender
 
 ```dart
@@ -612,7 +603,6 @@ stable enums you can switch on and translate; the English `message` is only a de
 | `Imei`       | ✅ | ✅ | ✅ | ✅ | ✅ | none (Luhn checksum is global) |
 | `Iccid`      | ✅ | ✅ | ✅ | ✅ | ✅ | none for checksum; `parse` country resolution is global (E.164 calling codes) |
 | `VoucherCode` | ✅ | ✅ | ✅ | ✅ | ✅ | none (Damm check symbol over GF(32) is global) |
-| `ExternalVoucherNumber` | ✅ | ✅ | – | – | – | none (`[A-Za-z0-9-_./]`, 1 to 40 characters) |
 | `Gender`     | ✅ | ✅ | ✅ | – (display via `label`) | – | Austria (civil register values) |
 | `MacAddress` | ✅ | ✅ | ✅ | ✅ | ✅ | none (EUI-48/64 notation handling is global) |
 | `Vin`        | ✅ | ✅ | ✅ | ✅ | ✅ | none (structure + check digit + model year are global, ISO 3779) |

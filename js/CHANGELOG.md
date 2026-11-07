@@ -1,14 +1,5 @@
 # Changelog
 
-## 0.16.0
-
-**ExternalVoucherNumber.** New `ExternalVoucherNumber` for voucher numbers of an
-external system, printed on receipts as given: trim (one fixed whitespace set in
-Dart and JS), then only `[A-Za-z0-9-_./]`, 1 to 40 characters, case preserved. `normalize` returns the
-cleaned string or null, `isValid` the boolean. `isOwnVoucherCode(text)` is
-`VoucherCode.isValid(text)`, to tell own codes from external numbers.
-Dart and JS identical, vectors in `test/vectors/external_voucher_number.json`.
-
 ## 0.15.0
 
 **Gender.** New `Gender`: the five values of the Austrian civil register
