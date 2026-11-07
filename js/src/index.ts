@@ -29,7 +29,6 @@ export type { ImeiInfo } from './imei/types';
 export { Iccid } from './iccid/index';
 export type { IccidInfo } from './iccid/types';
 export { VoucherCode } from './voucher-code/index';
-export { ExternalVoucherNumber, isOwnVoucherCode } from './external-voucher-number/index';
 export { Gender } from './gender/index';
 export type { GenderCode, GenderLocale, GenderOption } from './gender/index';
 export { MacAddress } from './mac-address/index';
