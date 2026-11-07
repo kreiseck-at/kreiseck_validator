@@ -1,0 +1,91 @@
+[
+  {
+    "input": "FG-1234",
+    "isValid": true,
+    "normalized": "FG-1234"
+  },
+  {
+    "input": " fg-1 ",
+    "isValid": true,
+    "normalized": "fg-1"
+  },
+  {
+    "input": "A/b_c.d-9",
+    "isValid": true,
+    "normalized": "A/b_c.d-9"
+  },
+  {
+    "input": "7",
+    "isValid": true,
+    "normalized": "7"
+  },
+  {
+    "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "isValid": true,
+    "normalized": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  },
+  {
+    "input": "\t GS.2026/0001 \n",
+    "isValid": true,
+    "normalized": "GS.2026/0001"
+  },
+  {
+    "input": "",
+    "isValid": false
+  },
+  {
+    "input": "   ",
+    "isValid": false
+  },
+  {
+    "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "isValid": false
+  },
+  {
+    "input": "a b",
+    "isValid": false
+  },
+  {
+    "input": "ä",
+    "isValid": false
+  },
+  {
+    "input": "<x>",
+    "isValid": false
+  },
+  {
+    "input": "a;b",
+    "isValid": false
+  },
+  {
+    "input": "K7QM​",
+    "isValid": false
+  },
+  {
+    "input": "FG-1",
+    "isValid": false
+  },
+  {
+    "input": " FG-1",
+    "isValid": true,
+    "normalized": "FG-1"
+  },
+  {
+    "input": "﻿FG-1",
+    "isValid": true,
+    "normalized": "FG-1"
+  },
+  {
+    "input": "FG-1 ",
+    "isValid": true,
+    "normalized": "FG-1"
+  },
+  {
+    "input": "K",
+    "isValid": false
+  },
+  {
+    "input": "FG-K1",
+    "isValid": false
+  }
+]
